@@ -7,7 +7,7 @@ API.
 
 ## Installation
 
-There are two supported ways to run Snowflake: [Docker](https://docker.com) and [uv](https://docs.astral.sh/uv).
+There are two supported ways to run Snowflake: [Docker](https://docs.docker.com) and [uv](https://docs.astral.sh/uv).
 (See also: [Configuration](#configuration).)
 
 ### Docker
