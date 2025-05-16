@@ -7,6 +7,8 @@ API.
 
 As far as I know, Snowflake is the only self-hostable, universally compatible, application that does this. 
 
+## Installation
+
 ### Docker
 
 Docker is the preferred way to run Snowflake. You can tailor the following Docker Compose configuration or
