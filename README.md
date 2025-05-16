@@ -77,12 +77,12 @@ this then you should already know how this works.
 | JSON Web Key Set | `/.well-known/jwks`                 |
 | OIDC Discovery   | `/.well-known/openid-configuration` |
 
-### Supported Scopes
+### Scopes
 
 Snowflake supports the `openid`, `profile`, and `email` scopes. `openid` and `profile` are required; `email` may be
 optionally included if you want email information.
 
-### Supported Claims
+### Claims
 
 Snowflake's ID tokens have the following claims:
 
