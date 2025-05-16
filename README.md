@@ -92,7 +92,7 @@ Snowflake's ID tokens have the following claims:
 | `sub`                | The ID of the user's Discord account.                                                                                                                                    |
 | `aud`                | The client ID of your Discord application.                                                                                                                               |
 | `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  |
-| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and no longer valid.                                          |
+| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     |
 | `preferred_username` | The username of the user's Discord account.                                                                                                                              |
 | `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. |
 | `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
