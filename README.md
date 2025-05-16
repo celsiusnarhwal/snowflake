@@ -116,7 +116,7 @@ Snowflake is configurable through the following environment variables:
 | `SNOWFLAKE_TOKEN_LIFETIME`       | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which ID tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>This must resolve to something greater than or equal to 60 seconds. Defaults to `1h`. | No            |
 | `SNOWFLAKE_REDIRECT_STATUS_CODE` | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`. Defaults to `303`.                                                                                                                                                                                                             |               |
 
-[Uvicorn](https://www.uvicorn.org/) will respect any
+Additionally, [Uvicorn](https://www.uvicorn.org/) will respect any
 of [its own environment variables](https://www.uvicorn.org/settings/) if they are set.
 
 [^1]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
