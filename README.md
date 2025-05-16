@@ -5,8 +5,6 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2 
 API.
 
-As far as I know, Snowflake is the only self-hostable, universally compatible, application that does this. 
-
 ## Installation
 
 There are two supported ways to run Snowflake: [Docker](https://docker.com) and [uv](https://docs.astral.sh/uv).
