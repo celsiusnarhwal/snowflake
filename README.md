@@ -10,7 +10,7 @@ As far as I know, Snowflake is the only self-hostable, universally compatible, a
 ## Installation
 
 There are two supported ways to run Snowflake: [Docker](https://docker.com) and [uv](https://docs.astral.sh/uv).
-(See also: [Configuration](#configuration)).
+(See also: [Configuration](#configuration).)
 
 ### Docker
 
