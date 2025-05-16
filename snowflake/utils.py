@@ -35,7 +35,10 @@ def create_private_key() -> RSAKey:
 
 def get_private_key() -> RSAKey:
     if PRIVATE_KEY_FILE.exists():
-        return JsonWebKey.import_key(json.load(PRIVATE_KEY_FILE.open()))
+        try:
+            return JsonWebKey.import_key(json.load(PRIVATE_KEY_FILE.open()))
+        except ValueError:
+            pass
 
     return create_private_key()
 
