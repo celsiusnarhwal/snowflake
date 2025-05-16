@@ -27,7 +27,7 @@ services:
     environment:
       - SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
     volumes:
-      - { SOME_DIRECTORY_ON_YOUR_MACHINE }:/app/snowflake/data
+      - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
 ```
 
 #### Docker CLI
