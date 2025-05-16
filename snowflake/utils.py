@@ -9,12 +9,12 @@ from authlib.oidc.core import IDToken
 
 from snowflake.settings import settings
 
-oauth = OAuth()
-
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "private_key.json"
 
 
 def get_oauth_client(**kwargs) -> StarletteOAuth2App:
+    oauth = OAuth()
+
     return oauth.register(
         name=uuid.uuid4().hex,
         authorize_url="https://discord.com/oauth2/authorize",
@@ -66,7 +66,7 @@ def get_jwks():
     return {"keys": [get_private_key().as_dict()]}
 
 
-async def decode_jwt(token: str):
+def decode_jwt(token: str):
     decoded = jwt.decode(
         token,
         get_jwks(),
