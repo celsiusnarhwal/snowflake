@@ -106,7 +106,7 @@ async def discovery(request: Request):
             "preferred_username",
             "locale",
             "email",
-            "email_verified,
+            "email_verified",
             "picture",
         ],
         "grant_types_supported": ["authorization_code"],
