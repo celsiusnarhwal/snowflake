@@ -10,4 +10,4 @@ RUN uv sync
 
 COPY . /app/
 
-CMD ["uv", "run", "uvicorn", "snowflake.app:app"]
+CMD ["uv", "run", "snowflake"]
