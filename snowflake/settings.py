@@ -6,7 +6,6 @@ import durationpy
 from pydantic import BeforeValidator, HttpUrl, model_validator
 from pydantic_settings import (
     BaseSettings,
-    PydanticBaseSettingsSource,
     SettingsConfigDict,
 )
 
@@ -16,7 +15,9 @@ Duration = t.Annotated[
 
 
 class SnowflakeSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
+    model_config = SettingsConfigDict(
+        env_prefix="SNOWFLAKE_", env_file=".env", env_ignore_empty=True
+    )
 
     public_url: str
     token_lifetime: Duration = "1h"
@@ -31,17 +32,6 @@ class SnowflakeSettings(BaseSettings):
             raise ValueError("public_url must be an HTTPS URL")
 
         return self
-
-    @classmethod
-    def settings_customise_sources(
-        cls,
-        settings_cls: type[BaseSettings],
-        init_settings: PydanticBaseSettingsSource,
-        env_settings: PydanticBaseSettingsSource,
-        dotenv_settings: PydanticBaseSettingsSource,
-        file_secret_settings: PydanticBaseSettingsSource,
-    ):
-        return (dotenv_settings,)
 
 
 @lru_cache
