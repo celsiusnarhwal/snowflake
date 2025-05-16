@@ -58,7 +58,7 @@ First, [Create an application in the Discord Developer Portal](https://discord.c
 application's OAuth2 settings, note your client ID and client secret and set appropriate redirect URIs.
 
 From there, Snowflake works just like any other OIDC provider. You provide the client ID, client secret,
-redirect URI, and scopes; your users will be redirected to Discord for authorization; Discord will provide you
+redirect URI, and scopes; clients will be redirected to Discord for authorization; Discord will provide you
 an authorization code, which you will send to Snowflake in exchange for an OIDC ID Token. Frankly, if you're reading
 this then you should already know how this works.
 
