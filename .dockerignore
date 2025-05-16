@@ -1,0 +1,5 @@
+*
+!snowflake/
+!pyproject.toml
+!uv.lock
+snowflake/persist/
