@@ -54,7 +54,7 @@ export SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
 snowflake
 ```
 
-When running Snowflake via `uv`, a `.env` file in the current working directory may be used in lieu
+When running Snowflake this way`, a `.env` file in the current working directory may be used in lieu
 of setting environment variables in the shell.
 
 ## Usage
