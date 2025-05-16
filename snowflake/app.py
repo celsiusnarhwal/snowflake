@@ -82,15 +82,13 @@ async def token(
 
 
 @app.get("/userinfo")
-async def userinfo(
+async def user_info(
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
     try:
-        user_info = utils.decode_jwt(credentials.credentials)
+        return utils.decode_jwt(credentials.credentials)
     except JoseError:
         raise HTTPException(401)
-
-    return user_info
 
 
 @app.get("/.well-known/jwks")
