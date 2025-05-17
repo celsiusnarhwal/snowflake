@@ -5,11 +5,10 @@ from pathlib import Path
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import JsonWebKey, RSAKey, jwt
-from authlib.oidc.core import IDToken
 
 from snowflake.settings import settings
 
-PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "private_key.json"
+PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "private_key.json"
 
 
 def get_oauth_client(**kwargs) -> StarletteOAuth2App:
@@ -24,13 +23,11 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     )
 
 
-def create_private_key() -> RSAKey:
+def create_private_key():
     key: RSAKey = JsonWebKey.generate_key(kty="RSA", crv_or_size=2048, is_private=True)
 
     PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
     PRIVATE_KEY_FILE.write_text(key.as_json(is_private=True))
-
-    return key
 
 
 def get_private_key() -> RSAKey:
@@ -40,14 +37,16 @@ def get_private_key() -> RSAKey:
         except ValueError:
             pass
 
-    return create_private_key()
+    create_private_key()
+
+    return get_private_key()
 
 
-def create_id_token(client_id: str, user_info: dict):
+def create_id_token(*, issuer: str, client_id: str, user_info: dict):
     now = int(time.time())
 
     claims = {
-        "iss": settings().public_url,
+        "iss": issuer,
         "sub": user_info["id"],
         "aud": client_id,
         "iat": now,
@@ -67,15 +66,3 @@ def create_id_token(client_id: str, user_info: dict):
 
 def get_jwks():
     return {"keys": [get_private_key().as_dict()]}
-
-
-def decode_jwt(token: str):
-    decoded = jwt.decode(
-        token,
-        get_jwks(),
-        claims_cls=IDToken,
-        claims_options={"iss": {"value": settings().public_url}},
-    )
-    decoded.validate()
-
-    return decoded
