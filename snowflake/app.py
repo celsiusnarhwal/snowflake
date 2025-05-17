@@ -80,7 +80,7 @@ async def token(
     resp.raise_for_status()
 
     return utils.create_id_token(
-        issuer=request.base_url, client_id=discord.client_id, user_info=resp.json()
+        issuer=str(request.base_url), client_id=discord.client_id, user_info=resp.json()
     )
 
 
@@ -107,7 +107,7 @@ async def jwks():
 @app.get("/.well-known/openid-configuration")
 async def discovery(request: Request):
     return {
-        "issuer": request.base_url,
+        "issuer": str(request.base_url),
         "claims_supported": [
             "sub",
             "name",
