@@ -40,7 +40,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - { SOME_DIRECTORY_ON_YOUR_MACHINE }:/app/snowflake/data
+      - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
 ```
 
 ### Docker CLI
