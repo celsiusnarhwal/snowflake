@@ -7,15 +7,9 @@ API.
 
 ## Installation
 
-There are two supported ways to run Snowflake: [Docker](https://docs.docker.com) and [uv](https://docs.astral.sh/uv).
-(See also: [Configuration](#configuration).)
+[Docker](https://docs.docker.com) is the only supported way of running Snowflake.
 
-### Docker
-
-Docker is the preferred way to run Snowflake. You can tailor the following Docker Compose configuration or
-`docker run` command to your needs:
-
-#### Docker Compose
+### Docker Compose
 
 ```yaml
 services:
@@ -31,7 +25,7 @@ services:
       - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
 ```
 
-#### Docker CLI
+### Docker CLI
 
 ```shell
 docker run --name snowflake \
@@ -41,19 +35,6 @@ docker run --name snowflake \
 -v "{SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data" \
 ghcr.io/celsiusnarhwal/snowflake
 ```
-
-### uv
-
-Snowflake can be installed via [uv](https://docs.astral.sh/uv).
-
-```shell
-uv tool install https://github.com/celsiusnarhwal/snowflake@latest
-export SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
-snowflake
-```
-
-When running Snowflake this way, a `.env` file in the current working directory may be used in lieu
-of setting environment variables in the shell.
 
 ## Usage
 
