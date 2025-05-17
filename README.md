@@ -12,6 +12,8 @@ API.
 
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake.
 
+<hr>
+
 <details>
 <summary>Supported Tags</summary>
 <br>
@@ -24,6 +26,8 @@ API.
 | `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
 
 </details>
+
+<hr>
 
 ### Docker Compose
 
