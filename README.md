@@ -5,7 +5,7 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
->[!IMPORTANT]
+> [!IMPORTANT]
 > Snowflake must be served over HTTPS.
 
 ## Installation
@@ -40,7 +40,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
+      - { SOME_DIRECTORY_ON_YOUR_MACHINE }:/app/snowflake/data
 ```
 
 ### Docker CLI
@@ -109,12 +109,12 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 
 ## Configuration
 
-Snowflake is configurable through the following environment variables:
+Snowflake is configurable through the following environment variables (all optional):
 
-| **Environment Variable**         | **Description**                                                                                                                                                                                                                                                                                                                                                  | **Required?** |
-|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `SNOWFLAKE_TOKEN_LIFETIME`       | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which ID tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>This must resolve to a length of time greater than or equal to 60 seconds. Defaults to `1h`. | No            |
-| `SNOWFLAKE_REDIRECT_STATUS_CODE` | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`. Defaults to `303`.                                                                                                                                                                                                                    |               |
+| **Environment Variable**         | **Description**                                                                                                                                                                                                                                                                                                                                                  |
+|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `SNOWFLAKE_TOKEN_LIFETIME`       | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which ID tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>This must resolve to a length of time greater than or equal to 60 seconds. Defaults to `1h`. |
+| `SNOWFLAKE_REDIRECT_STATUS_CODE` | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`. Defaults to `303`.                                                                                                                                                                                                                    |
 
 Additionally, [Uvicorn](https://www.uvicorn.org/) will respect any
 of [its own environment variables](https://www.uvicorn.org/settings/) if they are set.
