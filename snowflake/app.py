@@ -91,7 +91,7 @@ async def user_info(
         raise HTTPException(401)
 
 
-@app.get("/.well-known/jwks")
+@app.get("/.well-known/jwks.json")
 async def jwks():
     return utils.get_jwks()
 
