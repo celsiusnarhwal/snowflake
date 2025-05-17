@@ -37,7 +37,7 @@ async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError)
 
 
 @app.get("/authorize")
-async def authorize(request: Request, client_id: str, scope: str, redirect_uri: str):
+async def authorize(request: Request, client_id: str, scope: str):
     scopes = set(scope.split(" "))
 
     if not (
