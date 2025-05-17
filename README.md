@@ -48,8 +48,6 @@ services:
     restart: unless-stopped
     ports:
       - "8000:8000"
-    environment:
-      - SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
     volumes:
       - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
 ```
@@ -60,7 +58,6 @@ services:
 docker run --name snowflake \
 --restart unless-stopped \
 -p "8000:8000" \
--e "SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTANCE_URL}" \
 -v "{SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data" \
 ghcr.io/celsiusnarhwal/snowflake
 ```
@@ -125,7 +122,6 @@ Snowflake is configurable through the following environment variables:
 
 | **Environment Variable**         | **Description**                                                                                                                                                                                                                                                                                                                                                  | **Required?** |
 |----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| `SNOWFLAKE_PUBLIC_URL`           | The externally-accessible HTTPS URL where Snowflake is reachable.                                                                                                                                                                                                                                                                                                | Yes           |
 | `SNOWFLAKE_TOKEN_LIFETIME`       | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which ID tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>This must resolve to a length of time greater than or equal to 60 seconds. Defaults to `1h`. | No            |
 | `SNOWFLAKE_REDIRECT_STATUS_CODE` | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`. Defaults to `303`.                                                                                                                                                                                                                    |               |
 
