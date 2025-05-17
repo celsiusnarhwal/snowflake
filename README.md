@@ -72,7 +72,7 @@ this then you should already know how this works.
 | Authorization    | `/authorize`                        |
 | Token            | `/token`                            |
 | User Info        | `/userinfo`                         |
-| JSON Web Key Set | `/.well-known/jwks`                 |
+| JSON Web Key Set | `/.well-known/jwks.json`            |
 | OIDC Discovery   | `/.well-known/openid-configuration` |
 
 ### Supported Scopes
