@@ -343,25 +343,6 @@ wheels = [
 ]
 
 [[package]]
-name = "oidc-wrapper"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "authlib" },
-    { name = "durationpy" },
-    { name = "fastapi", extra = ["all", "standard"] },
-    { name = "pydantic-settings" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "authlib", specifier = ">=1.5.2" },
-    { name = "durationpy", specifier = ">=0.9" },
-    { name = "fastapi", extras = ["all", "standard"], specifier = ">=0.115.12" },
-    { name = "pydantic-settings", specifier = ">=2.9.1" },
-]
-
-[[package]]
 name = "orjson"
 version = "3.10.18"
 source = { registry = "https://pypi.org/simple" }
@@ -550,6 +531,24 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a2/87/a6771e1546d97e7e041b6ae58d80074f81b7d5121207425c964ddf5cfdbd/sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc", size = 20372 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e9/44/75a9c9421471a6c4805dbf2356f7c181a29c1879239abab1ea2cc8f38b40/sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2", size = 10235 },
+]
+
+[[package]]
+name = "snowflake"
+source = { editable = "." }
+dependencies = [
+    { name = "authlib" },
+    { name = "durationpy" },
+    { name = "fastapi", extra = ["all", "standard"] },
+    { name = "pydantic-settings" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "authlib", specifier = ">=1.5.2" },
+    { name = "durationpy", specifier = ">=0.9" },
+    { name = "fastapi", extras = ["all", "standard"], specifier = ">=0.115.12" },
+    { name = "pydantic-settings", specifier = ">=2.9.1" },
 ]
 
 [[package]]
