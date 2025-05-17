@@ -27,15 +27,6 @@ API.
 
 </details>
 
-<details>
-<summary>Supported Architectures</summary>
-<br>
-
-- `amd64`
-- `arm64`
-
-</details>
-
 <hr>
 
 ### Docker Compose
