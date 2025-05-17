@@ -2,12 +2,38 @@
 
 Snowflake enables you to use [Discord](https://discord.com) as
 an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect-protocol) (OIDC) provider. With it, you
-can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2 
+can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
 ## Installation
 
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake.
+
+<hr>
+
+<details>
+<summary>Supported Tags</summary>
+<br>
+
+| **Name**             | **Description**                                                                               | **Example**                                                                            |
+|----------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
+| `latest`             | The latest stable version of Snowflake.                                                       | `ghcr.io/celsiusnarhwal/snowflake:latest`                                              |
+| Major version number | The latest release of this major version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1`         |
+| Exact version number | This version of Snowflake exactly. May be optionally prefixed with a `v`.                     | `ghcr.io/celsiusnarhwal/snowflake:1.0.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0.0` |
+| `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
+
+</details>
+
+<details>
+<summary>Supported Architectures</summary>
+<br>
+
+- `amd64`
+- `arm64`
+
+</details>
+
+<hr>
 
 ### Docker Compose
 
@@ -22,7 +48,7 @@ services:
     environment:
       - SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
     volumes:
-      - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
+      - { SOME_DIRECTORY_ON_YOUR_MACHINE }:/app/snowflake/data
 ```
 
 ### Docker CLI
@@ -42,8 +68,8 @@ First, [create an application in the Discord Developer Portal](https://discord.c
 application's OAuth2 settings, note your client ID and client secret and set appropriate redirect URIs.
 
 From there, Snowflake works just like any other OIDC provider. Your app redirects clients to Snowflake for authorization
-(which in turn redirects them to Discord); Discord provides your app with an authorization code, which your app 
-sends to Snowflake in exchange for an OIDC ID token. Frankly, if you're reading this then you should 
+(which in turn redirects them to Discord); Discord provides your app with an authorization code, which your app
+sends to Snowflake in exchange for an OIDC ID token. Frankly, if you're reading this then you should
 already know how this works.
 
 ### OIDC Routes
