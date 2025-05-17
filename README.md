@@ -2,7 +2,7 @@
 
 Snowflake enables you to use [Discord](https://discord.com) as
 an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect-protocol) (OIDC) provider. With it, you
-can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth 2 
+can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2 
 API.
 
 ## Installation
