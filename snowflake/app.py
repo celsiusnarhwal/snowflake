@@ -17,9 +17,11 @@ from starlette.exceptions import HTTPException
 from starlette.middleware.sessions import SessionMiddleware
 
 from snowflake import utils
+from snowflake.middleware import HTTPSOnlyMiddleware
 from snowflake.settings import settings
 
 app = FastAPI()
+app.add_middleware(HTTPSOnlyMiddleware)
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
