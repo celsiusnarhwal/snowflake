@@ -15,9 +15,7 @@ Duration = t.Annotated[
 
 
 class SnowflakeSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="SNOWFLAKE_", env_file=".env", env_ignore_empty=True
-    )
+    model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
     public_url: str
     token_lifetime: Duration = "1h"
