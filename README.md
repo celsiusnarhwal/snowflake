@@ -57,7 +57,7 @@ of setting environment variables in the shell.
 
 ## Usage
 
-First, [Create an application in the Discord Developer Portal](https://discord.com/developers/applications). In your
+First, [create an application in the Discord Developer Portal](https://discord.com/developers/applications). In your
 application's OAuth2 settings, note your client ID and client secret and set appropriate redirect URIs.
 
 From there, Snowflake works just like any other OIDC provider. You provide the client ID, client secret,
