@@ -5,6 +5,9 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
+>[!IMPORTANT]
+> Snowflake must be served over HTTPS.
+
 ## Installation
 
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake.
@@ -48,7 +51,7 @@ services:
     environment:
       - SNOWFLAKE_PUBLIC_URL=https://{YOUR_SNOWFLAKE_INSTACE_URL}
     volumes:
-      - { SOME_DIRECTORY_ON_YOUR_MACHINE }:/app/snowflake/data
+      - {SOME_DIRECTORY_ON_YOUR_MACHINE}:/app/snowflake/data
 ```
 
 ### Docker CLI
