@@ -1,7 +1,7 @@
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from snowflake.utils import settings
+from snowflake.settings import settings
 
 
 class HTTPSOnlyMiddleware:
