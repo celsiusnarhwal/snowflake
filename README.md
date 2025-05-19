@@ -98,8 +98,19 @@ Frankly, if you're reading this then you should already know how this works.
 
 ### Supported Scopes
 
-Snowflake supports the `openid`, `profile`, and `email` scopes. `openid` and `profile` are required; `email` may be
-optionally included if you want email information.
+| **Scope** | **Description**                                                                          | **Required?** |
+|-----------|------------------------------------------------------------------------------------------|---------------|
+| `openid`  | Requests to authorize with OpenID Connect.                                               | Yes           |
+| `profile` | Requests basic information about the user's Discord account.                             | Yes           |
+| `email`   | Requests information about the email address associated with the user's Discord account. | No            |
+| `guilds`  | Requests information about the guilds (a.k.a. "servers") the user is a member of.        | No            |
+
+Snowflake supports the `openid`, `profile`, and `email` and `guilds` scopes. `openid` and `profile` are required;
+`email` may be optionally included if you want email information.
+
+> [!WARNING]
+> Requesting the `guilds` scope can increase the time it takes for Snowflake to respond to token requests by
+> several seconds.
 
 ### Supported Claims
 

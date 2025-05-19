@@ -23,7 +23,7 @@ from starlette.responses import RedirectResponse
 
 from snowflake import security, utils
 from snowflake.settings import settings
-from snowflake.types import SnowflakeAuthorizationCode
+from snowflake.types import SnowflakeAuthorizationData, SnowflakeStateData
 
 logger = logging.getLogger("uvicorn")
 
@@ -89,7 +89,7 @@ async def authorize(
     client_id: str,
     scope: str,
     redirect_uri: str,
-    state: str = None,
+    state: str,
     nonce: str = None,
 ):
     fixed_redirect_uri = utils.fix_redirect_uri(request, redirect_uri)
@@ -106,13 +106,19 @@ async def authorize(
 
     scopes = set(scope.split(" "))
 
-    if not (
-        scopes == {"openid", "profile"} or scopes == {"openid", "profile", "email"}
-    ):
-        raise HTTPException(400, "Bad scopes")
+    for scope in ["openid", "profile"]:
+        if scope not in scopes:
+            raise HTTPException(400, f"{scope} scope is required")
+
+    discord_scopes = ["identify"]
+
+    for scope in ["email", "guilds"]:
+        if scope in scopes:
+            discord_scopes.append(scope)
 
     discord = utils.get_oauth_client(
-        client_id=client_id, scope="identify" + (" email" if "email" in scopes else "")
+        client_id=client_id,
+        scope=" ".join(discord_scopes),
     )
 
     authorization_params = {
@@ -124,9 +130,10 @@ async def authorize(
     resp = await discord.authorize_redirect(request, **authorization_params)
     resp.status_code = settings().redirect_status_code
 
-    if state and nonce:
-        redis = settings().redis
-        await redis.set(state, nonce, ex=300)
+    state_data = SnowflakeStateData(scopes=scopes, nonce=nonce)
+
+    redis = settings().redis
+    await redis.set(state, state_data.to_encrypted(), ex=300)
 
     return resp
 
@@ -141,9 +148,11 @@ async def redirect_to(
     request: Request, redirect_uri: str, code: str, state: str = None
 ):
     async with settings().redis as redis:
-        nonce = await redis.getdel(state)
+        state_data = SnowflakeStateData.from_encrypted(await redis.getdel(state))
 
-    snowflake_code = SnowflakeAuthorizationCode(code=code, nonce=nonce)
+    snowflake_code = SnowflakeAuthorizationData(
+        code=code, scopes=state_data.scopes, nonce=state_data.nonce
+    )
     full_redirect_uri = URL(redirect_uri).include_query_params(
         **{**request.query_params, "code": snowflake_code.to_encrypted()}
     )
@@ -170,19 +179,18 @@ async def token(
         client_id = client_id or credentials.username
         client_secret = client_secret or credentials.password
 
-    snowflake_code = SnowflakeAuthorizationCode.from_encrypted(params.pop("code"))
+    authorization_data = SnowflakeAuthorizationData.from_encrypted(params.pop("code"))
 
     discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
-    discord_token = await discord.fetch_access_token(**params, code=snowflake_code.code)
-
-    resp = await discord.get("users/@me", token=discord_token)
-    resp.raise_for_status()
+    discord_token = await discord.fetch_access_token(
+        **params, code=authorization_data.code
+    )
 
     return await security.create_tokens(
         issuer=str(request.base_url),
-        client_id=discord.client_id,
-        nonce=snowflake_code.nonce,
-        user_info=resp.json(),
+        discord=discord,
+        discord_token=discord_token,
+        authorization_data=authorization_data,
     )
 
 

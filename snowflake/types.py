@@ -6,10 +6,10 @@ from pydantic import BaseModel
 from starlette.exceptions import HTTPException
 
 
-class SnowflakeAuthorizationCode(BaseModel):
+class SnowflakeStateData(BaseModel):
     cipher: t.ClassVar[Fernet] = Fernet(Fernet.generate_key())
 
-    code: str
+    scopes: list
     nonce: str | None = None
 
     def to_encrypted(self):
@@ -20,4 +20,10 @@ class SnowflakeAuthorizationCode(BaseModel):
         try:
             return cls.model_validate_json(cls.cipher.decrypt(encrypted))
         except cryptography.fernet.InvalidToken:
-            raise HTTPException(400, "Invalid authorization code")
+            raise HTTPException(400)
+
+
+class SnowflakeAuthorizationData(SnowflakeStateData):
+    cipher: t.ClassVar[Fernet] = Fernet(Fernet.generate_key())
+
+    code: str

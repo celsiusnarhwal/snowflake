@@ -2,10 +2,12 @@ import json
 import time
 from pathlib import Path
 
+from authlib.integrations.starlette_client import StarletteOAuth2App
 from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey
 
 from snowflake.settings import settings
+from snowflake.types import SnowflakeAuthorizationData
 
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
 
@@ -32,17 +34,27 @@ def create_jwt(claims, key):
     return jwt.encode({"alg": "RS256"}, claims, key)
 
 
-async def create_tokens(*, issuer: str, client_id: str, nonce: str, user_info: dict):
+async def create_tokens(
+    *,
+    issuer: str,
+    discord: StarletteOAuth2App,
+    authorization_data: SnowflakeAuthorizationData,
+    discord_token: dict,
+):
     now = int(time.time())
     expiry = now + settings().token_lifetime
+
+    user_resp = await discord.get("users/@me", token=discord_token)
+    user_resp.raise_for_status()
+    user_info = user_resp.json()
 
     access_claims = {
         "iss": issuer,
         "sub": user_info["id"],
-        "aud": client_id,
+        "aud": discord.client_id,
         "iat": now,
         "exp": expiry,
-        "nonce": nonce,
+        "nonce": authorization_data.nonce,
     }
 
     identity_claims = {
@@ -54,10 +66,22 @@ async def create_tokens(*, issuer: str, client_id: str, nonce: str, user_info: d
         f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
     }
 
-    if email := user_info.get("email"):
+    if "email" in authorization_data.scopes:
         identity_claims.update(
-            {"email": email, "email_verified": user_info["verified"]}
+            {
+                "email": user_info.get("email"),
+                "email_verified": user_info.get("verified"),
+            }
         )
+
+    if "guilds" in authorization_data.scopes:
+        guilds_resp = await discord.get(
+            "users/@me/guilds", token=discord_token, timeout=30
+        )
+        guilds_resp.raise_for_status()
+        identity_claims["discord:guilds"] = [
+            guild["id"] for guild in guilds_resp.json()
+        ]
 
     access_token = create_jwt(access_claims, get_private_key())
     id_token = create_jwt(identity_claims, get_private_key())
