@@ -163,3 +163,4 @@ cython_debug/
 snowflake/data/
 test/
 .envrc
+dump.rdb
