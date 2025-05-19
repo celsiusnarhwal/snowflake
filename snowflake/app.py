@@ -1,9 +1,13 @@
 import json
+import logging
 import secrets
 import typing as t
+from contextlib import asynccontextmanager
 
 from authlib.common.errors import AuthlibHTTPError
 from fastapi import Depends, FastAPI, Request
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBasic,
@@ -18,22 +22,51 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 
 from snowflake import security, utils
-from snowflake.middleware import HTTPSOnlyMiddleware
 from snowflake.settings import settings
 from snowflake.types import SnowflakeAuthorizationCode
 
+logger = logging.getLogger("uvicorn")
+
+
+# noinspection PyUnusedLocal
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    if settings().dev_mode:
+        logger.info(
+            "Developer mode disables certain security features. Please don't use it in production."
+        )
+    if "*" in settings().allowed_host_list and not settings().dev_mode:
+        logger.warning(
+            "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
+        )
+
+    yield
+
+
 app = FastAPI(
-    root_path=settings().base_path,
-    openapi_url=settings().openapi_url,
-    docs_url=settings().docs_url,
+    lifespan=lifespan, root_path=settings().base_path, docs_url=settings().docs_url
 )
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
     session_cookie="snowflake_session",
     max_age=0,
 )
-app.add_middleware(HTTPSOnlyMiddleware)
+
+
+@app.middleware("http")
+async def enforce_https(request: Request, call_next):
+    if request.url.scheme != "https" and not settings().dev_mode:
+        return JSONResponse(
+            {
+                "detail": "Snowflake must be served over HTTPS. If you're using a reverse proxy, "
+                "see https://github.com/celsiusnarhwal/snowflake#using-reverse-proxies."
+            },
+            status_code=400,
+        )
+
+    return await call_next(request)
 
 
 # noinspection PyUnusedLocal

@@ -18,14 +18,18 @@ Duration = t.Annotated[
 class SnowflakeSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
-    base_path: str = ""
-    token_lifetime: Duration = "1h"
+    allowed_hosts: str
+    base_path: str = "/"
     fix_redirect_uris: bool = False
+    token_lifetime: Duration = "1h"
     redis_url: RedisDsn | None = None
     redirect_status_code: t.Literal[302, 303] = 303
-    enable_openapi: bool = False
     enable_swagger: bool = False
     dev_mode: bool = False
+
+    @property
+    def allowed_host_list(self) -> list[str]:
+        return self.allowed_hosts.split(",")
 
     @property
     def redis(self):
@@ -33,10 +37,6 @@ class SnowflakeSettings(BaseSettings):
             return aioredis.from_url(self.redis_url, decode_responses=True)
 
         return aioredis.Redis(decode_responses=True)
-
-    @property
-    def openapi_url(self):
-        return "/docs" if self.enable_openapi else None
 
     @property
     def docs_url(self):
