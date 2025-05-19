@@ -8,6 +8,7 @@ dependencies = [
     "authlib>=1.5.2",
     "durationpy>=0.9",
     "fastapi[all,standard]>=0.115.12",
+    "joserfc>=1.0.4",
     "pydantic-settings>=2.9.1",
     "redis>=6.1.0",
 ]

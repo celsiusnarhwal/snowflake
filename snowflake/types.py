@@ -1,7 +1,9 @@
 import typing as t
 
+import cryptography.fernet
 from cryptography.fernet import Fernet
 from pydantic import BaseModel
+from starlette.exceptions import HTTPException
 
 
 class SnowflakeAuthorizationCode(BaseModel):
@@ -15,4 +17,7 @@ class SnowflakeAuthorizationCode(BaseModel):
 
     @classmethod
     def from_encrypted(cls, encrypted) -> t.Self:
-        return cls.model_validate_json(cls.cipher.decrypt(encrypted))
+        try:
+            return cls.model_validate_json(cls.cipher.decrypt(encrypted))
+        except cryptography.fernet.InvalidToken:
+            raise HTTPException(400, "Invalid authorization code")

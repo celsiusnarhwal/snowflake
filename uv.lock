@@ -294,6 +294,18 @@ wheels = [
 ]
 
 [[package]]
+name = "joserfc"
+version = "1.0.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "cryptography" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/6a/e4/4c649e364bafa7cd2dd44ab5c301a721d3ff4942c43feb562deded60b414/joserfc-1.0.4.tar.gz", hash = "sha256:dc3fc216cfcfc952d4c0d4b06c759a04711af0b667e5973adc47dbb1ba784127", size = 172055 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/57/81/a61b8942d94ca222c9df901d2704d2746f49174727e64eb5cd0a21450f1e/joserfc-1.0.4-py3-none-any.whl", hash = "sha256:ecf3a5999f89d3a663485ab7c4f633541586d6f44e664ee760197299f39ed51b", size = 61070 },
+]
+
+[[package]]
 name = "markdown-it-py"
 version = "3.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -549,6 +561,7 @@ dependencies = [
     { name = "authlib" },
     { name = "durationpy" },
     { name = "fastapi", extra = ["all", "standard"] },
+    { name = "joserfc" },
     { name = "pydantic-settings" },
     { name = "redis" },
 ]
@@ -558,6 +571,7 @@ requires-dist = [
     { name = "authlib", specifier = ">=1.5.2" },
     { name = "durationpy", specifier = ">=0.9" },
     { name = "fastapi", extras = ["all", "standard"], specifier = ">=0.115.12" },
+    { name = "joserfc", specifier = ">=1.0.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "redis", specifier = ">=6.1.0" },
 ]
