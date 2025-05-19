@@ -114,6 +114,8 @@ Snowflake supports the `openid`, `profile`, and `email` and `guilds` scopes. `op
 
 ### Supported Claims
 
+#### Access Tokens
+
 Snowflake-issued access tokens have the following claims:
 
 | **Claim** | **Description**                                                                                                                      |
@@ -123,6 +125,8 @@ Snowflake-issued access tokens have the following claims:
 | `aud`     | The client ID of your Discord application.                                                                                           |
 | `iat`     | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                              |
 | `exp`     | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid. |
+
+#### ID Tokens
 
 Snowflake-issed ID tokens tokens have the same claims as Snowflake-issued access tokens as well as the following:
 
@@ -140,6 +144,12 @@ When the `email` scope is requested, ID tokens will also have the following clai
 | `email`          | The email address associated with the user's Discord account.                     |
 | `email_verified` | Whether the email address associated with the user's Discord account is verified. |
 
+When the `guilds` scope is requested, ID tokens will also have the following claims:
+
+| **Claim**        | **Description**                                  |
+|------------------|--------------------------------------------------|
+| `discord:guilds` | A list of IDs of guilds the user is a member of. |
+
 ### PKCE Support
 
 For applications that cannot securely store a client secret, Snowflake supports the
@@ -155,7 +165,8 @@ You can do this by setting the `UVICORN_FORWARDED_ALLOW_IPS` environment variabl
 
 - The IPv4 or IPv6 address of your reverse proxy as seen by Snowflake (e.g., `172.17.0.2` or `fd12:3456:789a::2`)
 - An IPv4 or IPv6 network containing the IP address of your reverse proxy as seen by Snowflake
-  (e.g., `172.17.0.0/16`, `fd12:3456:789a::/64`)
+  (e.g., `172.17.0.0/16` or `fd12:3456:789a::/64`)
+- A comma-separated list of such IPv4 or IPv6 addresses or networks
 
 You can also set it to `*` to trust all IP addresses, but this is generally not recommended.
 
@@ -165,16 +176,16 @@ For more information, see [Uvicorn's documentation](https://www.uvicorn.org/depl
 
 Snowflake is configurable through the following environment variables:
 
-| **Environment Variable**         | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                                                             | **Required?** | **Default** |
-|----------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
-| `SNOWFLAKE_ALLOWED_HOSTS`        | String   | A comma-separated list of domain names at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) are supported. You can also set this to `*` to allow all domains, but this is not recommended.                                                                                                                                                                                          | Yes           | N/A         |
-| `SNOWFLAKE_BASE_PATH`            | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                                                                                     | No            | `/`         |
-| `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URI's you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                                                                                     | No            | `false`     ||          |                                                                                                                                                                                                                                                                                                                                    |               |              |
-| `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds.                                                              | No            | `1h`        |
-| `SNOWFLAKE_REDIS_URL`            | String   | A [Redis](https://redis.io/) connection string. Snowflake uses Redis to store important authorization data; if this variable is provided, Snowflake will use the Redis database it points to rather than its own internal one, allowing that data to persist across container restarts. Must begin with `redis://` or `rediss://`.                                                                          | No            | N/A         |
-| `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path should redirect to. Must be either `repo`, `web`, `app`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `web` and `app` redirect to the user's Discord account settings on discord.com or in their platform's Discord app, respectively; `off` responds with an HTTP 404 error. Note that `app` only works if Discord is installed on the user's device. | No            | `repo`      |
-| `SNOWFLAKE_REDIRECT_STATUS_CODE` | Integer  | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`.                                                                                                                                                                                                                                                                                  | No            | `303`       |
-| `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`.                                                                                                                                                                                                                                                                                                          | No            | `false`     |
+| **Environment Variable**         | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                                                  | **Required?** | **Default** |
+|----------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
+| `SNOWFLAKE_ALLOWED_HOSTS`        | String   | A comma-separated list of domain names at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) are supported. You can also set this to `*` to allow all domains, but this is not recommended.                                                                                                                                                                               | Yes           | N/A         |
+| `SNOWFLAKE_BASE_PATH`            | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                                                                          | No            | `/`         |
+| `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URI's you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                                                                          | No            | `false`     ||          |                                                                                                                                                                                                                                                                                                                                    |               |              |
+| `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can also use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds.                                                   | No            | `1h`        |
+| `SNOWFLAKE_REDIS_URL`            | String   | A [Redis](https://redis.io/) connection string. Snowflake uses Redis to store important authorization data; if this variable is provided, Snowflake will use the Redis database it points to rather than its own internal one, allowing that data to persist across container restarts. Must begin with `redis://` or `rediss://`.                                                               | No            | N/A         |
+| `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path should redirect to. Must be `repo`, `web`, `app`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `web` and `app` redirect to the user's Discord account settings on the web or in their platform's Discord app, respectively; `off` responds with an HTTP 404 error. Note that `app` only works if Discord is installed on the user's device. | No            | `repo`      |
+| `SNOWFLAKE_REDIRECT_STATUS_CODE` | Integer  | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`.                                                                                                                                                                                                                                                                       | No            | `303`       |
+| `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`.                                                                                                                                                                                                                                                                                               | No            | `false`     |
 
 Additionally, Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/)
 if they are set.
