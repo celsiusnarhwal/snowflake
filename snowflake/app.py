@@ -1,31 +1,28 @@
 import secrets
 import typing as t
-import urllib.parse
-import uuid
 
 from authlib.common.errors import AuthlibHTTPError
-from authlib.jose import JoseError, jwt
-from authlib.oidc.core import IDToken
 from fastapi import Depends, FastAPI, Request
 from fastapi.security import (
-    HTTPAuthorizationCredentials,
     HTTPBasic,
     HTTPBasicCredentials,
-    HTTPBearer,
 )
+from starlette.datastructures import URL
 from starlette.exceptions import HTTPException
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import RedirectResponse
 
 from snowflake import utils
 from snowflake.middleware import HTTPSOnlyMiddleware
 from snowflake.settings import settings
+from snowflake.types import SnowflakeAuthorizationCode
 
 app = FastAPI()
 app.add_middleware(HTTPSOnlyMiddleware)
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
-    session_cookie=uuid.uuid4().hex,
+    session_cookie="snowflake_session",
     max_age=0,
 )
 
@@ -37,7 +34,21 @@ async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError)
 
 
 @app.get("/authorize")
-async def authorize(request: Request, client_id: str, scope: str):
+async def authorize(
+    request: Request,
+    client_id: str,
+    scope: str,
+    redirect_uri: str,
+    state: str = None,
+    nonce: str = None,
+):
+    if not redirect_uri.startswith(f"{request.url_for('redirect')}/"):
+        raise HTTPException(
+            400,
+            f"Redirect URI must be a subpath of {request.url_for('redirect')} "
+            f"(e.g., {request.url_for('redirect_to', redirect_uri=redirect_uri)}",
+        )
+
     scopes = set(scope.split(" "))
 
     if not (
@@ -56,6 +67,10 @@ async def authorize(request: Request, client_id: str, scope: str):
     resp = await discord.authorize_redirect(request, **authorization_params)
     resp.status_code = settings().redirect_status_code
 
+    if state and nonce:
+        redis = settings().redis
+        await redis.set(state, nonce, ex=300)
+
     return resp
 
 
@@ -66,44 +81,54 @@ async def token(
         HTTPBasicCredentials, Depends(HTTPBasic(auto_error=False))
     ],
 ):
-    body = urllib.parse.parse_qs((await request.body()).decode())
-    params = {k: v[0] if len(v) == 1 else v for k, v in body.items()}
+    params = dict(await request.form())
+
+    client_id = params.pop("client_id", None)
+    client_secret = params.pop("client_secret", None)
 
     if credentials:
-        discord = utils.get_oauth_client(
-            client_id=credentials.username, client_secret=credentials.password
-        )
-    else:
-        discord = utils.get_oauth_client(client_id=params.pop("client_id"))
+        client_id = client_id or credentials.username
+        client_secret = client_secret or credentials.password
 
-    discord_token = await discord.fetch_access_token(**params)
+    snowflake_code = SnowflakeAuthorizationCode.from_encrypted(params.pop("code"))
+
+    discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
+    discord_token = await discord.fetch_access_token(**params, code=snowflake_code.code)
 
     resp = await discord.get("users/@me", token=discord_token)
     resp.raise_for_status()
 
     return utils.create_id_token(
-        issuer=str(request.base_url), client_id=discord.client_id, user_info=resp.json()
+        issuer=str(request.base_url),
+        client_id=discord.client_id,
+        nonce=snowflake_code.nonce,
+        user_info=resp.json(),
     )
-
-
-@app.get("/userinfo")
-async def user_info(
-    credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
-):
-    try:
-        decoded_jwt = jwt.decode(
-            credentials.credentials, utils.get_jwks(), claims_cls=IDToken
-        )
-        decoded_jwt.validate()
-    except JoseError:
-        raise HTTPException(401)
-
-    return decoded_jwt
 
 
 @app.get("/.well-known/jwks.json")
 async def jwks():
     return utils.get_jwks()
+
+
+@app.get("/redirect")
+async def redirect():
+    raise HTTPException(403)
+
+
+@app.get("/redirect/{redirect_uri:path}")
+async def redirect_to(
+    request: Request, redirect_uri: str, code: str, state: str = None
+):
+    redis = settings().redis
+    nonce = await redis.getdel(state)
+
+    snowflake_code = SnowflakeAuthorizationCode(code=code, nonce=nonce)
+    full_redirect_uri = URL(redirect_uri).include_query_params(
+        **{**request.query_params, "code": snowflake_code.to_encrypted()}
+    )
+
+    return RedirectResponse(full_redirect_uri)
 
 
 @app.get("/.well-known/openid-configuration")
@@ -126,6 +151,5 @@ async def discovery(request: Request):
         "scopes_supported": ["openid", "profile", "email"],
         "authorization_endpoint": str(request.url_for("authorize")),
         "token_endpoint": str(request.url_for("token")),
-        "userinfo_endpoint": str(request.url_for("user_info")),
         "jwks_uri": str(request.url_for("jwks")),
     }

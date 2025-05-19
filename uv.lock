@@ -489,6 +489,15 @@ wheels = [
 ]
 
 [[package]]
+name = "redis"
+version = "6.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a6/af/e875d57383653e5d9065df8552de1deb7576b4d3cf3af90cde2e79ff7f65/redis-6.1.0.tar.gz", hash = "sha256:c928e267ad69d3069af28a9823a07726edf72c7e37764f43dc0123f37928c075", size = 4629300 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/28/5f/cf36360f80ae233bd1836442f5127818cfcfc7b1846179b60b2e9a4c45c9/redis-6.1.0-py3-none-any.whl", hash = "sha256:3b72622f3d3a89df2a6041e82acd896b0e67d9f54e9bcd906d091d23ba5219f6", size = 273750 },
+]
+
+[[package]]
 name = "rich"
 version = "14.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -541,6 +550,7 @@ dependencies = [
     { name = "durationpy" },
     { name = "fastapi", extra = ["all", "standard"] },
     { name = "pydantic-settings" },
+    { name = "redis" },
 ]
 
 [package.metadata]
@@ -549,6 +559,7 @@ requires-dist = [
     { name = "durationpy", specifier = ">=0.9" },
     { name = "fastapi", extras = ["all", "standard"], specifier = ">=0.115.12" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "redis", specifier = ">=6.1.0" },
 ]
 
 [[package]]

@@ -42,7 +42,11 @@ def get_private_key() -> RSAKey:
     return get_private_key()
 
 
-def create_id_token(*, issuer: str, client_id: str, user_info: dict):
+def create_jwt(claims):
+    return jwt.encode({"alg": "RS256"}, claims, get_private_key()).decode()
+
+
+def create_id_token(*, issuer: str, client_id: str, nonce: str, user_info: dict):
     now = int(time.time())
 
     claims = {
@@ -51,6 +55,7 @@ def create_id_token(*, issuer: str, client_id: str, user_info: dict):
         "aud": client_id,
         "iat": now,
         "exp": now + settings().token_lifetime,
+        "nonce": nonce,
         "preferred_username": user_info["username"],
         "name": user_info["global_name"],
         "locale": user_info["locale"],
@@ -61,7 +66,9 @@ def create_id_token(*, issuer: str, client_id: str, user_info: dict):
     if email := user_info.get("email"):
         claims.update({"email": email, "email_verified": user_info["verified"]})
 
-    return jwt.encode({"alg": "RS256"}, claims, get_private_key()).decode()
+    id_token = jwt.encode({"alg": "RS256"}, claims, get_private_key()).decode()
+
+    return {"id_token": id_token}
 
 
 def get_jwks():

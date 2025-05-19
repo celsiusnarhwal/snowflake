@@ -9,6 +9,7 @@ dependencies = [
     "durationpy>=0.9",
     "fastapi[all,standard]>=0.115.12",
     "pydantic-settings>=2.9.1",
+    "redis>=6.1.0",
 ]
 dynamic = ["version"]
 
