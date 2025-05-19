@@ -3,11 +3,11 @@ import time
 from pathlib import Path
 
 from joserfc import jwt
-from joserfc.jwk import RSAKey
+from joserfc.jwk import KeySet, RSAKey
 
 from snowflake.settings import settings
 
-PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "private_key.json"
+PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
 
 
 def create_private_key():
@@ -74,4 +74,4 @@ async def create_tokens(*, issuer: str, client_id: str, nonce: str, user_info: d
 
 
 def get_jwks():
-    return {"keys": [get_private_key().as_dict(private=False)]}
+    return KeySet([get_private_key()]).as_dict(private=False)
