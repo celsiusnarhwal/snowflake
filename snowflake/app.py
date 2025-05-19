@@ -17,7 +17,7 @@ from snowflake.middleware import HTTPSOnlyMiddleware
 from snowflake.settings import settings
 from snowflake.types import SnowflakeAuthorizationCode
 
-app = FastAPI()
+app = FastAPI(root_path=settings().base_path)
 app.add_middleware(HTTPSOnlyMiddleware)
 app.add_middleware(
     SessionMiddleware,
@@ -74,6 +74,26 @@ async def authorize(
     return resp
 
 
+@app.get("/redirect")
+async def redirect():
+    raise HTTPException(403)
+
+
+@app.get("/redirect/{redirect_uri:path}")
+async def redirect_to(
+    request: Request, redirect_uri: str, code: str, state: str = None
+):
+    redis = settings().redis
+    nonce = await redis.getdel(state)
+
+    snowflake_code = SnowflakeAuthorizationCode(code=code, nonce=nonce)
+    full_redirect_uri = URL(redirect_uri).include_query_params(
+        **{**request.query_params, "code": snowflake_code.to_encrypted()}
+    )
+
+    return RedirectResponse(full_redirect_uri)
+
+
 @app.post("/token")
 async def token(
     request: Request,
@@ -109,26 +129,6 @@ async def token(
 @app.get("/.well-known/jwks.json")
 async def jwks():
     return utils.get_jwks()
-
-
-@app.get("/redirect")
-async def redirect():
-    raise HTTPException(403)
-
-
-@app.get("/redirect/{redirect_uri:path}")
-async def redirect_to(
-    request: Request, redirect_uri: str, code: str, state: str = None
-):
-    redis = settings().redis
-    nonce = await redis.getdel(state)
-
-    snowflake_code = SnowflakeAuthorizationCode(code=code, nonce=nonce)
-    full_redirect_uri = URL(redirect_uri).include_query_params(
-        **{**request.query_params, "code": snowflake_code.to_encrypted()}
-    )
-
-    return RedirectResponse(full_redirect_uri)
 
 
 @app.get("/.well-known/openid-configuration")

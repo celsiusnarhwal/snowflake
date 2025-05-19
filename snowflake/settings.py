@@ -3,7 +3,7 @@ from functools import lru_cache
 
 import annotated_types as at
 import durationpy
-from pydantic import BeforeValidator, IPvAnyNetwork, RedisDsn
+from pydantic import BeforeValidator, RedisDsn
 from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
@@ -18,7 +18,7 @@ Duration = t.Annotated[
 class SnowflakeSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
-    trust_proxies: IPvAnyNetwork | bool = False
+    base_path: str = ""
     token_lifetime: Duration = "1h"
     redis_url: RedisDsn | None = None
     redirect_status_code: t.Literal[302, 303] = 303
