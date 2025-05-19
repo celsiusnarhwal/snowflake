@@ -9,11 +9,17 @@ class HTTPSOnlyMiddleware:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if scope["scheme"] == "https" or settings().dev_mode:
+        scheme = scope["scheme"]
+
+        if scheme == "https" or settings().dev_mode:
             await self.app(scope, receive, send)
         else:
             resp = JSONResponse(
-                {"detail": "Client sent an HTTP request to an HTTPS server"},
+                {
+                    "detail": "Snowflake must be served over HTTPS. If you're using a reverse proxy, "
+                    "see https://github.com/celsiusnarhwal/snowflake#using-reverse-proxies."
+                },
                 status_code=400,
             )
+
             await resp(scope, receive, send)
