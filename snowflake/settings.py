@@ -23,6 +23,7 @@ class SnowflakeSettings(BaseSettings):
     fix_redirect_uris: bool = False
     token_lifetime: Duration = "1h"
     redis_url: RedisDsn | None = None
+    root_redirect: t.Literal["repo", "web", "app", "off"] = "repo"
     redirect_status_code: t.Literal[302, 303] = 303
     enable_swagger: bool = False
     dev_mode: bool = False
@@ -41,6 +42,14 @@ class SnowflakeSettings(BaseSettings):
     @property
     def docs_url(self):
         return "/docs" if self.enable_swagger else None
+
+    @property
+    def root_redirect_url(self):
+        return {
+            "repo": "https://github.com/celsiusnarhwal/snowflake",
+            "web": "https://discord.com/settings/account",
+            "app": "discord://-/settings/account",
+        }.get(self.root_redirect)
 
 
 @lru_cache

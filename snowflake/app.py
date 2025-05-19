@@ -77,7 +77,10 @@ async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError)
 
 @app.get("/")
 def root():
-    return RedirectResponse("https://github.com/celsiusnarhwal/snowflake")
+    if settings().root_redirect_url:
+        return RedirectResponse(settings().root_redirect_url)
+
+    raise HTTPException(404)
 
 
 @app.get("/authorize")
