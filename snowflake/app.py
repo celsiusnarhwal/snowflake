@@ -61,7 +61,7 @@ async def enforce_https(request: Request, call_next):
         return JSONResponse(
             {
                 "detail": "Snowflake must be served over HTTPS. If you're using a reverse proxy, "
-                "see https://github.com/celsiusnarhwal/snowflake#using-reverse-proxies."
+                "see https://github.com/celsiusnarhwal/snowflake#https-and-reverse-proxies."
             },
             status_code=400,
         )
