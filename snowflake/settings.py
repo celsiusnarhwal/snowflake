@@ -87,6 +87,10 @@ class SnowflakeSettings(BaseSettings):
         return "/docs" if self.enable_swagger else None
 
     @property
+    def openapi_url(self):
+        return "/openapi.json" if self.enable_swagger else None
+
+    @property
     def root_redirect_url(self):
         return {
             "repo": "https://github.com/celsiusnarhwal/snowflake",
