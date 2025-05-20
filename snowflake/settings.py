@@ -67,7 +67,7 @@ class SnowflakeSettings(BaseSettings):
     @model_validator(mode="after")
     def validate_redis_url(self):
         if not (self.redis_url or self.internal.use_internal_redis):
-            raise ValueError("redis_url is required on no-redis Snowflake images")
+            raise ValueError("redis_url is required on Redis-less Snowflake images")
 
         return self
 
