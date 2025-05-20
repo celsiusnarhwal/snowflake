@@ -3,6 +3,7 @@ import time
 from pathlib import Path
 
 from authlib.integrations.starlette_client import StarletteOAuth2App
+from fastapi import Request
 from joserfc import jwt
 from joserfc.jwk import KeySet, RSAKey
 
@@ -36,29 +37,24 @@ def create_jwt(claims, key):
 
 async def create_tokens(
     *,
-    issuer: str,
+    request: Request,
     discord: StarletteOAuth2App,
     authorization_data: SnowflakeAuthorizationData,
     discord_token: dict,
 ):
-    now = int(time.time())
-    expiry = now + settings().token_lifetime
-
     user_resp = await discord.get("users/@me", token=discord_token)
     user_resp.raise_for_status()
     user_info = user_resp.json()
 
+    now = int(time.time())
+    expiry = now + settings().token_lifetime
+
     access_claims = {
-        "iss": issuer,
+        "iss": str(request.base_url),
         "sub": user_info["id"],
-        "aud": discord.client_id,
+        "aud": str(request.url_for("userinfo")),
         "iat": now,
         "exp": expiry,
-        "nonce": authorization_data.nonce,
-    }
-
-    identity_claims = {
-        **access_claims,
         "preferred_username": user_info["username"],
         "name": user_info["global_name"],
         "locale": user_info["locale"],
@@ -67,18 +63,21 @@ async def create_tokens(
     }
 
     if "email" in authorization_data.scopes:
-        identity_claims.update(
+        access_claims.update(
             {
                 "email": user_info.get("email"),
                 "email_verified": user_info.get("verified"),
             }
         )
 
+    identity_claims = {
+        **access_claims,
+        "aud": discord.client_id,
+        "nonce": authorization_data.nonce,
+    }
+
     access_token = create_jwt(access_claims, get_private_key())
     id_token = create_jwt(identity_claims, get_private_key())
-
-    async with settings().redis as redis:
-        await redis.set(access_token, json.dumps(identity_claims), exat=expiry)
 
     return {
         "access_token": access_token,

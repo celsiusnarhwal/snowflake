@@ -168,7 +168,7 @@ async def token(
     )
 
     return await security.create_tokens(
-        issuer=str(request.base_url),
+        request=request,
         discord=discord,
         discord_token=discord_token,
         authorization_data=authorization_data,
@@ -179,18 +179,22 @@ async def token(
 async def userinfo(
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
-    access_token = credentials.credentials
+    userinfo_claims = [
+        "sub",
+        "preferred_username",
+        "name",
+        "locale",
+        "picture",
+        "email",
+        "email_verified",
+    ]
 
     try:
-        jwt.decode(credentials.credentials, security.get_private_key())
+        access_token = jwt.decode(credentials.credentials, security.get_private_key())
     except JoseError:
         raise HTTPException(401)
 
-    async with settings().redis as redis:
-        user_info = await redis.get(access_token)
-
-    if not user_info:
-        raise HTTPException(404)
+    return {k: v for k, v in access_token.claims.items() if k in userinfo_claims}
 
 
 @app.get("/.well-known/jwks.json")
@@ -218,5 +222,6 @@ async def discovery(request: Request):
         "scopes_supported": ["openid", "profile", "email"],
         "authorization_endpoint": str(request.url_for("authorize")),
         "token_endpoint": str(request.url_for("token")),
+        "userinfo_endpoint": str(request.url_for("userinfo")),
         "jwks_uri": str(request.url_for("jwks")),
     }
