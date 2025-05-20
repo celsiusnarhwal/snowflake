@@ -73,14 +73,16 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: |
+          images: | 
             ghcr.io/${{ github.repository }}
+          flavor: |
+            suffix=-noredis,onlatest=true
           tags: |
-            type=edge,branch=main,suffix=-noredis
-            type=pep440,pattern={{version}}-noredis
-            type=pep440,pattern=v{{version}}-noredis
-            type=pep440,pattern={{major}}-noredis
-            type=pep440,pattern=v{{major}}-noredis
+            type=edge,branch=main
+            type=pep440,pattern={{version}}
+            type=pep440,pattern=v{{version}}
+            type=pep440,pattern={{major}}
+            type=pep440,pattern=v{{major}}
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
