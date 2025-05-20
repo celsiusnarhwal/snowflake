@@ -121,7 +121,7 @@ Snowflake-issued access tokens have the following claims:
 
 #### ID Tokens
 
-Snowflake-issed ID tokens tokens have the same claims as Snowflake-issued access tokens as well as the following:
+Snowflake-issed ID tokens tokens have the same claims as Snowflake-issued access tokens as well as the following claims:
 
 | **Claim**            | **Description**                                                                                                                                                          |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
