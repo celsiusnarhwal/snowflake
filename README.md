@@ -74,8 +74,8 @@ URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
 > [!TIP]
-> If you're unable to control the redirect URI your OIDC client provides to Snowflake, setting
-> the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true` should help. See [Configuration](#configuration)
+> If you're unable to control the redirect URI your OIDC client provides to Snowflake, set
+> the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
 > for details.
 
 From there, Snowflake works just like any other OIDC provider. Your app redirects to Snowflake for authorization
