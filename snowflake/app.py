@@ -71,7 +71,7 @@ def root():
     raise HTTPException(404)
 
 
-@app.get("/authorize", name="Authorize")
+@app.get("/authorize")
 async def authorize(
     request: Request,
     client_id: str,
@@ -120,7 +120,7 @@ async def authorize(
     return resp
 
 
-@app.get("/r", name="Callback", include_in_schema=False)
+@app.get("/r", include_in_schema=False)
 async def redirect():
     raise HTTPException(403)
 
@@ -142,7 +142,7 @@ async def redirect_to(
     return RedirectResponse(full_redirect_uri)
 
 
-@app.post("/token", name="Token")
+@app.post("/token")
 async def token(
     request: Request,
     credentials: t.Annotated[
@@ -176,7 +176,7 @@ async def token(
     )
 
 
-@app.get("/userinfo", name="User Info")
+@app.get("/userinfo")
 async def userinfo(
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
@@ -194,12 +194,12 @@ async def userinfo(
         raise HTTPException(404)
 
 
-@app.get("/.well-known/jwks.json", name="JSON Web Key Set")
+@app.get("/.well-known/jwks.json")
 async def jwks():
     return security.get_jwks()
 
 
-@app.get("/.well-known/openid-configuration", name="OIDC Discovery")
+@app.get("/.well-known/openid-configuration")
 async def discovery(request: Request):
     return {
         "issuer": str(request.base_url),
