@@ -76,11 +76,11 @@ jobs:
           images: |
             ghcr.io/${{ github.repository }}
           tags: |
-            type=edge,branch=main,suffix=-no-redis
-            type=pep440,pattern={{version}}-no-redis
-            type=pep440,pattern=v{{version}}-no-redis
-            type=pep440,pattern={{major}}-no-redis
-            type=pep440,pattern=v{{major}}-no-redis
+            type=edge,branch=main,suffix=-noredis
+            type=pep440,pattern={{version}}-noredis
+            type=pep440,pattern=v{{version}}-noredis
+            type=pep440,pattern={{major}}-noredis
+            type=pep440,pattern=v{{major}}-noredis
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
