@@ -76,7 +76,7 @@ jobs:
           password: ${{ github.token }}
 
       - name: Get Image Metadata
-        id: meta-standard
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
