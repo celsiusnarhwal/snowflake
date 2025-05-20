@@ -26,7 +26,14 @@ from snowflake.types import SnowflakeAuthorizationData, SnowflakeStateData
 
 logger = logging.getLogger("uvicorn")
 
-app = FastAPI(root_path=settings().base_path, docs_url=settings().docs_url)
+app = FastAPI(
+    title="Snowflake",
+    description="Snowflake lets you use Discord as an OpenID Connect provider. "
+    "[https://github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
+    root_path=settings().base_path,
+    docs_url=settings().docs_url,
+    openapi_url=settings().openapi_url,
+)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
 app.add_middleware(
     SessionMiddleware,
@@ -57,7 +64,7 @@ async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError)
     raise HTTPException(exception.status_code, exception.description)
 
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def root():
     if settings().root_redirect_url:
         return RedirectResponse(settings().root_redirect_url)
@@ -65,7 +72,7 @@ def root():
     raise HTTPException(404)
 
 
-@app.get("/authorize")
+@app.get("/authorize", name="Authorize")
 async def authorize(
     request: Request,
     client_id: str,
@@ -114,7 +121,7 @@ async def authorize(
     return resp
 
 
-@app.get("/r", include_in_schema=False)
+@app.get("/r", name="Callback", include_in_schema=False)
 async def redirect():
     raise HTTPException(403)
 
@@ -136,7 +143,7 @@ async def redirect_to(
     return RedirectResponse(full_redirect_uri)
 
 
-@app.post("/token")
+@app.post("/token", name="Token")
 async def token(
     request: Request,
     credentials: t.Annotated[
@@ -170,7 +177,7 @@ async def token(
     )
 
 
-@app.get("/userinfo")
+@app.get("/userinfo", name="User Info")
 async def userinfo(
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
@@ -188,12 +195,12 @@ async def userinfo(
         raise HTTPException(404)
 
 
-@app.get("/.well-known/jwks.json")
+@app.get("/.well-known/jwks.json", name="JSON Web Key Set")
 async def jwks():
     return security.get_jwks()
 
 
-@app.get("/.well-known/openid-configuration")
+@app.get("/.well-known/openid-configuration", name="OIDC Discovery")
 async def discovery(request: Request):
     return {
         "issuer": str(request.base_url),
