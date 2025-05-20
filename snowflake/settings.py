@@ -25,7 +25,6 @@ Duration = t.Annotated[
 
 class SnowflakeInternalSettings(BaseModel):
     dev_mode: bool = False
-    use_internal_redis: bool = True
 
     @field_validator("dev_mode")
     def validate_dev_mode(cls, v):
@@ -64,13 +63,6 @@ class SnowflakeSettings(BaseSettings):
 
         return self
 
-    @model_validator(mode="after")
-    def validate_redis_url(self):
-        if not (self.redis_url or self.internal.use_internal_redis):
-            raise ValueError("redis_url is required on Redis-less Snowflake images")
-
-        return self
-
     @property
     def allowed_host_list(self) -> list[str]:
         return self.allowed_hosts.split(",")
@@ -78,7 +70,7 @@ class SnowflakeSettings(BaseSettings):
     @property
     def redis(self):
         if self.redis_url:
-            return aioredis.from_url(self.redis_url, decode_responses=True)
+            return aioredis.from_url(str(self.redis_url), decode_responses=True)
 
         return aioredis.Redis(decode_responses=True)
 

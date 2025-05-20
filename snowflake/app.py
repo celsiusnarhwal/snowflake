@@ -1,4 +1,3 @@
-import logging
 import secrets
 import typing as t
 import uuid
@@ -24,8 +23,6 @@ from snowflake import security, utils
 from snowflake.settings import settings
 from snowflake.types import SnowflakeAuthorizationData, SnowflakeStateData
 
-logger = logging.getLogger("uvicorn")
-
 app = FastAPI(
     title="Snowflake",
     description="Snowflake lets you use Discord as an OpenID Connect provider. "
@@ -34,6 +31,8 @@ app = FastAPI(
     openapi_url=settings().openapi_url,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
+
+
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
