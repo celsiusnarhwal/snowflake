@@ -32,7 +32,7 @@ environment variable must be set; see [Configuration](#configuration).
 | Exact version number | This version of Snowflake exactly. May be optionally prefixed with a `v`.                     | `ghcr.io/celsiusnarhwal/snowflake:1.0.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0.0` |
 | `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
 
-By default, Snowflake images run an internal [Redis](https://redis.io) server. You can append `-noredis` to any of the 
+By default, Snowflake images use an internal [Redis](https://redis.io) server. You can append `-noredis` to any of the 
 above tags to disable this server, which will reduce the amount of memory Snowflake's container uses. If you do this, 
 you must also set the `SNOWFLAKE_REDIS_URL` environment variable (see [Configruation](#configuration)).
 
