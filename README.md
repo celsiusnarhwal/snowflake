@@ -22,7 +22,7 @@ environment variable must be set; see [Configuration](#configuration).
 <hr>
 
 <details>
-<summary>Supported Tags</summary>
+<summary>Supported tags</summary>
 <br>
 
 | **Name**             | **Description**                                                                               | **Example**                                                                            |
