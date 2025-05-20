@@ -26,4 +26,4 @@ class SnowflakeAuthorizationData(BaseModel):
         try:
             return cls.model_validate_json(cls.cipher.decrypt(encrypted))
         except cryptography.fernet.InvalidToken:
-            raise HTTPException(400)
+            raise HTTPException(400, "Invalid authorization code")
