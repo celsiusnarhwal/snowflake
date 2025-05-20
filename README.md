@@ -82,11 +82,11 @@ as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 > the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
 > for details.
 
-From there, Snowflake works just like any other OIDC provider. Your app redirects to Snowflake for authorization
-(which in turn redirects to Discord); upon succcessful authorization, Snowflake provides your app with an authorization
-code, which your app returns to Snowflake in exchange for an access token and an ID token. The access token can be sent
-to Snowflake's `/userinfo` endpoint to obtain the associated identity claims, or your application can decode the ID
-token directly to obtain the same claims.
+From there, Snowflake works just like any other OIDC provider. Your app redirects to Snowflake for authorization; 
+upon succcessful authorization, Snowflake provides your app with an authorization code, which your app returns 
+to Snowflake in exchange for an access token and an ID token. The access token can be sent to Snowflake's 
+`/userinfo` endpoint to obtain the associated identity claims, or your application can decode the ID token 
+directly to obtain the same claims.
 
 Frankly, if you're reading this then you should already know how this works.
 
