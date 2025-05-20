@@ -31,7 +31,6 @@ app = FastAPI(
     description="Snowflake lets you use Discord as an OpenID Connect provider. "
     "[https://github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
     root_path=settings().base_path,
-    docs_url=settings().docs_url,
     openapi_url=settings().openapi_url,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
