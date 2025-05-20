@@ -33,7 +33,7 @@ environment variable must be set; see [Configuration](#configuration).
 | `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
 
 By default, Snowflake images use an internal [Redis](https://redis.io) server. You can append `-noredis` to any of the 
-above tags to disable this server, which will reduce the amount of memory Snowflake's container uses. If you do this, 
+above tags to disable this server, which will reduce the amount of memory Snowflake uses. If you do this, 
 you must also set the `SNOWFLAKE_REDIS_URL` environment variable (see [Configruation](#configuration)).
 
 </details>
