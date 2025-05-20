@@ -34,8 +34,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
 
-      - name: Get Standard Image Metadata
-        id: meta-standard
+      - name: Get Image Metadata
+        id: meta
         uses: docker/metadata-action@v5
         with:
           images: |
@@ -47,13 +47,13 @@ jobs:
             type=pep440,pattern={{major}}
             type=pep440,pattern=v{{major}}
 
-      - name: Build and Push Standard Image
+      - name: Build and Push Image
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ steps.meta-standard.outputs.tags }}
-          labels: ${{ steps.meta-standard.outputs.labels }}
-          annotations: ${{ steps.meta-standard.outputs.annotations }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -75,7 +75,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
 
-      - name: Get Standard Image Metadata
+      - name: Get Image Metadata
         id: meta-standard
         uses: docker/metadata-action@v5
         with:
@@ -88,13 +88,13 @@ jobs:
             type=pep440,pattern={{major}}-no-redis
             type=pep440,pattern=v{{major}}-no-redis
 
-      - name: Build and Push Redis-less Image
+      - name: Build and Push Image
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: ${{ steps.meta-standard.outputs.tags }}
-          labels: ${{ steps.meta-standard.outputs.labels }}
-          annotations: ${{ steps.meta-standard.outputs.annotations }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
