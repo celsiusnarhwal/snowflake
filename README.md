@@ -22,7 +22,7 @@ environment variable must be set; see [Configuration](#configuration).
 <hr>
 
 <details>
-<summary>Supported Tags</summary>
+<summary>Supported tags</summary>
 <br>
 
 | **Name**             | **Description**                                                                               | **Example**                                                                            |
@@ -34,7 +34,7 @@ environment variable must be set; see [Configuration](#configuration).
 
 By default, Snowflake images use an internal [Redis](https://redis.io) server. You can append `-noredis` to any of the
 above tags to disable this server, which will reduce the amount of memory Snowflake uses. If you do this,
-you must also set the `SNOWFLAKE_REDIS_URL` environment variable (see [Configruation](#configuration)).
+you must also set the `SNOWFLAKE_REDIS_URL` environment variable (see [Configuration](#configuration)).
 
 </details>
 
