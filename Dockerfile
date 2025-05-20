@@ -14,4 +14,7 @@ RUN uv sync
 
 COPY . /app/
 
-CMD ["sh", "-c", "redis-server --daemonize yes && uv run uvicorn snowflake.app:app"]
+ARG SNOWFLAKE_INTERNAL__USE_INTERNAL_REDIS
+ENV SNOWFLAKE_INTERNAL__USE_INTERNAL_REDIS=${SNOWFLAKE_INTERNAL__USE_INTERNAL_REDIS:-true}
+
+CMD ["bash", "-c", "[ ${SNOWFLAKE_INTERNAL__USE_INTERNAL_REDIS,,} != 'false' ] && redis-server --daemonize yes; uv run uvicorn snowflake.app:app"]

@@ -1,7 +1,7 @@
 import logging
 import secrets
 import typing as t
-from contextlib import asynccontextmanager
+import uuid
 
 from authlib.common.errors import AuthlibHTTPError
 from fastapi import Depends, FastAPI, Request
@@ -26,38 +26,20 @@ from snowflake.types import SnowflakeAuthorizationData, SnowflakeStateData
 
 logger = logging.getLogger("uvicorn")
 
-
-# noinspection PyUnusedLocal
-@asynccontextmanager
-async def lifespan(application: FastAPI):
-    if settings().dev_mode:
-        logger.info(
-            "Developer mode disables certain security features. Please don't use it in production."
-        )
-    if "*" in settings().allowed_host_list and not settings().dev_mode:
-        logger.warning(
-            "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
-        )
-
-    yield
-
-
-app = FastAPI(
-    lifespan=lifespan, root_path=settings().base_path, docs_url=settings().docs_url
-)
+app = FastAPI(root_path=settings().base_path, docs_url=settings().docs_url)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
 app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
-    session_cookie="snowflake_session",
-    same_site="lax" if settings().dev_mode else "strict",
-    https_only=not settings().dev_mode,
+    session_cookie=uuid.uuid4().hex,
+    https_only=not settings().internal.dev_mode,
+    max_age=0,
 )
 
 
 @app.middleware("http")
 async def enforce_https(request: Request, call_next):
-    if request.url.scheme != "https" and not settings().dev_mode:
+    if request.url.scheme != "https" and not settings().internal.dev_mode:
         return JSONResponse(
             {
                 "detail": "Snowflake must be served over HTTPS. If you're using a reverse proxy, "
