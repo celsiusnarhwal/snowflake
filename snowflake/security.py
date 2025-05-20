@@ -74,15 +74,6 @@ async def create_tokens(
             }
         )
 
-    if "guilds" in authorization_data.scopes:
-        guilds_resp = await discord.get(
-            "users/@me/guilds", token=discord_token, timeout=30
-        )
-        guilds_resp.raise_for_status()
-        identity_claims["discord:guilds"] = [
-            guild["id"] for guild in guilds_resp.json()
-        ]
-
     access_token = create_jwt(access_claims, get_private_key())
     id_token = create_jwt(identity_claims, get_private_key())
 

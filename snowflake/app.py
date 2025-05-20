@@ -1,4 +1,3 @@
-import json
 import logging
 import secrets
 import typing as t
@@ -51,7 +50,8 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
     session_cookie="snowflake_session",
-    max_age=0,
+    same_site="lax" if settings().dev_mode else "strict",
+    https_only=not settings().dev_mode,
 )
 
 
@@ -110,15 +110,9 @@ async def authorize(
         if scope not in scopes:
             raise HTTPException(400, f"{scope} scope is required")
 
-    discord_scopes = ["identify"]
-
-    for scope in ["email", "guilds"]:
-        if scope in scopes:
-            discord_scopes.append(scope)
-
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=" ".join(discord_scopes),
+        scope="identify " + ("email" if "email" in scopes else ""),
     )
 
     authorization_params = {
@@ -132,8 +126,8 @@ async def authorize(
 
     state_data = SnowflakeStateData(scopes=scopes, nonce=nonce)
 
-    redis = settings().redis
-    await redis.set(state, state_data.to_encrypted(), ex=300)
+    async with settings().redis as redis:
+        await redis.set(state, state_data.model_dump_json(), ex=300)
 
     return resp
 
@@ -148,7 +142,7 @@ async def redirect_to(
     request: Request, redirect_uri: str, code: str, state: str = None
 ):
     async with settings().redis as redis:
-        state_data = SnowflakeStateData.from_encrypted(await redis.getdel(state))
+        state_data = SnowflakeStateData.model_validate_json(await redis.getdel(state))
 
     snowflake_code = SnowflakeAuthorizationData(
         code=code, scopes=state_data.scopes, nonce=state_data.nonce
@@ -210,8 +204,6 @@ async def userinfo(
 
     if not user_info:
         raise HTTPException(404)
-
-    return json.loads(user_info)
 
 
 @app.get("/.well-known/jwks.json")

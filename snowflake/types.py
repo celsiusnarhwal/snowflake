@@ -7,10 +7,16 @@ from starlette.exceptions import HTTPException
 
 
 class SnowflakeStateData(BaseModel):
+    scopes: list
+    nonce: str | None = None
+
+
+class SnowflakeAuthorizationData(BaseModel):
     cipher: t.ClassVar[Fernet] = Fernet(Fernet.generate_key())
 
     scopes: list
     nonce: str | None = None
+    code: str
 
     def to_encrypted(self):
         return self.cipher.encrypt(self.model_dump_json().encode()).decode()
@@ -21,9 +27,3 @@ class SnowflakeStateData(BaseModel):
             return cls.model_validate_json(cls.cipher.decrypt(encrypted))
         except cryptography.fernet.InvalidToken:
             raise HTTPException(400)
-
-
-class SnowflakeAuthorizationData(SnowflakeStateData):
-    cipher: t.ClassVar[Fernet] = Fernet(Fernet.generate_key())
-
-    code: str

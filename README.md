@@ -97,20 +97,8 @@ Frankly, if you're reading this then you should already know how this works.
 | OIDC Discovery   | `/.well-known/openid-configuration` |
 
 ### Supported Scopes
-
-| **Scope** | **Description**                                                                          | **Required?** |
-|-----------|------------------------------------------------------------------------------------------|---------------|
-| `openid`  | Requests to authorize with OpenID Connect.                                               | Yes           |
-| `profile` | Requests basic information about the user's Discord account.                             | Yes           |
-| `email`   | Requests information about the email address associated with the user's Discord account. | No            |
-| `guilds`  | Requests information about the guilds (a.k.a. "servers") the user is a member of.        | No            |
-
-Snowflake supports the `openid`, `profile`, and `email` and `guilds` scopes. `openid` and `profile` are required;
+Snowflake supports the `openid`, `profile`, and `email` scopes. `openid` and `profile` are required;
 `email` may be optionally included if you want email information.
-
-> [!WARNING]
-> Requesting the `guilds` scope can increase the time it takes for Snowflake to respond to token requests by
-> several seconds.
 
 ### Supported Claims
 
@@ -144,12 +132,6 @@ When the `email` scope is requested, ID tokens will also have the following clai
 | `email`          | The email address associated with the user's Discord account.                     |
 | `email_verified` | Whether the email address associated with the user's Discord account is verified. |
 
-When the `guilds` scope is requested, ID tokens will also have the following claims:
-
-| **Claim**        | **Description**                                  |
-|------------------|--------------------------------------------------|
-| `discord:guilds` | A list of IDs of guilds the user is a member of. |
-
 ### PKCE Support
 
 For applications that cannot securely store a client secret, Snowflake supports the
@@ -159,16 +141,11 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 ## HTTPS and Reverse Proxies
 
 As mentioned at the top of the README, Snowflake must be served over HTTPS. If you're serving Snowflake behind a reverse
-proxy and connecting to the reverse proxy over HTTPS, you will almost certainly need to configure
-[Uvicorn](https://uvicorn.org) — which Snowflake uses under the hood — to trust the IP of your reverse proxy.
-You can do this by setting the `UVICORN_FORWARDED_ALLOW_IPS` environment variable to either:
-
-- The IPv4 or IPv6 address of your reverse proxy as seen by Snowflake (e.g., `172.17.0.2` or `fd12:3456:789a::2`)
-- An IPv4 or IPv6 network containing the IP address of your reverse proxy as seen by Snowflake
-  (e.g., `172.17.0.0/16` or `fd12:3456:789a::/64`)
-- A comma-separated list of such IPv4 or IPv6 addresses or networks
-
-You can also set it to `*` to trust all IP addresses, but this is generally not recommended.
+proxy and connecting to the reverse proxy over HTTPS, you will likely need to configure
+[Uvicorn](https://uvicorn.org) — which Snowflake uses under the hood — to trust the IP address of your reverse proxy.
+You can do this by setting the `UVICORN_FORWARDED_ALLOW_IPS` environment to a comma-separated list of IP addresses
+or networks, at least one of which must match the IP of your reverse proxy. You can also set it to `*` to trust all 
+IP addresses, but this is generally not recommended.
 
 For more information, see [Uvicorn's documentation](https://www.uvicorn.org/deployment/#proxies-and-forwarded-headers).
 
