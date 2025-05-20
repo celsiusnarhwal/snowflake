@@ -177,4 +177,4 @@ if they are set.
 [^1]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
 [^2]: `SNOWFLAKE_REDIS_URL` is required when using an image with a `-noredis` tag.
 [^3]: Even when using `web`, discord.com itself may still redirect users to the Discord app if it is installed.
-[^4]: `app` does nothing on devices where the Discord app isn't installed.
+[^4]: `app` only works on devices where the Discord app isn't installed.
