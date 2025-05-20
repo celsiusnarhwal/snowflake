@@ -109,7 +109,7 @@ Snowflake-issued access tokens have the following claims:
 
 | **Claim** | **Description**                                                                                                                      |
 |-----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `iss`     | The issuer of the ID token (i.e., the URL where Snowflake is reachable).                                                             |
+| `iss`     | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                   |
 | `sub`     | The ID of the user's Discord account.                                                                                                |
 | `aud`     | The client ID of your Discord application.                                                                                           |
 | `iat`     | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                              |
