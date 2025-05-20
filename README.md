@@ -148,6 +148,7 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 As mentioned at the top of the README, Snowflake must be served over HTTPS. If you're serving Snowflake behind a reverse
 proxy and connecting to the reverse proxy over HTTPS, you will likely need to configure
 [Uvicorn](https://uvicorn.org) — which Snowflake uses under the hood — to trust the IP address of your reverse proxy.
+
 You can do this by setting the `UVICORN_FORWARDED_ALLOW_IPS` environment to a comma-separated list of IP addresses
 or networks, at least one of which must match the IP of your reverse proxy. You can also set it to `*` to trust all
 IP addresses, but this is generally not recommended.
