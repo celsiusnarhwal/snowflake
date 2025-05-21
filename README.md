@@ -98,51 +98,34 @@ Frankly, if you're reading this then you should already know how this works.
 
 ### Supported Scopes
 
-Snowflake supports the `openid`, `profile`, and `email` scopes. `openid` and `profile` are required;
-`email` may be optionally included if you want email information.
+Snowflake supports the `openid`, `profile`, and `email` scopes. Only the `openid` scope is required by Snowflake,
+but you will get an error from Discord if you do not provide at least one of the other scopes.
 
 ### Supported Claims
 
 #### Tokens
 
-Snowflake-issued access and ID tokens have the following claims:
+Depending on the requested scopes, Snowflake-issued access and ID tokens include some subset of the following claims
+(note that the `openid` scope is always required):
 
-| **Claim**            | **Description**                                                                                                                                                          |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       |
-| `sub`                | The ID of the user's Discord account.                                                                                                                                    |
-| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                |
-| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  |
-| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     |
-| `preferred_username` | The username of the user's Discord account.                                                                                                                              |
-| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. |
-| `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
-| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     |
-
-When the `email` scope is requested, access and ID tokens will also have the following claims:
-
-| **Claim**        | **Description**                                                                   |
-|------------------|-----------------------------------------------------------------------------------|
-| `email`          | The email address associated with the user's Discord account.                     |
-| `email_verified` | Whether the email address associated with the user's Discord account is verified. |
+| **Claim**            | **Description**                                                                                                                                                          | **Required Scopes** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
+| `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       | `profile`           |
+| `sub`                | The ID of the user's Discord account.                                                                                                                                    | `profile`           |
+| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                | `profile`           |
+| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  | `profile`           |
+| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | `profile`           |
+| `preferred_username` | The username of the user's Discord account.                                                                                                                              | `profile`           |
+| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. | `profile`           |
+| `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        | `profile`           |
+| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | `profile`           |
+| `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`             |
+| `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`             |
 
 #### User Info
 
-The `/userinfo` endpoint returns the following claims:
-
-| **Claim**            | **Description**                                                                                                                                                          |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `preferred_username` | The username of the user's Discord account.                                                                                                                              |
-| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. |
-| `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
-| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     |
-
-For access tokens authorized with the `email` scope, the `/userinfo` endpoint also returns the following claims:
-
-| **Claim**        | **Description**                                                                   |
-|------------------|-----------------------------------------------------------------------------------|
-| `email`          | The email address associated with the user's Discord account.                     |
-| `email_verified` | Whether the email address associated with the user's Discord account is verified. |
+The `/userinfo` endpoint returns the same claims as access and ID tokens but does not include `iss`, `sub`, `aud`,
+`iat`, or `exp`. 
 
 ### PKCE Support
 
@@ -167,15 +150,15 @@ For more information, see [Uvicorn's documentation](https://www.uvicorn.org/depl
 
 Snowflake is configurable through the following environment variables:
 
-| **Environment Variable**         | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                         | **Required?** | **Default** |
-|----------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
-| `SNOWFLAKE_ALLOWED_HOSTS`        | String   | A comma-separated list of domain names at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) are supported. You can also set this to `*` to allow all domains, but this is not recommended.                                                                                                                                      | Yes           | N/A         |
-| `SNOWFLAKE_BASE_PATH`            | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                                 | No            | `/`         |
-| `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                                  | No            | `false`     |                                                                                                                                                                                                                                                                                                                                   |               |              |
-| `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds.               | No            | `1h`        |
-| `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings, respectively; `off` responds with an HTTP 404 error.                                                                                           | No            | `repo`      |
-| `SNOWFLAKE_REDIRECT_STATUS_CODE` | Integer  | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`.                                                                                                                                                                                                                              | No            | `303`       |
-| `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                                                         | No            | `false`     |
+| **Environment Variable**         | **Type** | **Description**                                                                                                                                                                                                                                                                                                                           | **Required?** | **Default** |
+|----------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
+| `SNOWFLAKE_ALLOWED_HOSTS`        | String   | A comma-separated list of domain names at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) are supported. You can also set this to `*` to allow all domains, but this is not recommended.                                                                                                                        | Yes           | N/A         |
+| `SNOWFLAKE_BASE_PATH`            | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                   | No            | `/`         |
+| `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                    | No            | `false`     |                                                                                                                                                                                                                                                                                                                                   |               |              |
+| `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds. | No            | `1h`        |
+| `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings, respectively; `off` responds with an HTTP 404 error.                                                                             | No            | `repo`      |
+| `SNOWFLAKE_REDIRECT_STATUS_CODE` | Integer  | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`.                                                                                                                                                                                                                | No            | `303`       |
+| `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                                           | No            | `false`     |
 
 Additionally, Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/)
 if they are set.
