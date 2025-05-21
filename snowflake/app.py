@@ -203,7 +203,7 @@ async def userinfo(
     async with httpx.AsyncClient() as client:
         resp = await client.get(str(request.url_for("discovery")))
         resp.raise_for_status()
-        userinfo_claims = resp.json()["claims_supported"]
+        supported_claims = resp.json()["claims_supported"]
 
     try:
         access_token = security.decode_jwt(
@@ -214,7 +214,15 @@ async def userinfo(
     except JoseError:
         raise HTTPException(401)
 
-    return {k: v for k, v in access_token.claims.items() if k in userinfo_claims}
+    userinfo_claims = {
+        k: v for k, v in access_token.claims.items() if k in supported_claims
+    }
+
+    # This should not be possible but you never know.
+    if not userinfo_claims:
+        raise HTTPException(403)
+
+    return userinfo_claims
 
 
 @app.get("/.well-known/jwks.json")
