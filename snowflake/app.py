@@ -2,6 +2,7 @@ import secrets
 import typing as t
 import uuid
 
+import httpx
 from authlib.common.errors import AuthlibHTTPError
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -105,15 +106,17 @@ async def authorize(
         k: v for k, v in request.query_params.items() if k not in ["client_id", "scope"]
     }
 
-    authorization_params["redirect_uri"] = redirect_uri
+    authorization_params.update(
+        {
+            "state": SnowflakeStateData(
+                state=state, scopes=scopes, nonce=nonce
+            ).to_jwt(),
+            "redirect_uri": redirect_uri,
+        }
+    )
 
     resp = await discord.authorize_redirect(request, **authorization_params)
     resp.status_code = settings().redirect_status_code
-
-    state_data = SnowflakeStateData(scopes=scopes, nonce=nonce)
-
-    async with settings().redis as redis:
-        await redis.set(state, state_data.model_dump_json(), ex=300)
 
     return resp
 
@@ -125,14 +128,17 @@ async def redirect():
 
 @app.get("/r/{redirect_uri:path}")
 async def redirect_to(request: Request, redirect_uri: str, state: str, code: str):
-    async with settings().redis as redis:
-        state_data = SnowflakeStateData.model_validate_json(await redis.getdel(state))
+    state_data = SnowflakeStateData.from_jwt(state)
 
     snowflake_code = SnowflakeAuthorizationData(
         code=code, scopes=state_data.scopes, nonce=state_data.nonce
     )
     full_redirect_uri = URL(redirect_uri).include_query_params(
-        **{**request.query_params, "code": snowflake_code.to_jwt()}
+        **{
+            **request.query_params,
+            "state": state_data.state,
+            "code": snowflake_code.to_jwt(),
+        }
     )
 
     return RedirectResponse(full_redirect_uri)
@@ -177,15 +183,10 @@ async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
-    userinfo_claims = [
-        "sub",
-        "preferred_username",
-        "name",
-        "locale",
-        "picture",
-        "email",
-        "email_verified",
-    ]
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(str(request.url_for("discovery")))
+        resp.raise_for_status()
+        userinfo_claims = resp.json()["claims_supported"]
 
     try:
         access_token = security.decode_jwt(

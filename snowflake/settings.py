@@ -8,7 +8,6 @@ from pydantic import (
     BaseModel,
     BeforeValidator,
     Field,
-    RedisDsn,
     field_validator,
     model_validator,
 )
@@ -16,7 +15,6 @@ from pydantic_settings import (
     BaseSettings,
     SettingsConfigDict,
 )
-from redis import asyncio as aioredis
 
 Duration = t.Annotated[
     int, BeforeValidator(lambda v: durationpy.from_str(v).total_seconds()), at.Ge(60)
@@ -45,7 +43,6 @@ class SnowflakeSettings(BaseSettings):
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = "1h"
-    redis_url: RedisDsn | None = None
     root_redirect: t.Literal["repo", "settings", "off"] = "repo"
     redirect_status_code: t.Literal[302, 303] = 303
     enable_swagger: bool = False
@@ -66,13 +63,6 @@ class SnowflakeSettings(BaseSettings):
     @property
     def allowed_host_list(self) -> list[str]:
         return self.allowed_hosts.split(",")
-
-    @property
-    def redis(self):
-        if self.redis_url:
-            return aioredis.from_url(str(self.redis_url), decode_responses=True)
-
-        return aioredis.Redis(decode_responses=True)
 
     @property
     def docs_url(self):
