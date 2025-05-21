@@ -93,13 +93,20 @@ async def authorize(
 
     scopes = set(scope.split(" "))
 
-    for scope in ["openid", "profile"]:
-        if scope not in scopes:
-            raise HTTPException(400, f"{scope} scope is required")
+    if "openid" not in scopes:
+        raise HTTPException(400, "openid scope is required")
+
+    discord_scopes = []
+
+    if "profile" in scopes:
+        discord_scopes.append("identify")
+
+    if "email" in scopes:
+        discord_scopes.append("email")
 
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope="identify " + ("email" if "email" in scopes else ""),
+        scope=" ".join(discord_scopes),
     )
 
     authorization_params = {
@@ -126,18 +133,18 @@ async def redirect():
 @app.get("/r/{redirect_uri:path}")
 async def redirect_to(
     request: Request,
-    redirect_uri: str = None,
-    state: str = None,
+    redirect_uri: str,
+    state: str,
     code: str = None,
     error: str = None,
 ):
+    state_data = SnowflakeStateData.from_jwt(state)
+
     if error:
         full_redirect_uri = URL(redirect_uri).include_query_params(
-            **request.query_params
+            **{**request.query_params, "state": state_data.state}
         )
         return RedirectResponse(full_redirect_uri)
-
-    state_data = SnowflakeStateData.from_jwt(state)
 
     authorization_data = SnowflakeAuthorizationData(
         code=code, scopes=state_data.scopes, nonce=state_data.nonce
