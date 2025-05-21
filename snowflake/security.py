@@ -62,12 +62,18 @@ async def create_tokens(
         "aud": str(request.url_for("userinfo")),
         "iat": now,
         "exp": expiry,
-        "preferred_username": user_info["username"],
-        "name": user_info["global_name"],
-        "locale": user_info["locale"],
-        "picture": f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}."
-        f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
     }
+
+    if "profile" in authorization_data.scopes:
+        access_claims.update(
+            {
+                "preferred_username": user_info["username"],
+                "name": user_info["global_name"],
+                "locale": user_info["locale"],
+                "picture": f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}."
+                f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
+            }
+        )
 
     if "email" in authorization_data.scopes:
         access_claims.update(
