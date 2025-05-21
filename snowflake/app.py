@@ -12,7 +12,6 @@ from fastapi.security import (
     HTTPBasicCredentials,
     HTTPBearer,
 )
-from joserfc import jwt
 from joserfc.errors import JoseError
 from starlette.datastructures import URL
 from starlette.exceptions import HTTPException
@@ -175,6 +174,7 @@ async def token(
 
 @app.get("/userinfo")
 async def userinfo(
+    request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
     userinfo_claims = [
@@ -188,7 +188,11 @@ async def userinfo(
     ]
 
     try:
-        access_token = jwt.decode(credentials.credentials, security.get_private_key())
+        access_token = security.decode_jwt(
+            credentials.credentials,
+            security.get_private_key(),
+            iss={"essential": True, "value": str(request.base_url)},
+        )
     except JoseError:
         raise HTTPException(401)
 
