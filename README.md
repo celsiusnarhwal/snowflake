@@ -124,7 +124,7 @@ Depending on the requested scopes, Snowflake-issued access and ID tokens include
 
 #### User Info
 
-The `/userinfo` endpoint returns the same claims as access and ID tokens but does not include `iss`, `sub`, `aud`,
+The `/userinfo` endpoint returns the same claims as access and ID tokens but does not include `iss`, `aud`,
 `iat`, or `exp`. 
 
 ### PKCE Support
