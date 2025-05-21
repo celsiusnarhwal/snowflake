@@ -133,7 +133,7 @@ async def redirect_to(request: Request, redirect_uri: str, state: str, code: str
         code=code, scopes=state_data.scopes, nonce=state_data.nonce
     )
     full_redirect_uri = URL(redirect_uri).include_query_params(
-        **{**request.query_params, "code": snowflake_code.to_encrypted()}
+        **{**request.query_params, "code": snowflake_code.to_jwt()}
     )
 
     return RedirectResponse(full_redirect_uri)
@@ -158,7 +158,7 @@ async def token(
         client_id = client_id or credentials.username
         client_secret = client_secret or credentials.password
 
-    authorization_data = SnowflakeAuthorizationData.from_encrypted(params.pop("code"))
+    authorization_data = SnowflakeAuthorizationData.from_jwt(params.pop("code"))
 
     discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
     discord_token = await discord.fetch_access_token(

@@ -35,6 +35,13 @@ def create_jwt(claims, key):
     return jwt.encode({"alg": "RS256"}, claims, key)
 
 
+def decode_jwt(token: str, key, **claims):
+    decoded = jwt.decode(token, key)
+    jwt.JWTClaimsRegistry(**claims).validate(decoded.claims)
+
+    return decoded
+
+
 async def create_tokens(
     *,
     request: Request,

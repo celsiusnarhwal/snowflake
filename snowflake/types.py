@@ -1,9 +1,8 @@
-import typing as t
-
-import cryptography.fernet
-from cryptography.fernet import Fernet
-from pydantic import BaseModel
+from joserfc.errors import JoseError
+from pydantic import BaseModel, ValidationError
 from starlette.exceptions import HTTPException
+
+from snowflake import security
 
 
 class SnowflakeStateData(BaseModel):
@@ -12,18 +11,17 @@ class SnowflakeStateData(BaseModel):
 
 
 class SnowflakeAuthorizationData(BaseModel):
-    cipher: t.ClassVar[Fernet] = Fernet(Fernet.generate_key())
-
+    code: str
     scopes: list
     nonce: str | None = None
-    code: str
 
-    def to_encrypted(self):
-        return self.cipher.encrypt(self.model_dump_json().encode()).decode()
+    def to_jwt(self):
+        return security.create_jwt(self.model_dump(), security.get_private_key())
 
     @classmethod
-    def from_encrypted(cls, encrypted) -> t.Self:
+    def from_jwt(cls, token: str):
         try:
-            return cls.model_validate_json(cls.cipher.decrypt(encrypted))
-        except cryptography.fernet.InvalidToken:
+            decoded = security.decode_jwt(token, security.get_private_key())
+            return cls.model_validate(decoded.claims)
+        except (JoseError, ValidationError):
             raise HTTPException(400, "Invalid authorization code")
