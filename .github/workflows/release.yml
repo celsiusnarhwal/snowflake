@@ -43,6 +43,8 @@ jobs:
             type=pep440,pattern=v{{version}}
             type=pep440,pattern={{major}}
             type=pep440,pattern=v{{major}}
+            type=pep440,pattern={{major}}.{{minor}}
+            type=pep440,pattern=v{{major}}.{{minor}}
 
       - name: Build and Push Image
         uses: docker/build-push-action@v6
