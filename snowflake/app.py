@@ -200,11 +200,6 @@ async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(str(request.url_for("discovery")))
-        resp.raise_for_status()
-        supported_claims = resp.json()["claims_supported"]
-
     try:
         access_token = security.decode_jwt(
             credentials.credentials,
@@ -214,8 +209,14 @@ async def userinfo(
     except JoseError:
         raise HTTPException(401)
 
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(str(request.url_for("discovery")))
+        resp.raise_for_status()
+
     userinfo_claims = {
-        k: v for k, v in access_token.claims.items() if k in supported_claims
+        k: v
+        for k, v in access_token.claims.items()
+        if k in resp.json()["supported_claims"]
     }
 
     # This should not be possible but you never know.
