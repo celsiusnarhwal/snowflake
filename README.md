@@ -137,7 +137,7 @@ The `/userinfo` endpoint returns the following claims:
 | `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
 | `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     |
 
-For access tokens authorized with the `email` scope, the `/userinfo` endpoint will also return the following claims:
+For access tokens authorized with the `email` scope, the `/userinfo` endpoint also return the following claims:
 
 | **Claim**        | **Description**                                                                   |
 |------------------|-----------------------------------------------------------------------------------|
