@@ -125,9 +125,7 @@ async def redirect():
 
 
 @app.get("/r/{redirect_uri:path}")
-async def redirect_to(
-    request: Request, redirect_uri: str, code: str, state: str = None
-):
+async def redirect_to(request: Request, redirect_uri: str, state: str, code: str):
     async with settings().redis as redis:
         state_data = SnowflakeStateData.model_validate_json(await redis.getdel(state))
 
