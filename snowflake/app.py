@@ -106,13 +106,10 @@ async def authorize(
         k: v for k, v in request.query_params.items() if k not in ["client_id", "scope"]
     }
 
+    state_data = SnowflakeStateData(state=state, scopes=scopes, nonce=nonce)
+
     authorization_params.update(
-        {
-            "state": SnowflakeStateData(
-                state=state, scopes=scopes, nonce=nonce
-            ).to_jwt(),
-            "redirect_uri": redirect_uri,
-        }
+        {"state": state_data.to_jwt(), "redirect_uri": redirect_uri}
     )
 
     resp = await discord.authorize_redirect(request, **authorization_params)
@@ -127,17 +124,30 @@ async def redirect():
 
 
 @app.get("/r/{redirect_uri:path}")
-async def redirect_to(request: Request, redirect_uri: str, state: str, code: str):
+async def redirect_to(
+    request: Request,
+    redirect_uri: str = None,
+    state: str = None,
+    code: str = None,
+    error: str = None,
+):
+    if error:
+        full_redirect_uri = URL(redirect_uri).include_query_params(
+            **request.query_params
+        )
+        return RedirectResponse(full_redirect_uri)
+
     state_data = SnowflakeStateData.from_jwt(state)
 
-    snowflake_code = SnowflakeAuthorizationData(
+    authorization_data = SnowflakeAuthorizationData(
         code=code, scopes=state_data.scopes, nonce=state_data.nonce
     )
+
     full_redirect_uri = URL(redirect_uri).include_query_params(
         **{
             **request.query_params,
             "state": state_data.state,
-            "code": snowflake_code.to_jwt(),
+            "code": authorization_data.to_jwt(),
         }
     )
 
