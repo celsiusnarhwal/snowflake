@@ -103,21 +103,32 @@ Snowflake supports the `openid`, `profile`, and `email` scopes. `openid` and `pr
 
 ### Supported Claims
 
-#### Access Tokens
+#### Tokens
 
-Snowflake-issued access tokens have the following claims:
+Snowflake-issued access and ID tokens have the following claims:
 
-| **Claim** | **Description**                                                                                                                      |
-|-----------|--------------------------------------------------------------------------------------------------------------------------------------|
-| `iss`     | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                   |
-| `sub`     | The ID of the user's Discord account.                                                                                                |
-| `aud`     | The client ID of your Discord application.                                                                                           |
-| `iat`     | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                              |
-| `exp`     | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid. |
+| **Claim**            | **Description**                                                                                                                                                          |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       |
+| `sub`                | The ID of the user's Discord account.                                                                                                                                    |
+| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                |
+| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  |
+| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     |
+| `preferred_username` | The username of the user's Discord account.                                                                                                                              |
+| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. |
+| `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
+| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     |
 
-#### ID Tokens
+When the `email` scope is requested, access and ID tokens will also have the following claims:
 
-Snowflake-issed ID tokens have the same claims as Snowflake-issued access tokens as well as the following claims:
+| **Claim**        | **Description**                                                                   |
+|------------------|-----------------------------------------------------------------------------------|
+| `email`          | The email address associated with the user's Discord account.                     |
+| `email_verified` | Whether the email address associated with the user's Discord account is verified. |
+
+#### User Info
+
+The `/userinfo` endpoint returns the following claims:
 
 | **Claim**            | **Description**                                                                                                                                                          |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -126,7 +137,7 @@ Snowflake-issed ID tokens have the same claims as Snowflake-issued access tokens
 | `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        |
 | `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     |
 
-When the `email` scope is requested, ID tokens will also have the following claims:
+For access tokens authorized with the `email` scope, the `/userinfo` endpoint will also return the following claims:
 
 | **Claim**        | **Description**                                                                   |
 |------------------|-----------------------------------------------------------------------------------|
