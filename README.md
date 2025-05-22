@@ -132,7 +132,7 @@ Depending on the requested scopes, Snowflake-issued access and ID tokens include
 | `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | `profile`           |
 | `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`             |
 | `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`             |
-| `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`             |
+| `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`            |
 
 #### User Info
 
