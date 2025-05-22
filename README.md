@@ -116,7 +116,7 @@ one of the other scopes.
 
 #### Tokens
 
-Depending on the requested scopes, Snowflake-issued access and ID tokens include some subset of the following claims:
+Depending on the provided scopes, Snowflake-issued access and ID tokens include some subset of the following claims:
 
 | **Claim**            | **Description**                                                                                                                                                          | **Required Scopes** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
