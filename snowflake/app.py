@@ -102,17 +102,15 @@ async def authorize(
     if "openid" not in scopes:
         raise HTTPException(400, "openid scope is required")
 
-    discord_scopes = []
-
-    if "profile" in scopes:
-        discord_scopes.append("identify")
-
-    if "email" in scopes:
-        discord_scopes.append("email")
+    scope_map = {
+        "profile": "identify",
+        "email": "email",
+        "groups": "guilds",
+    }
 
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=" ".join(discord_scopes),
+        scope=" ".join([v for k, v in scope_map.items() if k in scopes]),
     )
 
     authorization_params = {
@@ -252,12 +250,13 @@ async def discovery(request: Request):
             "picture",
             "email",
             "email_verified",
+            "groups",
         ],
         "grant_types_supported": ["authorization_code"],
         "id_token_signing_alg_values_supported": ["RS256"],
         "response_types_supported": ["code", "id_token"],
         "subject_types_supported": ["public"],
-        "scopes_supported": ["openid", "profile", "email"],
+        "scopes_supported": ["openid", "profile", "email", "groups"],
         "authorization_endpoint": str(request.url_for("authorize")),
         "token_endpoint": str(request.url_for("token")),
         "userinfo_endpoint": str(request.url_for("userinfo")),

@@ -98,8 +98,19 @@ Frankly, if you're reading this then you should already know how this works.
 
 ### Supported Scopes
 
-Snowflake supports the `openid`, `profile`, and `email` scopes. Only the `openid` scope is required by Snowflake,
-but you will get an error from Discord if you do not provide at least one of the other scopes.
+| **Scope** | **Requests**                                                                                    | **Required?** |
+|-----------|-------------------------------------------------------------------------------------------------|---------------|
+| `openid`  | To authenticate using OpenID Connect.                                                           | Yes           |
+| `profile` | Basic information about the user's Discord account.                                             | No            |
+| `email`   | The email address associated with the user's Discord account and whether or not it is verified. | No            |
+| `groups`  | A list of IDs of guilds (a.k.a. "servers") the user is a member of.                             | No            |
+
+Snowflake only requires the `openid` scope, but you will get an error from Discord if you do not provide at least
+one of the other scopes.
+
+> [!WARNING]
+> The Discord API is a little slow at returning guild information, so providing the `groups` scope can make Snowflake
+> take significantly longer to respond to access token requests.
 
 ### Supported Claims
 
@@ -121,11 +132,12 @@ Depending on the requested scopes, Snowflake-issued access and ID tokens include
 | `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | `profile`           |
 | `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`             |
 | `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`             |
+| `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         |                     |
 
 #### User Info
 
 The `/userinfo` endpoint returns the same claims as access and ID tokens but does not include `iss`, `aud`,
-`iat`, or `exp`. 
+`iat`, or `exp`.
 
 ### PKCE Support
 

@@ -83,6 +83,13 @@ async def create_tokens(
             }
         )
 
+    if "groups" in authorization_data.scopes:
+        guilds_resp = await discord.get("users/@me/guilds", token=discord_token)
+        guilds_resp.raise_for_status()
+        guilds = guilds_resp.json()
+
+        access_claims["groups"] = [guild["id"] for guild in guilds]
+
     identity_claims = {
         **access_claims,
         "aud": discord.client_id,
