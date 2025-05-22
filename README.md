@@ -15,7 +15,7 @@ Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake. The `SNOWFLAKE_ALLOWED_HOSTS`
 environment variable must be set; see [Configuration](#configuration).
 
-> [!TIP]
+> [!NOTE]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
 > Snowflake instace is reachable.
 
@@ -73,7 +73,7 @@ where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your applica
 URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
-> [!NOTE]
+> [!TIP]
 > If you're unable to control the redirect URI your OIDC client provides to Snowflake, set
 > the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
 > for details.
