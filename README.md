@@ -73,7 +73,7 @@ where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your applica
 URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
->[!IMPORTANT]
+> [!IMPORTANT]
 > Redirect URIs must be HTTPS or have a hostname of `localhost`, `127.0.0.1`, or `::1`.
 
 > [!TIP]
@@ -149,7 +149,7 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 
 ## HTTPS and Reverse Proxies
 
-As previously mentioned, Snowflake requires HTTPS for external connections. If you're serving Snowflake 
+As previously mentioned, Snowflake requires HTTPS for external connections. If you're serving Snowflake
 behind a reverse proxy and connecting to the reverse proxy over HTTPS, you will likely need to configure
 [Uvicorn](https://www.uvicorn.org) — which Snowflake uses under the hood — to trust the IP address
 of your reverse proxy.
