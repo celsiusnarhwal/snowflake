@@ -20,8 +20,12 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 
 from snowflake import security, utils
+from snowflake.exceptions import InsecureRedirectURIError
 from snowflake.settings import settings
-from snowflake.types import SnowflakeAuthorizationData, SnowflakeStateData
+from snowflake.types import (
+    SnowflakeAuthorizationData,
+    SnowflakeStateData,
+)
 
 app = FastAPI(
     title="Snowflake",
@@ -37,14 +41,13 @@ app.add_middleware(
     SessionMiddleware,
     secret_key=secrets.token_urlsafe(32),
     session_cookie=uuid.uuid4().hex,
-    https_only=not settings().internal.dev_mode,
     max_age=0,
 )
 
 
 @app.middleware("http")
-async def enforce_https(request: Request, call_next):
-    if request.url.scheme != "https" and not settings().internal.dev_mode:
+async def secure_transport_middleware(request: Request, call_next):
+    if not utils.is_secure_transport(request.url):
         return JSONResponse(
             {
                 "detail": "Snowflake must be served over HTTPS. If you're using a reverse proxy, "
@@ -79,6 +82,9 @@ async def authorize(
     state: str,
     nonce: str = None,
 ):
+    if not utils.is_secure_transport(redirect_uri):
+        raise InsecureRedirectURIError(redirect_uri)
+
     fixed_redirect_uri = utils.fix_redirect_uri(request, redirect_uri)
 
     if redirect_uri != fixed_redirect_uri:
@@ -138,6 +144,9 @@ async def redirect_to(
     code: str = None,
     error: str = None,
 ):
+    if not utils.is_secure_transport(redirect_uri):
+        raise InsecureRedirectURIError(redirect_uri)
+
     state_data = SnowflakeStateData.from_jwt(state)
 
     if error:
@@ -216,7 +225,7 @@ async def userinfo(
     userinfo_claims = {
         k: v
         for k, v in access_token.claims.items()
-        if k in resp.json()["supported_claims"]
+        if k in resp.json()["claims_supported"]
     }
 
     # This should not be possible but you never know.
