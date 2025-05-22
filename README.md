@@ -116,8 +116,7 @@ one of the other scopes.
 
 #### Tokens
 
-Depending on the requested scopes, Snowflake-issued access and ID tokens include some subset of the following claims
-(note that the `openid` scope is always required):
+Depending on the requested scopes, Snowflake-issued access and ID tokens include some subset of the following claims:
 
 | **Claim**            | **Description**                                                                                                                                                          | **Required Scopes** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
