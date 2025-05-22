@@ -73,7 +73,7 @@ where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your applica
 URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
-> [!INFO]
+> [!NOTE]
 > If you're unable to control the redirect URI your OIDC client provides to Snowflake, set
 > the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
 > for details.
