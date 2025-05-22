@@ -8,7 +8,7 @@ API.
 Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used like any other OIDC provider.
 
 > [!IMPORTANT]
-> Snowflake must be served over HTTPS.
+> Snowflake always requires HTTPS when being accessed from outside of `localhost`.
 
 ## Installation
 
