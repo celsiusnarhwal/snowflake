@@ -120,11 +120,11 @@ Depending on the provided scopes, Snowflake-issued access and ID tokens include 
 
 | **Claim**            | **Description**                                                                                                                                                          | **Required Scopes** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------|
-| `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       | `profile`           |
-| `sub`                | The ID of the user's Discord account.                                                                                                                                    | `profile`           |
-| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                | `profile`           |
-| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  | `profile`           |
-| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | `profile`           |
+| `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       | `openid`            |
+| `sub`                | The ID of the user's Discord account.                                                                                                                                    | `openid`            |
+| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                | `openid`            |
+| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  | `openid`            |
+| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | `openid`            |
 | `preferred_username` | The username of the user's Discord account.                                                                                                                              | `profile`           |
 | `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. | `profile`           |
 | `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        | `profile`           |
