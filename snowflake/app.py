@@ -123,10 +123,7 @@ async def authorize(
         {"state": state_data.to_jwt(), "redirect_uri": redirect_uri}
     )
 
-    resp = await discord.authorize_redirect(request, **authorization_params)
-    resp.status_code = settings().redirect_status_code
-
-    return resp
+    return await discord.authorize_redirect(request, **authorization_params)
 
 
 @app.get("/r", include_in_schema=False)

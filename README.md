@@ -73,9 +73,6 @@ where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your applica
 URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
-> [!IMPORTANT]
-> `{YOUR_REDIRECT_URI}` must be HTTPS or have a hostname of `localhost`, `127.0.0.1`, or `::1`.
-
 > [!TIP]
 > If you're unable to control the redirect URI your OIDC client provides to Snowflake, set
 > the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
@@ -171,7 +168,6 @@ Snowflake is configurable through the following environment variables:
 | `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                    | No            | `false`     |                                                                                                                                                                                                                                                                                                                                   |               |              |
 | `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds. | No            | `1h`        |
 | `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `off` responds with an HTTP 404 error.                                                                                           | No            | `repo`      |
-| `SNOWFLAKE_REDIRECT_STATUS_CODE` | Integer  | The HTTP status code Snowflake will use when redirecting clients to authorize with Discord. Must be either `302` or `303`.                                                                                                                                                                                                                | No            | `303`       |
 | `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                                           | No            | `false`     |
 
 Additionally, Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/)
