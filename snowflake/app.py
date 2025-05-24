@@ -4,6 +4,7 @@ import uuid
 
 import httpx
 from authlib.common.errors import AuthlibHTTPError
+from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
@@ -97,7 +98,7 @@ async def authorize(
                 f"(e.g., {fixed_redirect_uri}",
             )
 
-    scopes = set(scope.split(" "))
+    scopes = set(scope_to_list(scope))
 
     if "openid" not in scopes:
         raise HTTPException(400, "openid scope is required")
@@ -110,7 +111,7 @@ async def authorize(
 
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=" ".join([v for k, v in scope_map.items() if k in scopes]),
+        scope=list_to_scope([v for k, v in scope_map.items() if k in scopes]),
     )
 
     authorization_params = {
@@ -139,9 +140,6 @@ async def redirect_to(
     code: str = None,
     error: str = None,
 ):
-    if not utils.is_secure_transport(redirect_uri):
-        raise InsecureRedirectURIError(redirect_uri)
-
     state_data = SnowflakeStateData.from_jwt(state)
 
     if error or not code:
