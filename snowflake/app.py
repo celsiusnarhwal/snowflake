@@ -196,23 +196,25 @@ async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
-    try:
-        access_token = security.decode_jwt(
-            credentials.credentials,
-            security.get_private_key(),
-            iss={"essential": True, "value": str(request.base_url)},
-        )
-    except JoseError:
-        raise HTTPException(401)
-
     async with httpx.AsyncClient() as client:
         resp = await client.get(str(request.url_for("discovery")))
         resp.raise_for_status()
 
+    oidc_metadata = resp.json()
+
+    try:
+        access_token = security.decode_jwt(
+            credentials.credentials,
+            security.get_private_key(),
+            iss={"essential": True, "value": oidc_metadata["issuer"]},
+        )
+    except JoseError:
+        raise HTTPException(401)
+
     userinfo_claims = {
         k: v
         for k, v in access_token.claims.items()
-        if k in resp.json()["claims_supported"]
+        if k in oidc_metadata["claims_supported"]
     }
 
     # This should not be possible but you never know.
