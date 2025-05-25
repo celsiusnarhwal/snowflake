@@ -21,7 +21,6 @@ from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import RedirectResponse
 
 from snowflake import security, utils
-from snowflake.exceptions import InsecureRedirectURIError
 from snowflake.settings import settings
 from snowflake.types import (
     SnowflakeAuthorizationData,
@@ -84,7 +83,10 @@ async def authorize(
     nonce: str = None,
 ):
     if not utils.is_secure_transport(redirect_uri):
-        raise InsecureRedirectURIError(redirect_uri)
+        raise HTTPException(
+            400,
+            f"Redirect URI {redirect_uri} is insecure. Redirect URIs must be either HTTPS or localhost",
+        )
 
     fixed_redirect_uri = utils.fix_redirect_uri(request, redirect_uri)
 
