@@ -30,7 +30,7 @@ from snowflake.types import (
 app = FastAPI(
     title="Snowflake",
     description="Snowflake lets you use Discord as an OpenID Connect provider. "
-    "[https://github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
+    "[github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
     root_path=settings().base_path,
     openapi_url=settings().openapi_url,
 )
