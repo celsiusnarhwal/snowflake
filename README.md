@@ -120,7 +120,7 @@ one of the other scopes.
 
 Depending on the provided scopes, Snowflake-issued access and ID tokens include some subset of the following claims:
 
-| **Claim**            | **Description**                                                                                                                                                          | **Required Scopes** (in addition to `openid`) |
+| **Claim**            | **Description**                                                                                                                                                          | **Required Scopes (in addition to `openid`)** |
 |----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
 | `iss`                | The issuer of the ID token (i.e., the URL at which the client accessed Snowflake).                                                                                       | None                                          |
 | `sub`                | The ID of the user's Discord account.                                                                                                                                    | None                                          |
