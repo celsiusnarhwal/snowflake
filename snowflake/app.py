@@ -1,13 +1,13 @@
-import secrets
 import typing as t
-import uuid
 
 import httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Depends, FastAPI, Request
+from fastapi.datastructures import URL
+from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBasic,
@@ -15,10 +15,6 @@ from fastapi.security import (
     HTTPBearer,
 )
 from joserfc.errors import JoseError
-from starlette.datastructures import URL
-from starlette.exceptions import HTTPException
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import RedirectResponse
 
 from snowflake import security, utils
 from snowflake.settings import settings
@@ -35,14 +31,6 @@ app = FastAPI(
     openapi_url=settings().openapi_url,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
-
-
-app.add_middleware(
-    SessionMiddleware,
-    secret_key=secrets.token_urlsafe(32),
-    session_cookie=uuid.uuid4().hex,
-    max_age=0,
-)
 
 
 @app.middleware("http")
@@ -80,7 +68,7 @@ async def authorize(
     scope: str,
     redirect_uri: str,
     state: str,
-    nonce: str = None,
+    nonce: str,
 ):
     if not utils.is_secure_transport(redirect_uri):
         raise HTTPException(
@@ -126,7 +114,10 @@ async def authorize(
         {"state": state_data.to_jwt(), "redirect_uri": redirect_uri}
     )
 
-    return await discord.authorize_redirect(request, **authorization_params)
+    authorization_url_dict = await discord.create_authorization_url(
+        **authorization_params
+    )
+    return RedirectResponse(authorization_url_dict["url"], status_code=302)
 
 
 @app.get("/r", include_in_schema=False)
