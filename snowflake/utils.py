@@ -4,9 +4,7 @@ from starlette.datastructures import URL
 
 
 def get_oauth_client(**kwargs) -> StarletteOAuth2App:
-    oauth = OAuth()
-
-    return oauth.register(
+    return OAuth().register(
         name="discord",
         authorize_url="https://discord.com/oauth2/authorize",
         access_token_url="https://discord.com/api/oauth2/token",
