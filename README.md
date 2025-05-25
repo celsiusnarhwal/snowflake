@@ -29,6 +29,7 @@ environment variable must be set; see [Configuration](#configuration).
 |----------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | `latest`             | The latest stable version of Snowflake.                                                       | `ghcr.io/celsiusnarhwal/snowflake:latest`                                              |
 | Major version number | The latest release of this major version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1`         |
+| Minor version number | The latest release of this minor version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0`      |
 | Exact version number | This version of Snowflake exactly. May be optionally prefixed with a `v`.                     | `ghcr.io/celsiusnarhwal/snowflake:1.0.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0.0` |
 | `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
 
@@ -105,8 +106,8 @@ Frankly, if you're reading this then you should already know how this works.
 | `email`   | The email address associated with the user's Discord account and whether or not it is verified. | No            |
 | `groups`  | A list of IDs of guilds (a.k.a. "servers") the user is a member of.                             | No            |
 
-Snowflake only requires the `openid` scope, but you will get an error from Discord if you do not provide at least
-one of the other scopes.
+Snowflake only requires the `openid` scope, but you will get a "no scopes provided" error from Discord if you do 
+not provide at least one of the other scopes.
 
 > [!WARNING]
 > The Discord API is a little slow at returning guild information, so providing the `groups` scope can make Snowflake
