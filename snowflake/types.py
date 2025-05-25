@@ -1,14 +1,25 @@
+import time
 import typing as t
 
 from authlib.oauth2.rfc6749 import MismatchingStateException
 from joserfc.errors import JoseError
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, computed_field
 from starlette.exceptions import HTTPException
 
 from snowflake import security
 
 
-class Encodable(BaseModel):
+class JWT(BaseModel):
+    @computed_field
+    @property
+    def iat(self) -> int:
+        return int(time.time())
+
+    @computed_field
+    @property
+    def exp(self) -> int:
+        return self.iat + 300
+
     def to_jwt(self):
         return security.create_jwt(self.model_dump(), security.get_private_key())
 
@@ -18,7 +29,7 @@ class Encodable(BaseModel):
         return cls.model_validate(decoded.claims)
 
 
-class SnowflakeStateData(Encodable):
+class SnowflakeStateData(JWT):
     state: str
     scopes: list
     nonce: str | None = None
@@ -31,7 +42,7 @@ class SnowflakeStateData(Encodable):
             raise MismatchingStateException()
 
 
-class SnowflakeAuthorizationData(Encodable):
+class SnowflakeAuthorizationData(JWT):
     code: str
     scopes: list
     nonce: str | None = None
