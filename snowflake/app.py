@@ -242,7 +242,7 @@ async def discovery(request: Request):
         ],
         "grant_types_supported": ["authorization_code"],
         "id_token_signing_alg_values_supported": ["RS256"],
-        "response_types_supported": ["code", "id_token"],
+        "response_types_supported": ["token", "id_token"],
         "subject_types_supported": ["public"],
         "scopes_supported": ["openid", "profile", "email", "groups"],
         "authorization_endpoint": str(request.url_for("authorize")),
