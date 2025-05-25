@@ -117,6 +117,7 @@ async def authorize(
     authorization_url_dict = await discord.create_authorization_url(
         **authorization_params
     )
+
     return RedirectResponse(authorization_url_dict["url"], status_code=302)
 
 
@@ -153,7 +154,7 @@ async def redirect_to(
         }
     )
 
-    return RedirectResponse(full_redirect_uri)
+    return RedirectResponse(full_redirect_uri, status_code=302)
 
 
 @app.post("/token")
