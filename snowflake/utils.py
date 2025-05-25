@@ -1,5 +1,3 @@
-import uuid
-
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Request
 from starlette.datastructures import URL
@@ -9,7 +7,7 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     oauth = OAuth()
 
     return oauth.register(
-        name=uuid.uuid4().hex,
+        name="discord",
         authorize_url="https://discord.com/oauth2/authorize",
         access_token_url="https://discord.com/api/oauth2/token",
         api_base_url="https://discord.com/api/",
