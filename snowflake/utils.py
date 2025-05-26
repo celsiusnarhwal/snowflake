@@ -13,14 +13,14 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     )
 
 
-def fix_redirect_uri(request: Request, redirect_uri: str):
+def fix_redirect_uri(request: Request, redirect_uri: str) -> str:
     if not redirect_uri.startswith(f"{request.url_for('redirect')}/"):
         return str(request.url_for("redirect_to", redirect_uri=redirect_uri))
 
     return redirect_uri
 
 
-def is_secure_transport(url: str | URL):
+def is_secure_transport(url: str | URL) -> bool:
     if not isinstance(url, URL):
         url = URL(url)
 
