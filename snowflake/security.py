@@ -1,11 +1,14 @@
 import json
 import time
+from json import JSONDecodeError
 from pathlib import Path
 
 from authlib.integrations.starlette_client import StarletteOAuth2App
 from fastapi import Request
 from joserfc import jwt
-from joserfc.jwk import KeySet, RSAKey
+from joserfc.errors import JoseError
+from joserfc.jwk import KeySet
+from joserfc.jwt import Token
 
 from snowflake.settings import settings
 from snowflake.types import SnowflakeAuthorizationData
@@ -13,42 +16,44 @@ from snowflake.types import SnowflakeAuthorizationData
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
 
 
-def create_private_key():
-    key = RSAKey.generate_key(2048, private=True, auto_kid=True)
+def create_private_key() -> None:
+    key = KeySet.generate_key_set("RSA", 2048, private=True, count=1)
     PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
     json.dump(key.as_dict(private=True), PRIVATE_KEY_FILE.open("w"))
 
 
-def get_private_key() -> RSAKey:
-    if PRIVATE_KEY_FILE.exists():
-        try:
-            return RSAKey.import_key(json.load(PRIVATE_KEY_FILE.open()))
-        except ValueError:
-            pass
+def get_private_key() -> KeySet:
+    try:
+        return KeySet.import_key_set(json.load(PRIVATE_KEY_FILE.open()))
+    except (FileNotFoundError, JSONDecodeError, JoseError):
+        pass
 
     create_private_key()
-
     return get_private_key()
 
 
-def create_jwt(claims, key):
-    return jwt.encode({"alg": "RS256"}, claims, key)
+def create_jwt(claims) -> str:
+    return jwt.encode({"alg": "RS256"}, claims, get_private_key())
 
 
-def decode_jwt(token: str, key, **claims):
-    decoded = jwt.decode(token, key)
+def decode_jwt(token: str, **claims) -> Token:
+    decoded = jwt.decode(token, get_jwks())
     jwt.JWTClaimsRegistry(**claims).validate(decoded.claims)
 
     return decoded
+
+
+def get_jwks() -> KeySet:
+    return KeySet.import_key_set(get_private_key().as_dict(private=False))
 
 
 async def create_tokens(
     *,
     request: Request,
     discord: StarletteOAuth2App,
-    authorization_data: SnowflakeAuthorizationData,
     discord_token: dict,
-):
+    authorization_data: SnowflakeAuthorizationData,
+) -> dict[str, str | int]:
     user_resp = await discord.get("users/@me", token=discord_token)
     user_resp.raise_for_status()
     user_info = user_resp.json()
@@ -96,8 +101,8 @@ async def create_tokens(
         "nonce": authorization_data.nonce,
     }
 
-    access_token = create_jwt(access_claims, get_private_key())
-    id_token = create_jwt(identity_claims, get_private_key())
+    access_token = create_jwt(access_claims)
+    id_token = create_jwt(identity_claims)
 
     return {
         "access_token": access_token,
@@ -105,7 +110,3 @@ async def create_tokens(
         "expires_at": expiry,
         "id_token": id_token,
     }
-
-
-def get_jwks():
-    return KeySet([get_private_key()]).as_dict(private=False)

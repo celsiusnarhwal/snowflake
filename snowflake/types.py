@@ -20,12 +20,12 @@ class JWT(BaseModel):
     def exp(self) -> int:
         return self.iat + 300
 
-    def to_jwt(self):
-        return security.create_jwt(self.model_dump(), security.get_private_key())
+    def to_jwt(self) -> str:
+        return security.create_jwt(self.model_dump())
 
     @classmethod
     def from_jwt(cls, token: str) -> t.Self:
-        decoded = security.decode_jwt(token, security.get_private_key())
+        decoded = security.decode_jwt(token)
         return cls.model_validate(decoded.claims)
 
 

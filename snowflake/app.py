@@ -205,7 +205,6 @@ async def userinfo(
     try:
         access_token = security.decode_jwt(
             credentials.credentials,
-            security.get_private_key(),
             iss={"essential": True, "value": oidc_metadata["issuer"]},
         )
     except JoseError:
@@ -226,7 +225,7 @@ async def userinfo(
 
 @app.get("/.well-known/jwks.json")
 async def jwks():
-    return security.get_jwks()
+    return security.get_jwks().as_dict()
 
 
 @app.get("/.well-known/openid-configuration")
