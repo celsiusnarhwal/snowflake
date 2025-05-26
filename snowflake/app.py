@@ -74,7 +74,7 @@ async def authorize(
     scope: str,
     redirect_uri: str,
     state: str,
-    nonce: str,
+    nonce: str = None,
 ):
     """
     Authorization endpoint.
