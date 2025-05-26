@@ -2,4 +2,4 @@
 !snowflake/
 !pyproject.toml
 !uv.lock
-snowflake/persist/
+snowflake/data/
