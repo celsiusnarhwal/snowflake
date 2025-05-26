@@ -18,7 +18,7 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
 
 def fix_redirect_uri(request: Request, redirect_uri: str) -> str:
     """
-    Modify a redirect URIs to be a subpath of the /r endpoint.
+    Modify a redirect URI to be a subpath of the /r endpoint.
     """
     if not redirect_uri.startswith(f"{request.url_for('redirect')}/"):
         return str(request.url_for("redirect_to", redirect_uri=redirect_uri))
