@@ -10,6 +10,23 @@ Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used
 > [!IMPORTANT]
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
+<!-- TOC -->
+* [Snowflake](#snowflake)
+  * [Installation](#installation)
+    * [Docker Compose](#docker-compose)
+    * [Docker CLI](#docker-cli)
+  * [Usage](#usage)
+  * [OIDC Information](#oidc-information)
+    * [Endpoints](#endpoints)
+    * [Supported Scopes](#supported-scopes)
+    * [Supported Claims](#supported-claims)
+      * [Tokens](#tokens)
+      * [User Info](#user-info)
+    * [PKCE Support](#pkce-support)
+  * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
+  * [Configuration](#configuration)
+<!-- TOC -->
+
 ## Installation
 
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake. The `SNOWFLAKE_ALLOWED_HOSTS`
@@ -29,7 +46,7 @@ environment variable must be set; see [Configuration](#configuration).
 |----------------------|-----------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------|
 | `latest`             | The latest stable version of Snowflake.                                                       | `ghcr.io/celsiusnarhwal/snowflake:latest`                                              |
 | Major version number | The latest release of this major version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1`         |
-| Minor version number | The latest release of this minor version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0`      |
+| Minor version number | The latest release of this minor version of Snowflake. May be optionally prefixed with a `v`. | `ghcr.io/celsiusnarhwal/snowflake:1.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0`     |
 | Exact version number | This version of Snowflake exactly. May be optionally prefixed with a `v`.                     | `ghcr.io/celsiusnarhwal/snowflake:1.0.0`<br/>`ghcr.io/celsiusnarhwal/snowflake:v1.0.0` |
 | `edge`               | The latest commit to Snowflake's `main` branch. Unstable.                                     | `ghcr.io/celsiusnarhwal/snowflake:edge`                                                |
 
@@ -87,7 +104,9 @@ directly to obtain the same claims.
 
 Frankly, if you're reading this then you should already know how this works.
 
-### OIDC Endpoints
+## OIDC Information
+
+### Endpoints
 
 | **Endpoint**     | **Path**                            |
 |------------------|-------------------------------------|
@@ -106,7 +125,7 @@ Frankly, if you're reading this then you should already know how this works.
 | `email`   | The email address associated with the user's Discord account and whether or not it is verified. | No            |
 | `groups`  | A list of IDs of guilds (a.k.a. "servers") the user is a member of.                             | No            |
 
-Snowflake only requires the `openid` scope, but you will get a "no scopes provided" error from Discord if you do 
+Snowflake only requires the `openid` scope, but you will get a "no scopes provided" error from Discord if you do
 not provide at least
 one of the other scopes.
 
@@ -163,14 +182,14 @@ For more information, see [Uvicorn's documentation](https://www.uvicorn.org/depl
 
 Snowflake is configurable through the following environment variables:
 
-| **Environment Variable**         | **Type** | **Description**                                                                                                                                                                                                                                                                                                                           | **Required?** | **Default** |
-|----------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
-| `SNOWFLAKE_ALLOWED_HOSTS`        | String   | A comma-separated list of hostnames at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended.                                                                                                        | Yes           | N/A         |
-| `SNOWFLAKE_BASE_PATH`            | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                   | No            | `/`         |
-| `SNOWFLAKE_FIX_REDIRECT_URIS`    | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                    | No            | `false`     |                                                                                                                                                                                                                                                                                                                                   |               |              |
-| `SNOWFLAKE_TOKEN_LIFETIME`       | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds. | No            | `1h`        |
-| `SNOWFLAKE_ROOT_REDIRECT`        | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `off` responds with an HTTP 404 error.                                                                                           | No            | `repo`      |
-| `SNOWFLAKE_ENABLE_SWAGGER`       | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                                           | No            | `false`     |
+| **Environment Variable**      | **Type** | **Description**                                                                                                                                                                                                                                                                                                                           | **Required?** | **Default** |
+|-------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------|
+| `SNOWFLAKE_ALLOWED_HOSTS`     | String   | A comma-separated list of hostnames at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended.                                                                                                        | Yes           | N/A         |
+| `SNOWFLAKE_BASE_PATH`         | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                   | No            | `/`         |
+| `SNOWFLAKE_FIX_REDIRECT_URIS` | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                    | No            | `false`     |                                                                                                                                                                                                                                                                                                                                   |               |              |
+| `SNOWFLAKE_TOKEN_LIFETIME`    | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds. | No            | `1h`        |
+| `SNOWFLAKE_ROOT_REDIRECT`     | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `off` responds with an HTTP 404 error.                                                                                           | No            | `repo`      |
+| `SNOWFLAKE_ENABLE_SWAGGER`    | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                                           | No            | `false`     |
 
 Additionally, Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/)
 if they are set.
