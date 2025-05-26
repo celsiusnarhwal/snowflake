@@ -117,8 +117,10 @@ async def create_tokens(
     identity_claims = {
         **access_claims,
         "aud": discord.client_id,
-        "nonce": authorization_data.nonce,
     }
+
+    if authorization_data.nonce:
+        identity_claims["nonce"] = authorization_data.nonce
 
     access_token = create_jwt(access_claims)
     id_token = create_jwt(identity_claims)
