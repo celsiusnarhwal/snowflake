@@ -2,10 +2,10 @@ import logging
 import typing as t
 from functools import lru_cache
 
-import annotated_types as at
 import durationpy
 from pydantic import (
     BeforeValidator,
+    Field,
     model_validator,
 )
 from pydantic_settings import (
@@ -14,7 +14,7 @@ from pydantic_settings import (
 )
 
 Duration = t.Annotated[
-    int, BeforeValidator(lambda v: durationpy.from_str(v).total_seconds()), at.Ge(60)
+    int, BeforeValidator(lambda v: durationpy.from_str(v).total_seconds())
 ]
 
 
@@ -26,7 +26,7 @@ class SnowflakeSettings(BaseSettings):
     allowed_hosts: str
     base_path: str = "/"
     fix_redirect_uris: bool = False
-    token_lifetime: Duration = "1h"
+    token_lifetime: Duration = Field("1h", ge=60)
     root_redirect: t.Literal["repo", "settings", "off"] = "repo"
     enable_swagger: bool = False
 
