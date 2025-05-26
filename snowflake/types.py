@@ -21,10 +21,16 @@ class JWT(BaseModel):
         return self.iat + 300
 
     def to_jwt(self) -> str:
+        """
+        Serialize this model to a JWT.
+        """
         return security.create_jwt(self.model_dump())
 
     @classmethod
     def from_jwt(cls, token: str) -> t.Self:
+        """
+        Deserialize this model from a JWT.
+        """
         decoded = security.decode_jwt(token)
         return cls.model_validate(decoded.claims)
 

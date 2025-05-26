@@ -4,6 +4,9 @@ from starlette.datastructures import URL
 
 
 def get_oauth_client(**kwargs) -> StarletteOAuth2App:
+    """
+    Create a client for Discord's OAuth2 API.
+    """
     return OAuth().register(
         name="discord",
         authorize_url="https://discord.com/oauth2/authorize",
@@ -14,6 +17,9 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
 
 
 def fix_redirect_uri(request: Request, redirect_uri: str) -> str:
+    """
+    Modify a redirect URIs to be a subpath of the /r endpoint.
+    """
     if not redirect_uri.startswith(f"{request.url_for('redirect')}/"):
         return str(request.url_for("redirect_to", redirect_uri=redirect_uri))
 
@@ -21,6 +27,9 @@ def fix_redirect_uri(request: Request, redirect_uri: str) -> str:
 
 
 def is_secure_transport(url: str | URL) -> bool:
+    """
+    Return `True` if the given URL is HTTPS or for a loopback address; `False` otherwise.
+    """
     if not isinstance(url, URL):
         url = URL(url)
 

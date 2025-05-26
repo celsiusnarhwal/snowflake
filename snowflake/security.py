@@ -17,12 +17,18 @@ PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.js
 
 
 def create_private_key() -> None:
+    """
+    Create a new private key.
+    """
     key = KeySet.generate_key_set("RSA", 2048, private=True, count=1)
     PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
     json.dump(key.as_dict(private=True), PRIVATE_KEY_FILE.open("w"))
 
 
 def get_private_key() -> KeySet:
+    """
+    Get the private key, creating one if necessary.
+    """
     try:
         return KeySet.import_key_set(json.load(PRIVATE_KEY_FILE.open()))
     except (FileNotFoundError, JSONDecodeError, JoseError):
@@ -32,11 +38,18 @@ def get_private_key() -> KeySet:
     return get_private_key()
 
 
-def create_jwt(claims) -> str:
+def create_jwt(claims: dict) -> str:
+    """
+    Create a JWT.
+    """
     return jwt.encode({"alg": "RS256"}, claims, get_private_key())
 
 
-def decode_jwt(token: str, **claims) -> Token:
+def decode_jwt(token: str, **claims: dict) -> Token:
+    """
+    Decode a JWT.
+
+    """
     decoded = jwt.decode(token, get_jwks())
     jwt.JWTClaimsRegistry(**claims).validate(decoded.claims)
 
@@ -44,6 +57,9 @@ def decode_jwt(token: str, **claims) -> Token:
 
 
 def get_jwks() -> KeySet:
+    """
+    Get the public JSON Web Key Set.
+    """
     return KeySet.import_key_set(get_private_key().as_dict(private=False))
 
 
@@ -54,6 +70,9 @@ async def create_tokens(
     discord_token: dict,
     authorization_data: SnowflakeAuthorizationData,
 ) -> dict[str, str | int]:
+    """
+    Create a pair of access and ID tokens.
+    """
     user_resp = await discord.get("users/@me", token=discord_token)
     user_resp.raise_for_status()
     user_info = user_resp.json()

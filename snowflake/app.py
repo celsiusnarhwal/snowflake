@@ -35,6 +35,9 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_
 
 @app.middleware("http")
 async def secure_transport_middleware(request: Request, call_next):
+    """
+    Enforce HTTPS for external connections.
+    """
     if not utils.is_secure_transport(request.url):
         return JSONResponse(
             {
@@ -50,6 +53,9 @@ async def secure_transport_middleware(request: Request, call_next):
 # noinspection PyUnusedLocal
 @app.exception_handler(AuthlibHTTPError)
 async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError):
+    """
+    Re-raise `AuthlibHTTPError` exceptions as `HTTPException` exceptions.
+    """
     raise HTTPException(exception.status_code, exception.description)
 
 
@@ -70,6 +76,9 @@ async def authorize(
     state: str,
     nonce: str,
 ):
+    """
+    Authorization endpoint.
+    """
     if not utils.is_secure_transport(redirect_uri):
         raise HTTPException(
             400,
@@ -123,6 +132,9 @@ async def authorize(
 
 @app.get("/r", include_in_schema=False)
 async def redirect():
+    """
+    Dummy endpoint that exists so `snowflake.utils.fix_redirect_uri()` can work properly.
+    """
     raise HTTPException(403)
 
 
@@ -134,6 +146,9 @@ async def redirect_to(
     code: str = None,
     error: str = None,
 ):
+    """
+    Callback endpoint.
+    """
     state_data = SnowflakeStateData.from_jwt(state)
 
     if error or not code:
@@ -164,6 +179,9 @@ async def token(
         HTTPBasicCredentials, Depends(HTTPBasic(auto_error=False))
     ],
 ):
+    """
+    Token endpoint.
+    """
     params = dict(await request.form())
 
     if settings().fix_redirect_uris:
@@ -196,6 +214,9 @@ async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
+    """
+    User info endpoint.
+    """
     async with httpx.AsyncClient() as client:
         resp = await client.get(str(request.url_for("discovery")))
         resp.raise_for_status()
@@ -225,11 +246,20 @@ async def userinfo(
 
 @app.get("/.well-known/jwks.json")
 async def jwks():
+    """
+    JWKS endpoint.
+    """
     return security.get_jwks().as_dict()
 
 
 @app.get("/.well-known/openid-configuration")
 async def discovery(request: Request):
+    """
+    OpenID Connect discovery endpoint.
+
+    See Also
+        https://openid.net/specs/openid-connect-discovery-1_0.html
+    """
     return {
         "issuer": str(request.base_url),
         "claims_supported": [
