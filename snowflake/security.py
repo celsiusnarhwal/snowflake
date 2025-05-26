@@ -48,7 +48,6 @@ def create_jwt(claims: dict) -> str:
 def decode_jwt(token: str, **claims: dict) -> Token:
     """
     Decode a JWT.
-
     """
     decoded = jwt.decode(token, get_jwks())
     jwt.JWTClaimsRegistry(**claims).validate(decoded.claims)
