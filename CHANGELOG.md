@@ -2,7 +2,15 @@
 
 Notable changes to Snowflake will be documented here. Breaking changes are marked with a 🚩.
 
+
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
+
+## <a name="1-2-0">1.2.0 — 2025-05-27</a>
+
+### Changed
+
+- Snowflake's authorization endpoint no longer requires a `state` parameter. This change was made because Discord's
+  OAuth2 flow also does not require a `state` parameter.
 
 ## <a name="1-1-0">1.1.0 — 2025-05-27</a>
 

@@ -1,3 +1,4 @@
+import secrets
 import time
 import typing as t
 
@@ -20,6 +21,11 @@ class JWT(BaseModel):
     def exp(self) -> int:
         return self.iat + 300
 
+    @computed_field
+    @property
+    def randomizer(self) -> str:
+        return secrets.token_urlsafe(32)
+
     def to_jwt(self) -> str:
         """
         Serialize this model to a JWT.
@@ -36,8 +42,8 @@ class JWT(BaseModel):
 
 
 class SnowflakeStateData(JWT):
-    state: str
     scopes: list
+    state: str | None = None
     nonce: str | None = None
 
     @classmethod

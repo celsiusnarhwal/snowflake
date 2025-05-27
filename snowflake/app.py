@@ -78,7 +78,7 @@ async def authorize(
     client_id: str,
     scope: str,
     redirect_uri: str,
-    state: str,
+    state: str = None,
     nonce: str = None,
 ):
     """
@@ -159,6 +159,9 @@ async def redirect_to(
     full_redirect_uri = URL(redirect_uri).include_query_params(
         **{**request.query_params, "state": state_data.state}
     )
+
+    if not state_data.state:
+        full_redirect_uri = full_redirect_uri.remove_query_params("state")
 
     if code and not error:
         authorization_data = SnowflakeAuthorizationData(

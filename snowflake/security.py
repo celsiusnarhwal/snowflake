@@ -59,7 +59,9 @@ def get_jwks() -> KeySet:
     """
     Get the public JSON Web Key Set.
     """
-    return KeySet.import_key_set(get_private_key().as_dict(private=False))
+    return KeySet.import_key_set(
+        get_private_key().as_dict(private=False), parameters={"use": "sig"}
+    )
 
 
 async def create_tokens(
