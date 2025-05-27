@@ -44,10 +44,6 @@ class SnowflakeSettings(BaseSettings):
         return self.allowed_hosts.split(",") + ["localhost", "127.0.0.1", "::1"]
 
     @property
-    def docs_url(self):
-        return "/docs" if self.enable_swagger else None
-
-    @property
     def openapi_url(self):
         return "/openapi.json" if self.enable_swagger else None
 
