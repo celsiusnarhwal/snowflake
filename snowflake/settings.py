@@ -19,9 +19,7 @@ Duration = t.Annotated[
 
 
 class SnowflakeSettings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
-    )
+    model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
     allowed_hosts: str = ""
     base_path: str = "/"
