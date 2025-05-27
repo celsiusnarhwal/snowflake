@@ -100,10 +100,7 @@ async def create_tokens(
 
     if "email" in authorization_data.scopes:
         access_claims.update(
-            {
-                "email": user_info.get("email"),
-                "email_verified": user_info.get("verified"),
-            }
+            {"email": user_info["email"], "email_verified": user_info["verified"]}
         )
 
     if "groups" in authorization_data.scopes:
