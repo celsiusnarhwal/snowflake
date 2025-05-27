@@ -11,28 +11,26 @@ Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
 <!-- TOC -->
-
 * [Snowflake](#snowflake)
-    * [Installation](#installation)
-        * [Docker Compose](#docker-compose)
-        * [Docker CLI](#docker-cli)
-    * [Usage](#usage)
-    * [OIDC Information](#oidc-information)
-        * [Endpoints](#endpoints)
-        * [Supported Scopes](#supported-scopes)
-        * [Supported Claims](#supported-claims)
-            * [Tokens](#tokens)
-            * [User Info](#user-info)
-        * [PKCE Support](#pkce-support)
-    * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
-    * [Configuration](#configuration)
-
+  * [Installation](#installation)
+    * [Docker Compose](#docker-compose)
+    * [Docker CLI](#docker-cli)
+  * [Usage](#usage)
+  * [OIDC Information](#oidc-information)
+    * [Endpoints](#endpoints)
+    * [Supported Scopes](#supported-scopes)
+    * [Supported Claims](#supported-claims)
+      * [Tokens](#tokens)
+      * [User Info](#user-info)
+    * [PKCE Support](#pkce-support)
+  * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
+  * [Configuration](#configuration)
 <!-- TOC -->
 
 ## Installation
 
-[Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set
-`SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
+[Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set 
+the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
 
 > [!NOTE]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
