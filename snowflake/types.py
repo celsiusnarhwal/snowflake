@@ -2,9 +2,9 @@ import time
 import typing as t
 
 from authlib.oauth2.rfc6749 import MismatchingStateException
+from fastapi.exceptions import HTTPException
 from joserfc.errors import JoseError
 from pydantic import BaseModel, ValidationError, computed_field
-from starlette.exceptions import HTTPException
 
 from snowflake import security
 
