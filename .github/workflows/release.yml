@@ -4,6 +4,7 @@ on:
       - .*ignore
       - "!.dockerignore"
       - README.md
+      - CHANGELOG.md
       - .pre-commit-config.yaml
 
   release:
