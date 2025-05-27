@@ -33,4 +33,4 @@ def is_secure_transport(url: str | URL) -> bool:
     if not isinstance(url, URL):
         url = URL(url)
 
-    return url.scheme == "https" or url.hostname in ["127.0.0.1", "::1", "localhost"]
+    return url.scheme == "https" or url.hostname in ["localhost", "127.0.0.1", "::1"]

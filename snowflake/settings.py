@@ -23,7 +23,7 @@ class SnowflakeSettings(BaseSettings):
         env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
     )
 
-    allowed_hosts: str
+    allowed_hosts: str = ""
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
@@ -41,7 +41,7 @@ class SnowflakeSettings(BaseSettings):
 
     @property
     def allowed_host_list(self) -> list[str]:
-        return self.allowed_hosts.split(",")
+        return self.allowed_hosts.split(",") + ["localhost", "127.0.0.1", "::1"]
 
     @property
     def docs_url(self):

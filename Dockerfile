@@ -10,4 +10,6 @@ RUN uv sync
 
 COPY . /app/
 
+HEALTHCHECK CMD curl -fs localhost:${UVICORN_PORT}/ping
+
 CMD ["uv", "run", "uvicorn", "snowflake.app:app"]

@@ -67,6 +67,11 @@ def root():
     raise HTTPException(404)
 
 
+@app.get("/ping", include_in_schema=False)
+def ping():
+    return "pong"
+
+
 @app.get("/authorize")
 async def authorize(
     request: Request,
