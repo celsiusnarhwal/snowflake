@@ -12,7 +12,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- `SNOWFLAKE_ALLOWED_HOSTS` now always includes loopback addresses (`localhost`, `127.0.0.1`, `::1`), and is thus
+- `SNOWFLAKE_ALLOWED_HOSTS` now always includes loopback addresses (`localhost`, `127.0.0.1`, `::1`) and is thus
 no longer strictly required, though you will still need to set it if you wish to connect to Snowflake externally.
 
 ## <a name="1-0-0">1.0.0 — 2025-05-26</a>
