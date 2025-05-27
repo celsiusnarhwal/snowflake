@@ -156,23 +156,18 @@ async def redirect_to(
     """
     state_data = SnowflakeStateData.from_jwt(state)
 
-    if error or not code:
-        full_redirect_uri = URL(redirect_uri).include_query_params(
-            **{**request.query_params, "state": state_data.state}
-        )
-        return RedirectResponse(full_redirect_uri)
-
-    authorization_data = SnowflakeAuthorizationData(
-        code=code, scopes=state_data.scopes, nonce=state_data.nonce
-    )
-
     full_redirect_uri = URL(redirect_uri).include_query_params(
-        **{
-            **request.query_params,
-            "state": state_data.state,
-            "code": authorization_data.to_jwt(),
-        }
+        **{**request.query_params, "state": state_data.state}
     )
+
+    if code and not error:
+        authorization_data = SnowflakeAuthorizationData(
+            code=code, scopes=state_data.scopes, nonce=state_data.nonce
+        )
+
+        full_redirect_uri = full_redirect_uri.include_query_params(
+            code=authorization_data.to_jwt()
+        )
 
     return RedirectResponse(full_redirect_uri, status_code=302)
 
