@@ -5,6 +5,13 @@ Notable changes to Snowflake will be documented here. Breaking changes are marke
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="1-2-0">1.2.1 — 2025-05-28</a>
+
+### Fixed
+
+- Snowflake will no longer incorrectly warn about `SNOWFLAKE_ALLOWED_HOSTS` being set to `*` when one of the
+the allowed hosts is a wildcard domain.
+
 ## <a name="1-2-0">1.2.0 — 2025-05-27</a>
 
 ### Changed
