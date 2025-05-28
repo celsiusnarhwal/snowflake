@@ -59,7 +59,7 @@ the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configu
 ```yaml
 services:
   snowflake:
-    image: ghcr.io/celsiusnarhwal/snowflake
+    image: ghcr.io/celsiusnarhwal/snowflake:latest
     container_name: snowflake
     restart: unless-stopped
     ports:
@@ -78,7 +78,7 @@ docker run --name snowflake \
 -p "8000:8000" \
 -e "SNOWFLAKE_ALLOWED_HOSTS=snowflake.example.com"
 -v "/some/directory/on/your/machine:/app/snowflake/data" \
-ghcr.io/celsiusnarhwal/snowflake
+ghcr.io/celsiusnarhwal/snowflake:latest
 ```
 
 ## Usage
