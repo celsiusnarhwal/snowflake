@@ -30,7 +30,7 @@ class SnowflakeSettings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_allowed_hosts(self):
-        if "*" in self.allowed_hosts:
+        if "*" in self.allowed_host_list:
             logging.getLogger("uvicorn").warning(
                 "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
             )
