@@ -84,6 +84,9 @@ async def authorize(
     """
     Authorization endpoint.
     """
+    if not {client_id, "*"}.intersection(settings().allowed_client_list):
+        raise HTTPException(400, f"Client ID {client_id} is not allowed")
+
     if not utils.is_secure_transport(redirect_uri):
         raise HTTPException(
             400,

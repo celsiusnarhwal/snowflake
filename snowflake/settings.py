@@ -22,6 +22,7 @@ class SnowflakeSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
     allowed_hosts: str = ""
+    allowed_clients: str = "*"
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
@@ -40,6 +41,10 @@ class SnowflakeSettings(BaseSettings):
     @property
     def allowed_host_list(self) -> list[str]:
         return self.allowed_hosts.split(",") + ["localhost", "127.0.0.1", "::1"]
+
+    @property
+    def allowed_client_list(self) -> list[str]:
+        return self.allowed_clients.split(",")
 
     @property
     def openapi_url(self):

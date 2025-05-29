@@ -11,25 +11,27 @@ Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
 <!-- TOC -->
+
 * [Snowflake](#snowflake)
-  * [Installation](#installation)
-    * [Docker Compose](#docker-compose)
-    * [Docker CLI](#docker-cli)
-  * [Usage](#usage)
-  * [OIDC Information](#oidc-information)
-    * [Endpoints](#endpoints)
-    * [Supported Scopes](#supported-scopes)
-    * [Supported Claims](#supported-claims)
-      * [Tokens](#tokens)
-      * [User Info](#user-info)
-    * [PKCE Support](#pkce-support)
-  * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
-  * [Configuration](#configuration)
+    * [Installation](#installation)
+        * [Docker Compose](#docker-compose)
+        * [Docker CLI](#docker-cli)
+    * [Usage](#usage)
+    * [OIDC Information](#oidc-information)
+        * [Endpoints](#endpoints)
+        * [Supported Scopes](#supported-scopes)
+        * [Supported Claims](#supported-claims)
+            * [Tokens](#tokens)
+            * [User Info](#user-info)
+        * [PKCE Support](#pkce-support)
+    * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
+    * [Configuration](#configuration)
+
 <!-- TOC -->
 
 ## Installation
 
-[Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set 
+[Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set
 the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
 
 > [!NOTE]
@@ -185,6 +187,7 @@ Snowflake is configurable through the following environment variables (all optio
 | **Environment Variable**      | **Type** | **Description**                                                                                                                                                                                                                                                                                                                           | **Default**               |
 |-------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | `SNOWFLAKE_ALLOWED_HOSTS`     | String   | A comma-separated list of hostnames at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended. Loopback addresses are always included.                                                                | `localhost,127.0.0.1,::1` |
+| `SNOWFLAKE_ALLOWED_CLIENTS`   | String   | A comma-separated list of Discord application client IDs. Snowflake will only fulfill authorization requests for client IDs in this list.<br/><br/>This can be set to `*` to allow all client IDs.                                                                                                                                        | `*`                       |
 | `SNOWFLAKE_BASE_PATH`         | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                   | `/`                       |
 | `SNOWFLAKE_FIX_REDIRECT_URIS` | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use. The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                    | `false`                   |                                                                                                                                                                                                                                                                                                                                   |               |              |
 | `SNOWFLAKE_TOKEN_LIFETIME`    | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1] Must resolve to a length of time greater than or equal to 60 seconds. | `1h`                      |

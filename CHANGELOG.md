@@ -2,15 +2,21 @@
 
 Notable changes to Snowflake will be documented here. Breaking changes are marked with a 🚩.
 
-
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
+
+## <a name="1-3-0">1.3.0 — 2025-05-29</a>
+
+### Added
+
+- The new `SNOWFLAKE_ALLOWED_CLIENTS` setting allows you to restrict the client IDs for which Snowflake will fulfill
+  authorization requests.
 
 ## <a name="1-2-1">1.2.1 — 2025-05-28</a>
 
 ### Fixed
 
 - Snowflake will no longer incorrectly warn about `SNOWFLAKE_ALLOWED_HOSTS` being set to `*` when one of the
-the allowed hosts is a wildcard domain.
+  the allowed hosts is a wildcard domain.
 
 ## <a name="1-2-0">1.2.0 — 2025-05-27</a>
 
