@@ -5,7 +5,7 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
-Conceptually, Snowflake itself is a spec-compliant OIDC provider and can be used like any other OIDC provider.
+Conceptually, Snowflake itself is an OIDC provider and can be used like any other OIDC provider.
 
 > [!IMPORTANT]
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
