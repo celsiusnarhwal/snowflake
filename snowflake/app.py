@@ -258,6 +258,19 @@ async def jwks():
     return security.get_jwks().as_dict()
 
 
+@app.get("/.well-known/webfinger")
+async def webfinger(resource: str, request: Request):
+    return {
+        "subject": resource,
+        "links": [
+            {
+                "rel": "http://openid.net/specs/connect/1.0/issuer",
+                "href": str(request.base_url),
+            }
+        ],
+    }
+
+
 @app.get("/.well-known/openid-configuration")
 async def discovery(request: Request):
     """
