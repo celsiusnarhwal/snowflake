@@ -11,22 +11,20 @@ Conceptually, Snowflake itself is an OIDC provider and can be used like any othe
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
 <!-- TOC -->
-
 * [Snowflake](#snowflake)
-    * [Installation](#installation)
-        * [Docker Compose](#docker-compose)
-        * [Docker CLI](#docker-cli)
-    * [Usage](#usage)
-    * [OIDC Information](#oidc-information)
-        * [Endpoints](#endpoints)
-        * [Supported Scopes](#supported-scopes)
-        * [Supported Claims](#supported-claims)
-            * [Tokens](#tokens)
-            * [User Info](#user-info)
-        * [PKCE Support](#pkce-support)
-    * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
-    * [Configuration](#configuration)
-
+  * [Installation](#installation)
+    * [Docker Compose](#docker-compose)
+    * [Docker CLI](#docker-cli)
+  * [Usage](#usage)
+  * [OIDC Information](#oidc-information)
+    * [Endpoints](#endpoints)
+    * [Supported Scopes](#supported-scopes)
+    * [Supported Claims](#supported-claims)
+      * [Tokens](#tokens)
+      * [User Info](#user-info)
+    * [PKCE Support](#pkce-support)
+  * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
+  * [Configuration](#configuration)
 <!-- TOC -->
 
 ## Installation
