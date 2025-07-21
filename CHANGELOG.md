@@ -8,7 +8,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-Snowflake now has a [WebFinger](https://en.wikipedia.org/wiki/WebFinger) endpoint at `/.well-known/webfinger`.
+- Snowflake now has a [WebFinger](https://en.wikipedia.org/wiki/WebFinger) endpoint at `/.well-known/webfinger`.
 
 ## <a name="1-3-0">1.3.0 — 2025-05-29</a>
 
