@@ -102,7 +102,7 @@ async def authorize(
             raise HTTPException(
                 400,
                 f"Redirect URI must be a subpath of {request.url_for('redirect')} "
-                f"(e.g., {fixed_redirect_uri}",
+                f"(e.g., {fixed_redirect_uri})",
             )
 
     scopes = set(scope_to_list(scope))
