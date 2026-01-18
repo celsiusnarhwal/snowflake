@@ -3,7 +3,7 @@ import typing as t
 import httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Form, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -121,15 +121,16 @@ async def authorize(
         scope=list_to_scope([v for k, v in scope_map.items() if k in scopes]),
     )
 
-    authorization_params = {
-        k: v for k, v in request.query_params.items() if k not in ["client_id", "scope"]
-    }
-
     state_data = SnowflakeStateData(state=state, scopes=scopes, nonce=nonce)
 
-    authorization_params.update(
-        {"state": state_data.to_jwt(), "redirect_uri": redirect_uri}
-    )
+    authorization_params = {
+        **request.query_params,
+        "state": state_data.to_jwt(),
+        "redirect_uri": redirect_uri,
+    }
+
+    for param in "client_id", "scope":
+        authorization_params.pop(param, None)
 
     authorization_url_dict = await discord.create_authorization_url(
         **authorization_params
@@ -181,31 +182,40 @@ async def callback(
 @app.post("/token")
 async def token(
     request: Request,
+    code: t.Annotated[str, Form()],
+    redirect_uri: t.Annotated[str, Form()],
     credentials: t.Annotated[
         HTTPBasicCredentials, Depends(HTTPBasic(auto_error=False))
     ],
+    client_id: t.Annotated[str, Form()] = None,
+    client_secret: t.Annotated[str, Form()] = None,
 ):
     """
     Token endpoint.
     """
-    params = dict(await request.form())
+    if (client_id or client_secret) and credentials:
+        raise HTTPException(
+            400,
+            "You cannot supply both client_secret_basic and client_secret_post "
+            "authentication at the same time",
+        )
 
-    if settings().fix_redirect_uris:
-        params["redirect_uri"] = utils.fix_redirect_uri(request, params["redirect_uri"])
+    client_id = client_id or credentials.username
+    client_secret = client_secret or credentials.password
 
-    client_id = params.pop("client_id", None)
-    client_secret = params.pop("client_secret", None)
+    authorization_data = SnowflakeAuthorizationData.from_jwt(code)
 
-    if credentials:
-        client_id = client_id or credentials.username
-        client_secret = client_secret or credentials.password
+    token_params = {
+        **(await request.form()),
+        "code": authorization_data.code,
+        "redirect_uri": utils.fix_redirect_uri(request, redirect_uri),
+    }
 
-    authorization_data = SnowflakeAuthorizationData.from_jwt(params.pop("code"))
+    for param in "client_id", "client_secret":
+        token_params.pop(param, None)
 
     discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
-    discord_token = await discord.fetch_access_token(
-        **params, code=authorization_data.code
-    )
+    discord_token = await discord.fetch_access_token(**token_params)
 
     return await security.create_tokens(
         request=request,
