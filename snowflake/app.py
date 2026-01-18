@@ -67,9 +67,9 @@ def root():
     raise HTTPException(404)
 
 
-@app.get("/ping", include_in_schema=False)
-def ping():
-    return "pong"
+@app.get("/health", include_in_schema=False)
+def health():
+    return
 
 
 @app.get("/authorize")
