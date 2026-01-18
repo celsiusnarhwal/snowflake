@@ -147,7 +147,7 @@ async def redirect():
 
 
 @app.get("/r/{redirect_uri:path}")
-async def redirect_to(
+async def callback(
     request: Request,
     redirect_uri: str,
     state: str,

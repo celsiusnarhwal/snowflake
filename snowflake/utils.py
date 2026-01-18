@@ -21,7 +21,7 @@ def fix_redirect_uri(request: Request, redirect_uri: str) -> str:
     Modify a redirect URI to be a subpath of the /r endpoint.
     """
     if not redirect_uri.startswith(f"{request.url_for('redirect')}/"):
-        return str(request.url_for("redirect_to", redirect_uri=redirect_uri))
+        return str(request.url_for("callback", redirect_uri=redirect_uri))
 
     return redirect_uri
 
