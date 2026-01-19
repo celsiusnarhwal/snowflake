@@ -10,7 +10,7 @@ from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
 from joserfc.jwt import Token
 
-from snowflake.jwt import SnowflakeAuthorizationData
+from snowflake.serializable import SnowflakeAuthorizationData
 from snowflake.settings import settings
 
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"

@@ -24,7 +24,7 @@ from scalar_fastapi import get_scalar_api_reference
 
 import snowflake.responses as r
 from snowflake import security, utils
-from snowflake.jwt import (
+from snowflake.serializable import (
     SnowflakeAuthorizationData,
     SnowflakeStateData,
 )
