@@ -162,12 +162,16 @@ async def callback(
     """
     state_data = SnowflakeStateData.from_jwt(state)
 
-    full_redirect_uri = URL(redirect_uri).include_query_params(
-        **{**request.query_params, "state": state_data.state}
+    full_redirect_uri = (
+        URL(redirect_uri)
+        .include_query_params(**request.query_params)
+        .remove_query_params("state")
     )
 
-    if not state_data.state:
-        full_redirect_uri = full_redirect_uri.remove_query_params("state")
+    if state_data.state:
+        full_redirect_uri = full_redirect_uri.include_query_params(
+            state=state_data.state
+        )
 
     if code and not error:
         authorization_data = SnowflakeAuthorizationData(
