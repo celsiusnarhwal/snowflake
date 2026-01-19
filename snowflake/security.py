@@ -110,7 +110,7 @@ async def create_tokens(
         guilds_resp.raise_for_status()
         guilds = guilds_resp.json()
 
-        access_claims["groups"] = [guild["id"] for guild in guilds]
+        access_claims["groups"] = [str(guild["id"]) for guild in guilds]
 
     identity_claims = {
         **access_claims,
