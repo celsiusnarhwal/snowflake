@@ -5,7 +5,7 @@ import httpx
 import typing_extensions as t
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from fastapi import Depends, FastAPI, Form, Query, Request
+from fastapi import Depends, FastAPI, Form, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -112,17 +112,21 @@ async def authorize(
     request: Request,
     client_id: str,
     scope: str,
-    redirect_uri: str = Query(
-        None,
-        description="Either this must point to Snowflake's [callback endpoint](#GET/r/{redirect_uri}) or "
-        "`SNOWFLAKE_FIX_REDIRECT_URIS` must be `true`.",
-    ),
-    state: str = Query(
-        None,
-        description="While optional, it is "
-        "[highly recommended](https://https://discord.com/developers/docs/topics/oauth2#state-and-security) "
-        "to supply this parameter.",
-    ),
+    redirect_uri: t.Annotated[
+        str,
+        Field(
+            description="Either this must point to Snowflake's [callback endpoint](#GET/r/{redirect_uri}) or "
+            "`SNOWFLAKE_FIX_REDIRECT_URIS` must be `true`.",
+        ),
+    ] = None,
+    state: t.Annotated[
+        str,
+        Field(
+            description="While optional, it is "
+            "[highly recommended](https://https://discord.com/developers/docs/topics/oauth2#state-and-security) "
+            "to supply this parameter.",
+        ),
+    ] = None,
     nonce: str = None,
 ):
     """
