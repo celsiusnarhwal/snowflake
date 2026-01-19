@@ -2,14 +2,17 @@ import logging
 import typing as t
 from functools import lru_cache
 
+import dns.name
 import durationpy
 from pydantic import (
     BeforeValidator,
     Field,
+    field_validator,
     model_validator,
 )
 from pydantic_settings import (
     BaseSettings,
+    NoDecode,
     SettingsConfigDict,
 )
 
@@ -27,7 +30,27 @@ class SnowflakeSettings(BaseSettings):
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
     root_redirect: t.Literal["repo", "settings", "off"] = "repo"
+    allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
+        default_factory=list, validate_default=False
+    )
     enable_swagger: bool = False
+
+    @field_validator("allowed_webfinger_hosts", mode="before")
+    @classmethod
+    def validate_allowed_webfinger_hosts(cls, v: str) -> list[dns.name.Name]:
+        hosts = []
+
+        for i in v.split(","):
+            name = dns.name.from_text(i)
+
+            if name.is_wild() and len(name) < 3:
+                raise ValueError(
+                    "Pure wildcards ('*') are not permitted in SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS"
+                )
+
+            hosts.append(name)
+
+        return hosts
 
     @model_validator(mode="after")
     def validate_allowed_hosts(self):
@@ -41,6 +64,10 @@ class SnowflakeSettings(BaseSettings):
     @property
     def allowed_host_list(self) -> list[str]:
         return self.allowed_hosts.split(",") + ["localhost", "127.0.0.1", "::1"]
+
+    @property
+    def allowed_webfinger_host_list(self) -> list[str]:
+        return self.allowed_webfinger_hosts.split(",")
 
     @property
     def allowed_client_list(self) -> list[str]:

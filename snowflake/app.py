@@ -1,5 +1,6 @@
 import typing as t
 
+import dns.name
 import httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
@@ -15,6 +16,7 @@ from fastapi.security import (
     HTTPBearer,
 )
 from joserfc.errors import JoseError
+from pydantic import AfterValidator, Field, validate_email
 
 from snowflake import security, utils
 from snowflake.settings import settings
@@ -269,16 +271,38 @@ async def jwks():
 
 
 @app.get("/.well-known/webfinger")
-async def webfinger(resource: str, request: Request):
-    return {
-        "subject": resource,
-        "links": [
-            {
-                "rel": "http://openid.net/specs/connect/1.0/issuer",
-                "href": str(request.base_url),
-            }
-        ],
-    }
+async def webfinger(
+    resource: t.Annotated[
+        str,
+        Field(pattern="acct:\S+"),
+        AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
+    ],
+    request: Request,
+):
+    """
+    WebFinger endpoint.
+
+    See Also
+        https://webfinger.net/
+
+    """
+    domain = dns.name.from_text(resource.split("@")[1])
+
+    if any(
+        domain == name or name.is_wild() and domain.is_subdomain(name.parent())
+        for name in settings().allowed_webfinger_hosts
+    ):
+        return {
+            "subject": resource,
+            "links": [
+                {
+                    "rel": "http://openid.net/specs/connect/1.0/issuer",
+                    "href": str(request.base_url),
+                }
+            ],
+        }
+
+    raise HTTPException(404)
 
 
 @app.get("/.well-known/openid-configuration")
