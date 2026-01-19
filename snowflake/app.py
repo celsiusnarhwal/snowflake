@@ -1,10 +1,9 @@
-import typing as t
-
 import dns.name
 import httpx
+import typing_extensions as t
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from fastapi import Depends, FastAPI, Form, Request
+from fastapi import Depends, FastAPI, Form, Query, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -19,12 +18,13 @@ from joserfc.errors import JoseError
 from pydantic import AfterValidator, Field, validate_email
 from scalar_fastapi import get_scalar_api_reference
 
+import snowflake.responses as r
 from snowflake import security, utils
-from snowflake.settings import settings
-from snowflake.types import (
+from snowflake.jwt import (
     SnowflakeAuthorizationData,
     SnowflakeStateData,
 )
+from snowflake.settings import settings
 
 app = FastAPI(
     title="Snowflake",
@@ -32,6 +32,7 @@ app = FastAPI(
     "[github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
     root_path=settings().base_path,
     docs_url=None,
+    redoc_url=None,
     openapi_url="/openapi.json" if settings().enable_docs else None,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_hosts)
@@ -71,8 +72,11 @@ def root():
     raise HTTPException(404)
 
 
-@app.get("/health", include_in_schema=False)
+@app.get("/health", summary="Healthcheck")
 def health():
+    """
+    This endpoint returns an HTTP 200 status code alongside an empty response body and does nothing else.
+    """
     return
 
 
@@ -89,13 +93,27 @@ async def docs():
     raise HTTPException(404)
 
 
-@app.get("/authorize", summary="Authorization", status_code=302)
+@app.get(
+    "/authorize",
+    summary="Authorization",
+    status_code=302,
+    responses={400: {"summary": httpx.codes.get_reason_phrase(400)}},
+)
 async def authorize(
     request: Request,
     client_id: str,
     scope: str,
-    redirect_uri: str,
-    state: str = None,
+    redirect_uri: str = Query(
+        None,
+        description="Either this must point to Snowflake's [callback endpoint](#GET/r/{redirect_uri}) or "
+        "`SNOWFLAKE_FIX_REDIRECT_URIS` must be `true`.",
+    ),
+    state: str = Query(
+        None,
+        description="While optional, it is "
+        "[highly recommended](https://https://discord.com/developers/docs/topics/oauth2#state-and-security) "
+        "to supply this parameter.",
+    ),
     nonce: str = None,
 ):
     """
@@ -173,7 +191,7 @@ async def callback(
     error: str = None,
 ):
     """
-    Discord should redirect to this endpoint upon successful authorization.
+    Discord must redirect to this endpoint upon successful authorization.
     """
     state_data = SnowflakeStateData.from_jwt(state)
 
@@ -200,7 +218,12 @@ async def callback(
     return RedirectResponse(full_redirect_uri, status_code=302)
 
 
-@app.post("/token", summary="Token")
+@app.post(
+    "/token",
+    summary="Token",
+    response_model=r.TokenResponse,
+    responses={400: {"summary": httpx.codes.get_reason_phrase(400)}},
+)
 async def token(
     request: Request,
     code: t.Annotated[str, Form()],
@@ -213,6 +236,9 @@ async def token(
 ):
     """
     Clients exchange authorization codes for tokens at this endpoint.
+
+    The client ID and client secret may be provided via either form fields or HTTP Basic authentication, but not both.
+    Clients using the PKCE-enabled authorization flow may omit the client secret entirely.
     """
     if (client_id or client_secret) and credentials:
         raise HTTPException(
@@ -223,6 +249,9 @@ async def token(
 
     client_id = client_id or credentials.username
     client_secret = client_secret or credentials.password
+
+    if not client_id:
+        raise HTTPException(400, "Client ID is required")
 
     authorization_data = SnowflakeAuthorizationData.from_jwt(code)
 
@@ -246,13 +275,18 @@ async def token(
     )
 
 
-@app.get("/userinfo", name="User Info")
+@app.get("/userinfo", summary="User Info", response_model=r.UserInfoResponse)
 async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
     """
-    This endpoint recieves an access token in the `Authorization` header and returns its claims.
+    This endpoint recieves an access token in via HTTP Bearer authentication and returns its claims. It is recommended
+    that clients obtain user claims by decoding the ID token directly rather than using this endpoint; the data is the
+    same either way.
+
+    Only `sub` is guaranteed to be present in the response. The presence of other claims is dependent on the scopes
+    the token was granted with.
     """
     async with httpx.AsyncClient() as client:
         resp = await client.get(str(request.url_for("discovery")))
@@ -281,7 +315,7 @@ async def userinfo(
     return userinfo_claims
 
 
-@app.get("/.well-known/jwks.json", summary="JWKS")
+@app.get("/.well-known/jwks.json", summary="JWKS", response_model=r.JWKSResponse)
 async def jwks():
     """
     This endpoint returns the public JSON Web Key Set.
@@ -289,17 +323,25 @@ async def jwks():
     return security.get_jwks().as_dict()
 
 
-@app.get("/.well-known/webfinger", summary="WebFinger")
+@app.get(
+    "/.well-known/webfinger",
+    summary="WebFinger",
+    response_model=r.WebFingerResponse,
+    responses={404: {"summary": httpx.codes.get_reason_phrase(404)}},
+)
 async def webfinger(
+    request: Request,
     resource: t.Annotated[
         str,
         Field(pattern="acct:\S+"),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
-    ],
-    request: Request,
+    ] = Query(
+        description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
+        "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`."
+    ),
 ):
     """
-    [WebFinger](https://webfinger.net) endpoint.
+    This endpoint implements limited support for the [WebFinger](https://webfinger.net) protocol.
     """
     domain = dns.name.from_text(resource.split("@")[1])
 
@@ -320,10 +362,14 @@ async def webfinger(
     raise HTTPException(404)
 
 
-@app.get("/.well-known/openid-configuration", summary="Discovery")
+@app.get(
+    "/.well-known/openid-configuration",
+    summary="Discovery",
+    response_model=r.DiscoveryResponse,
+)
 async def discovery(request: Request):
     """
-    [OpenID Connect discovery](https://openid.net/specs/openid-connect-discovery-1_0.html) endpoint.
+    This endpoint implements [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html).
     """
     return {
         "issuer": str(request.base_url),
