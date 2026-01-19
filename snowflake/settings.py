@@ -36,7 +36,7 @@ class SnowflakeSettings(BaseSettings):
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         default_factory=list, validate_default=False
     )
-    enable_swagger: bool = False
+    enable_docs: bool = False
 
     @field_validator("allowed_hosts", mode="before")
     @classmethod
@@ -74,7 +74,7 @@ class SnowflakeSettings(BaseSettings):
 
     @property
     def openapi_url(self):
-        return "/openapi.json" if self.enable_swagger else None
+        return "/openapi.json" if self.enable_docs else None
 
     @property
     def root_redirect_url(self):

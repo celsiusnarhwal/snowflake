@@ -32,7 +32,7 @@ app = FastAPI(
     "[github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
     root_path=settings().base_path,
     docs_url=None,
-    openapi_url="/openapi.json" if settings().enable_swagger else None,
+    openapi_url="/openapi.json" if settings().enable_docs else None,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_hosts)
 
@@ -78,7 +78,7 @@ def health():
 
 @app.get("/docs", include_in_schema=False)
 async def docs():
-    if settings().enable_swagger:
+    if settings().enable_docs:
         return get_scalar_api_reference(
             title="Snowflake",
             openapi_url=app.openapi_url,
