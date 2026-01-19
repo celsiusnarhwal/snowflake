@@ -12,4 +12,6 @@ COPY . /app/
 
 HEALTHCHECK CMD curl -fs localhost:${UVICORN_PORT}/health
 
+EXPOSE 8000
+
 CMD ["uv", "run", "uvicorn", "snowflake.app:app"]
