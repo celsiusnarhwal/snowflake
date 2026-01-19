@@ -193,7 +193,6 @@ Snowflake is configurable through the following environment variables (all optio
 | `SNOWFLAKE_ROOT_REDIRECT`     | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `off` responds with an HTTP 404 error.                                                                        | `repo`                    |
 | `SNOWFLAKE_ENABLE_SWAGGER`    | Boolean  | Whether to serve Snowflake's [Swagger UI](https://github.com/swagger-api/swagger-ui) documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.                                                                        | `false`                   |
 
-Additionally, Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/)
-if they are set.
+Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 
 [^1]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.

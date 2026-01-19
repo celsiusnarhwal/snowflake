@@ -1,6 +1,6 @@
 # Changelog[^1]
 
-Notable changes to Snowflake will be documented here. Breaking changes are marked with a 🚩.
+Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
