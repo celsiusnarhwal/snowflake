@@ -1,4 +1,6 @@
-FROM ghcr.io/astral-sh/uv:0.6-debian
+FROM ghcr.io/astral-sh/uv:0.9-debian
+
+LABEL org.opencontainers.image.authors="celsius narhwal <hello@celsiusnarhwal.dev>"
 
 ENV UVICORN_HOST=0.0.0.0
 ENV UVICORN_PORT=8000
