@@ -375,6 +375,14 @@ async def webfinger(
         ),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
     ],
+    rel: t.Annotated[
+        str,
+        Query(
+            title="Link Relation",
+            description="The `links` array in the response will be empty if this is anything other than its "
+            "default value.",
+        ),
+    ] = "http://openid.net/specs/connect/1.0/issuer",
 ):
     """
     This endpoint implements limited support for the [WebFinger](https://en.wikipedia.org/wiki/WebFinger) protocol.
@@ -385,15 +393,12 @@ async def webfinger(
         domain == name or name.is_wild() and domain.is_subdomain(name.parent())
         for name in settings().allowed_webfinger_hosts
     ):
-        return {
-            "subject": resource,
-            "links": [
-                {
-                    "rel": "http://openid.net/specs/connect/1.0/issuer",
-                    "href": str(request.base_url),
-                }
-            ],
-        }
+        response = {"subject": resource, "links": []}
+
+        if rel == "http://openid.net/specs/connect/1.0/issuer":
+            response["links"].append({"rel": rel, "href": str(request.base_url)})
+
+        return response
 
     raise HTTPException(404)
 
