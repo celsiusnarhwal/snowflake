@@ -32,7 +32,7 @@ app = FastAPI(
     root_path=settings().base_path,
     openapi_url=settings().openapi_url,
 )
-app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_host_list)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_hosts)
 
 
 @app.middleware("http")
@@ -86,7 +86,7 @@ async def authorize(
     """
     Authorization endpoint.
     """
-    if not {client_id, "*"}.intersection(settings().allowed_client_list):
+    if not {client_id, "*"}.intersection(settings().allowed_clients):
         raise HTTPException(400, f"Client ID {client_id} is not allowed")
 
     if not utils.is_secure_transport(redirect_uri):

@@ -8,7 +8,6 @@ from pydantic import (
     BeforeValidator,
     Field,
     field_validator,
-    model_validator,
 )
 from pydantic_settings import (
     BaseSettings,
@@ -24,8 +23,12 @@ Duration = t.Annotated[
 class SnowflakeSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
 
-    allowed_hosts: str = ""
-    allowed_clients: str = "*"
+    allowed_hosts: t.Annotated[list[str], NoDecode] = Field(
+        default_factory=list, validate_default=False
+    )
+    allowed_clients: t.Annotated[list[str], NoDecode] = Field(
+        default=["*"], validate_default=False
+    )
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
@@ -34,6 +37,23 @@ class SnowflakeSettings(BaseSettings):
         default_factory=list, validate_default=False
     )
     enable_swagger: bool = False
+
+    @field_validator("allowed_hosts", mode="before")
+    @classmethod
+    def validate_allowed_hosts(cls, v: str) -> list[str]:
+        hosts = v.split(",")
+
+        if "*" in hosts:
+            logging.getLogger("uvicorn").warning(
+                "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
+            )
+
+        return hosts + ["localhost", "127.0.0.1", "::1"]
+
+    @field_validator("allowed_clients", mode="before")
+    @classmethod
+    def validate_allowed_clients(cls, v: str) -> list[str]:
+        return v.split(",")
 
     @field_validator("allowed_webfinger_hosts", mode="before")
     @classmethod
@@ -51,27 +71,6 @@ class SnowflakeSettings(BaseSettings):
             hosts.append(name)
 
         return hosts
-
-    @model_validator(mode="after")
-    def validate_allowed_hosts(self):
-        if "*" in self.allowed_host_list:
-            logging.getLogger("uvicorn").warning(
-                "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
-            )
-
-        return self
-
-    @property
-    def allowed_host_list(self) -> list[str]:
-        return self.allowed_hosts.split(",") + ["localhost", "127.0.0.1", "::1"]
-
-    @property
-    def allowed_webfinger_host_list(self) -> list[str]:
-        return self.allowed_webfinger_hosts.split(",")
-
-    @property
-    def allowed_client_list(self) -> list[str]:
-        return self.allowed_clients.split(",")
 
     @property
     def openapi_url(self):
