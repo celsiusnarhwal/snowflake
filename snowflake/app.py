@@ -76,11 +76,17 @@ async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError)
 
 
 @app.get("/", include_in_schema=False)
-def root():
-    if settings().root_redirect_url:
-        return RedirectResponse(settings().root_redirect_url)
+def root(request: Request):
+    if settings().root_redirect == "off":
+        raise HTTPException(404)
 
-    raise HTTPException(404)
+    redirects = {
+        "repo": "https://github.com/celsiusnarhwal/snowflake",
+        "settings": "https://discord.com/settings/account",
+        "docs": request.url_for("docs"),
+    }
+
+    return RedirectResponse(redirects[settings().root_redirect])
 
 
 @app.get("/docs", include_in_schema=False)

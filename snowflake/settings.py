@@ -10,6 +10,7 @@ from pydantic import (
     Field,
     field_validator,
 )
+from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import (
     BaseSettings,
     NoDecode,
@@ -39,7 +40,7 @@ class SnowflakeSettings(BaseSettings):
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
-    root_redirect: t.Literal["repo", "settings", "off"] = "repo"
+    root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         default_factory=list, validate_default=False
     )
@@ -80,6 +81,11 @@ class SnowflakeSettings(BaseSettings):
             hosts.append(name)
 
         return hosts
+
+    @field_validator("enable_docs")
+    @classmethod
+    def validate_enable_docs(cls, v: bool, info: ValidationInfo) -> bool:
+        return v or info.data["root_redirect"] == "docs"
 
     @property
     def root_redirect_url(self):
