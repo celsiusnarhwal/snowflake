@@ -73,10 +73,6 @@ class SnowflakeSettings(BaseSettings):
         return hosts
 
     @property
-    def openapi_url(self):
-        return "/openapi.json" if self.enable_docs else None
-
-    @property
     def root_redirect_url(self):
         return {
             "repo": "https://github.com/celsiusnarhwal/snowflake",
