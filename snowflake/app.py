@@ -332,6 +332,7 @@ async def jwks():
     return security.get_jwks().as_dict()
 
 
+# TODO fix validation issue with acct: pattern
 @app.get(
     "/.well-known/webfinger",
     summary="WebFinger",
@@ -342,12 +343,13 @@ async def webfinger(
     request: Request,
     resource: t.Annotated[
         str,
-        Field(pattern="acct:\S+"),
+        Field(
+            pattern="acct:\S+",
+            description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
+            "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`.",
+        ),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
-    ] = Query(
-        description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
-        "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`."
-    ),
+    ],
 ):
     """
     This endpoint implements limited support for the [WebFinger](https://en.wikipedia.org/wiki/WebFinger) protocol.
