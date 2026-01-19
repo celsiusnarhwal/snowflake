@@ -96,7 +96,7 @@ async def docs():
             title="Snowflake",
             openapi_url=app.openapi_url,
             hide_models=True,
-            scalar_proxy_url="https://proxy.scalar.com",
+            # scalar_proxy_url="https://proxy.scalar.com",
         )
 
     raise HTTPException(404)
