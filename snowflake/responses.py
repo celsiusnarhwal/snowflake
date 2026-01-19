@@ -21,24 +21,22 @@ class UserInfoResponse(BaseModel):
     groups: list[str] = None
 
 
-class JWK(BaseModel):
-    n: str
-    e: str
-    kty: t.Literal["RSA"]
-    kid: str
-    use: t.Literal["sig"]
-
-
 class JWKSResponse(BaseModel):
+    class JWK(BaseModel):
+        n: str
+        e: str
+        kty: t.Literal["RSA"]
+        kid: str
+        use: t.Literal["sig"]
+
     keys: list[JWK]
 
 
-class WebFingerLink(BaseModel):
-    rel: t.Literal["http://openid.net/specs/connect/1.0/issuer"]
-    href: HttpUrl
-
-
 class WebFingerResponse(BaseModel):
+    class WebFingerLink(BaseModel):
+        rel: t.Literal["http://openid.net/specs/connect/1.0/issuer"]
+        href: HttpUrl
+
     subject: str
     links: list[WebFingerLink]
 
