@@ -65,7 +65,7 @@ class SnowflakeSettings(BaseSettings):
 
             if name.is_wild() and len(name) < 3:
                 raise ValueError(
-                    "Pure wildcards ('*') are not permitted in SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS"
+                    "The unqualified wildcard ('*') are not permitted in SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS"
                 )
 
             hosts.append(name)
