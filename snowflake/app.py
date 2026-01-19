@@ -19,7 +19,7 @@ from fastapi.security import (
     HTTPBearer,
 )
 from joserfc.errors import JoseError
-from pydantic import AfterValidator, Field, validate_email
+from pydantic import AfterValidator, BaseModel, Field, validate_email
 from scalar_fastapi import get_scalar_api_reference
 
 import snowflake.responses as r
@@ -116,8 +116,9 @@ def health():
 @app.get(
     "/authorize",
     summary="Authorization",
+    response_class=RedirectResponse,
     status_code=302,
-    responses={400: {"summary": httpx.codes.get_reason_phrase(400)}},
+    responses={400: utils.get_response_code_documentation(400)},
 )
 async def authorize(
     request: Request,
@@ -214,7 +215,12 @@ async def redirect():
     raise HTTPException(403)
 
 
-@app.get("/r/{redirect_uri:path}", summary="Callback", status_code=302)
+@app.get(
+    "/r/{redirect_uri:path}",
+    summary="Callback",
+    response_class=RedirectResponse,
+    status_code=302,
+)
 async def callback(
     request: Request,
     redirect_uri: t.Annotated[str, PathParam(title="Redirect URI")],
@@ -254,7 +260,7 @@ async def callback(
     "/token",
     summary="Token",
     response_model=r.TokenResponse,
-    responses={400: {"summary": httpx.codes.get_reason_phrase(400)}},
+    responses={400: utils.get_response_code_documentation(400)},
 )
 async def token(
     request: Request,
@@ -307,13 +313,17 @@ async def token(
     )
 
 
+class UnauthorizedMessage(BaseModel):
+    detail: str = "Unauthorized"
+
+
 @app.get(
     "/userinfo",
     summary="User Info",
     response_model=r.UserInfoResponse,
     responses={
-        401: {"summary": httpx.codes.get_reason_phrase(401)},
-        403: {"summary": httpx.codes.get_reason_phrase(403)},
+        404: utils.get_response_code_documentation(404),
+        403: utils.get_response_code_documentation(403),
     },
 )
 async def userinfo(
@@ -375,7 +385,7 @@ async def jwks():
     "/.well-known/webfinger",
     summary="WebFinger",
     response_model=r.WebFingerResponse,
-    responses={404: {"summary": httpx.codes.get_reason_phrase(404)}},
+    responses={404: utils.get_response_code_documentation(404)},
 )
 async def webfinger(
     request: Request,

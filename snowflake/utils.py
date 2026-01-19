@@ -1,5 +1,8 @@
+import httpx
+import pydantic
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Request
+from pydantic import ConfigDict
 from starlette.datastructures import URL
 
 
@@ -34,3 +37,21 @@ def is_secure_transport(url: str | URL) -> bool:
         url = URL(url)
 
     return url.scheme == "https" or url.hostname in ["localhost", "127.0.0.1", "::1"]
+
+
+def get_response_code_documentation(code: int) -> dict:
+    """
+    Return generic OpenAPI response documentation for an HTTP status code.
+    """
+    reason_phrase = httpx.codes.get_reason_phrase(code)
+
+    model = pydantic.create_model(
+        f"HTTP{code}Error",
+        __config__=ConfigDict(title=f"HTTP {code} Error"),
+        detail=(str, reason_phrase),
+    )
+
+    return {
+        "summary": reason_phrase,
+        "model": model,
+    }
