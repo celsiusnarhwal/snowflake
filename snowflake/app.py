@@ -329,7 +329,7 @@ async def userinfo(
     ],
 ):
     """
-    This endpoint recieves an access token in via HTTP Bearer authentication and returns its claims. It is recommended
+    This endpoint recieves an access token via HTTP Bearer authentication and returns its claims. It is recommended
     that clients obtain user claims by decoding the ID token directly rather than using this endpoint; the data is the
     same either way.
 
