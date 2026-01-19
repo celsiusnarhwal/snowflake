@@ -88,6 +88,7 @@ async def docs():
             title="Snowflake",
             openapi_url=app.openapi_url,
             hide_models=True,
+            hide_client_button=True,
         )
 
     raise HTTPException(404)
