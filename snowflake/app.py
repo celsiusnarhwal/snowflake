@@ -350,7 +350,7 @@ async def webfinger(
     ),
 ):
     """
-    This endpoint implements limited support for the [WebFinger](https://webfinger.net) protocol.
+    This endpoint implements limited support for the [WebFinger](https://en.wikipedia.org/wiki/WebFinger) protocol.
     """
     domain = dns.name.from_text(resource.split("@")[1])
 
