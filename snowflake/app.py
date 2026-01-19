@@ -17,6 +17,7 @@ from fastapi.security import (
 )
 from joserfc.errors import JoseError
 from pydantic import AfterValidator, Field, validate_email
+from scalar_fastapi import get_scalar_api_reference
 
 from snowflake import security, utils
 from snowflake.settings import settings
@@ -30,7 +31,8 @@ app = FastAPI(
     description="Snowflake lets you use Discord as an OpenID Connect provider. "
     "[github.com/celsiusnarhwal/snowflake](https://github.com/celsiusnarhwal/snowflake)",
     root_path=settings().base_path,
-    openapi_url=settings().openapi_url,
+    docs_url=None,
+    openapi_url="/openapi.json" if settings().enable_swagger else None,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_hosts)
 
@@ -74,7 +76,20 @@ def health():
     return
 
 
-@app.get("/authorize")
+@app.get("/docs", include_in_schema=False)
+async def docs():
+    if settings().enable_swagger:
+        return get_scalar_api_reference(
+            title="Snowflake",
+            openapi_url=app.openapi_url,
+            hide_models=True,
+            scalar_proxy_url="https://proxy.scalar.com",
+        )
+
+    raise HTTPException(404)
+
+
+@app.get("/authorize", summary="Authorization", status_code=302)
 async def authorize(
     request: Request,
     client_id: str,
@@ -84,7 +99,7 @@ async def authorize(
     nonce: str = None,
 ):
     """
-    Authorization endpoint.
+    Clients are directed to this endpoint to begin the authorization process.
     """
     if not {client_id, "*"}.intersection(settings().allowed_clients):
         raise HTTPException(400, f"Client ID {client_id} is not allowed")
@@ -149,7 +164,7 @@ async def redirect():
     raise HTTPException(403)
 
 
-@app.get("/r/{redirect_uri:path}")
+@app.get("/r/{redirect_uri:path}", summary="Callback", status_code=302)
 async def callback(
     request: Request,
     redirect_uri: str,
@@ -158,7 +173,7 @@ async def callback(
     error: str = None,
 ):
     """
-    Callback endpoint.
+    Discord should redirect to this endpoint upon successful authorization.
     """
     state_data = SnowflakeStateData.from_jwt(state)
 
@@ -185,7 +200,7 @@ async def callback(
     return RedirectResponse(full_redirect_uri, status_code=302)
 
 
-@app.post("/token")
+@app.post("/token", summary="Token")
 async def token(
     request: Request,
     code: t.Annotated[str, Form()],
@@ -197,7 +212,7 @@ async def token(
     client_secret: t.Annotated[str, Form()] = None,
 ):
     """
-    Token endpoint.
+    Clients exchange authorization codes for tokens at this endpoint.
     """
     if (client_id or client_secret) and credentials:
         raise HTTPException(
@@ -231,13 +246,13 @@ async def token(
     )
 
 
-@app.get("/userinfo")
+@app.get("/userinfo", name="User Info")
 async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
 ):
     """
-    User info endpoint.
+    This endpoint recieves an access token in the `Authorization` header and returns its claims.
     """
     async with httpx.AsyncClient() as client:
         resp = await client.get(str(request.url_for("discovery")))
@@ -266,15 +281,15 @@ async def userinfo(
     return userinfo_claims
 
 
-@app.get("/.well-known/jwks.json")
+@app.get("/.well-known/jwks.json", summary="JWKS")
 async def jwks():
     """
-    JWKS endpoint.
+    This endpoint returns the public JSON Web Key Set.
     """
     return security.get_jwks().as_dict()
 
 
-@app.get("/.well-known/webfinger")
+@app.get("/.well-known/webfinger", summary="WebFinger")
 async def webfinger(
     resource: t.Annotated[
         str,
@@ -284,11 +299,7 @@ async def webfinger(
     request: Request,
 ):
     """
-    WebFinger endpoint.
-
-    See Also
-        https://webfinger.net/
-
+    [WebFinger](https://webfinger.net) endpoint.
     """
     domain = dns.name.from_text(resource.split("@")[1])
 
@@ -309,13 +320,10 @@ async def webfinger(
     raise HTTPException(404)
 
 
-@app.get("/.well-known/openid-configuration")
+@app.get("/.well-known/openid-configuration", summary="Discovery")
 async def discovery(request: Request):
     """
-    OpenID Connect discovery endpoint.
-
-    See Also
-        https://openid.net/specs/openid-connect-discovery-1_0.html
+    [OpenID Connect discovery](https://openid.net/specs/openid-connect-discovery-1_0.html) endpoint.
     """
     return {
         "issuer": str(request.base_url),

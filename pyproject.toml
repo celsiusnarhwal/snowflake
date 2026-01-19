@@ -12,6 +12,7 @@ dependencies = [
     "joserfc>=1.0.4",
     "pydantic-settings>=2.9.1",
     "pydantic[email]>=2.11.4",
+    "scalar-fastapi>=1.6.0",
 ]
 dynamic = ["version"]
 

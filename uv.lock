@@ -525,6 +525,15 @@ wheels = [
 ]
 
 [[package]]
+name = "scalar-fastapi"
+version = "1.6.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4d/c5/bc6af52b86758420067e9ecfb8ee6b1f85191e61ca22cd54a7726574aee4/scalar_fastapi-1.6.0.tar.gz", hash = "sha256:3ddeb7c6733f97bbeddf05742594259ddcd01ee1468ee3c9724fb90b7e1d5eee", size = 7772, upload-time = "2026-01-07T20:11:26.848Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8c/ba/2e4d8ef2a4fb999e96884694aa86180e228d78a0d27d89e771d65d8f5f5b/scalar_fastapi-1.6.0-py3-none-any.whl", hash = "sha256:dced90a726c0408aee96217b3aa30424fda0ab4cb2f476753f8592f8d73a9edf", size = 7129, upload-time = "2026-01-07T20:11:25.816Z" },
+]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 source = { registry = "https://pypi.org/simple" }
@@ -553,6 +562,7 @@ dependencies = [
     { name = "joserfc" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
+    { name = "scalar-fastapi" },
 ]
 
 [package.metadata]
@@ -564,6 +574,7 @@ requires-dist = [
     { name = "joserfc", specifier = ">=1.0.4" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.11.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
+    { name = "scalar-fastapi", specifier = ">=1.6.0" },
 ]
 
 [[package]]
