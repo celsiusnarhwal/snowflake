@@ -163,7 +163,7 @@ The `/userinfo` endpoint returns the same claims as access and ID tokens but doe
 ### PKCE Support
 
 For applications that cannot securely store a client secret, Snowflake supports the
-[PKCE-enhanced authorization code flow](https://auth0.com/docs/get-started/authentication-and-authorization-flow/authorization-code-flow-with-pkce).
+[PKCE-enhanced authorization code flow](https://datatracker.ietf.org/doc/html/rfc7636).
 Make sure the `Public Client` option is enabled in your Discord application's OAuth2 settings.
 
 ## HTTPS and Reverse Proxies
