@@ -108,14 +108,14 @@ Frankly, if you're reading this then you should already know how this works.
 
 ### Endpoints
 
-| **Endpoint**     | **Path**                            |
-|------------------|-------------------------------------|
-| Authorization    | `/authorize`                        |
-| Token            | `/token`                            |
-| User Info        | `/userinfo`                         |
-| JSON Web Key Set | `/.well-known/jwks.json`            |
-| OIDC Discovery   | `/.well-known/openid-configuration` |
-| WebFinger        | `/.well-known/webfinger`            |
+| **Endpoint**                                         | **Path**                            |
+|------------------------------------------------------|-------------------------------------|
+| Authorization                                        | `/authorize`                        |
+| Token                                                | `/token`                            |
+| User Info                                            | `/userinfo`                         |
+| JSON Web Key Set                                     | `/.well-known/jwks.json`            |
+| OIDC Discovery                                       | `/.well-known/openid-configuration` |
+| [WebFinger](https://en.wikipedia.org/wiki/WebFinger) | `/.well-known/webfinger`            |
 
 ### Supported Scopes
 
