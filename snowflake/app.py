@@ -96,7 +96,6 @@ async def docs():
             title="Snowflake",
             openapi_url=app.openapi_url,
             hide_models=True,
-            scalar_proxy_url="https://proxy.scalar.com",
         )
 
     raise HTTPException(404)
@@ -288,7 +287,15 @@ async def token(
     )
 
 
-@app.get("/userinfo", summary="User Info", response_model=r.UserInfoResponse)
+@app.get(
+    "/userinfo",
+    summary="User Info",
+    response_model=r.UserInfoResponse,
+    responses={
+        401: {"summary": httpx.codes.get_reason_phrase(401)},
+        403: {"summary": httpx.codes.get_reason_phrase(403)},
+    },
+)
 async def userinfo(
     request: Request,
     credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
