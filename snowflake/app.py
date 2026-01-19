@@ -9,6 +9,8 @@ from fastapi import Depends, FastAPI, Form, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.params import Path as PathParam
+from fastapi.params import Query
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.security import (
     HTTPAuthorizationCredentials,
@@ -113,11 +115,12 @@ def health():
 )
 async def authorize(
     request: Request,
-    client_id: str,
+    client_id: t.Annotated[str, Query(title="Client ID")],
     scope: str,
     redirect_uri: t.Annotated[
         str,
-        Field(
+        Query(
+            title="Redirect URI",
             description="Either this must point to Snowflake's [callback endpoint](#GET/r/{redirect_uri}) or "
             "`SNOWFLAKE_FIX_REDIRECT_URIS` must be `true`.",
         ),
@@ -201,9 +204,9 @@ async def redirect():
 @app.get("/r/{redirect_uri:path}", summary="Callback", status_code=302)
 async def callback(
     request: Request,
-    redirect_uri: str,
+    redirect_uri: t.Annotated[str, PathParam(title="Redirect URI")],
     state: str,
-    code: str = None,
+    code: t.Annotated[str, Query(title="Authorization Code")] = None,
     error: str = None,
 ):
     """
@@ -242,12 +245,12 @@ async def callback(
 )
 async def token(
     request: Request,
-    code: t.Annotated[str, Form()],
-    redirect_uri: t.Annotated[str, Form()],
+    code: t.Annotated[str, Form(title="Authorization Code")],
+    redirect_uri: t.Annotated[str, Form(title="Redirect URI")],
     credentials: t.Annotated[
         HTTPBasicCredentials, Depends(HTTPBasic(auto_error=False))
     ],
-    client_id: t.Annotated[str, Form()] = None,
+    client_id: t.Annotated[str, Form(title="Client ID")] = None,
     client_secret: t.Annotated[str, Form()] = None,
 ):
     """
@@ -302,7 +305,15 @@ async def token(
 )
 async def userinfo(
     request: Request,
-    credentials: t.Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer())],
+    credentials: t.Annotated[
+        HTTPAuthorizationCredentials,
+        Depends(
+            HTTPBearer(
+                scheme_name="Access Token",
+                description="An access token recieved from the `/token` endpoint.",
+            )
+        ),
+    ],
 ):
     """
     This endpoint recieves an access token in via HTTP Bearer authentication and returns its claims. It is recommended
@@ -357,7 +368,7 @@ async def webfinger(
     request: Request,
     resource: t.Annotated[
         str,
-        Field(
+        Query(
             pattern="acct:\S+",
             description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
             "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`.",
