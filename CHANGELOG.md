@@ -11,8 +11,6 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### 🚨 Breaking Changes
 
-- The value of the `sub` claim is now a string. It was previously an integer.
-- The value of the `groups` claim is now an array of strings. It was previously an array of integers.
 - The `/token` endpoint now returns an HTTP 400 error if you try to supply the client ID and secret via both
 form fields and HTTP Basic authentication at the same time (though you shouldn't have been doing that anyway).
 - The `/token` endpont now returns an HTTP 400 error if no client ID is supplied.
