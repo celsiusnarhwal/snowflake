@@ -120,7 +120,7 @@ async def authorize(
     state: str = Query(
         None,
         description="While optional, it is "
-        "[highly recommended](https://https://discord.com/developers/docs/topics/oauth2#state-and-security) "
+        "[highly recommended](https://discord.com/developers/docs/topics/oauth2#state-and-security) "
         "to supply this parameter.",
     ),
     nonce: str = None,
