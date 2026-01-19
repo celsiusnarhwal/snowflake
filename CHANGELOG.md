@@ -33,6 +33,7 @@ key in its response.
 ### Changed
 
 - Snowflake's interactive API documentation is now built with [Scalar](https://scalar.com) instead of Swagger UI.
+- Snowflake's Dockerfile now includes an `EXPOSE` directive indicating that Snowflake listens on port 8000.
 
 ## <a name="1-4-0">1.4.0 — 2025-07-20</a>
 
