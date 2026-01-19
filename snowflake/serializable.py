@@ -10,7 +10,7 @@ from pydantic import BaseModel, ValidationError, computed_field
 from snowflake import security
 
 
-class JWT(BaseModel):
+class Serializable(BaseModel):
     @computed_field
     @property
     def iat(self) -> int:
@@ -41,7 +41,7 @@ class JWT(BaseModel):
         return cls.model_validate(decoded.claims)
 
 
-class SnowflakeStateData(JWT):
+class SnowflakeStateData(Serializable):
     scopes: list
     state: str | None = None
     nonce: str | None = None
@@ -54,7 +54,7 @@ class SnowflakeStateData(JWT):
             raise MismatchingStateException()
 
 
-class SnowflakeAuthorizationData(JWT):
+class SnowflakeAuthorizationData(Serializable):
     code: str
     scopes: list
     nonce: str | None = None
