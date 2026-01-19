@@ -1,6 +1,6 @@
 import typing as t
 
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 
 
 class TokenResponse(BaseModel):
@@ -15,7 +15,7 @@ class UserInfoResponse(BaseModel):
     name: str = None
     preferred_username: str = None
     locale: str = None
-    picture: str = None
+    picture: HttpUrl = None
     email: str = None
     email_verified: bool = None
     groups: list[str] = None
@@ -34,8 +34,8 @@ class JWKSResponse(BaseModel):
 
 
 class WebFingerLink(BaseModel):
-    rel: str
-    href: str
+    rel: t.Literal["http://openid.net/specs/connect/1.0/issuer"]
+    href: HttpUrl
 
 
 class WebFingerResponse(BaseModel):
@@ -44,14 +44,14 @@ class WebFingerResponse(BaseModel):
 
 
 class DiscoveryResponse(BaseModel):
-    issuer: str
+    issuer: HttpUrl
     claims_supported: list[str]
     grant_types_supported: list[str]
     id_token_signing_alg_values_supported: list[str]
     token_endpoint_auth_methods_supported: list[str]
     response_types_supported: list[str]
     scopes_supported: list[str]
-    authorization_endpoint: str
-    token_endpoint: str
-    userinfo_endpoint: str
-    jwks_uri: str
+    authorization_endpoint: HttpUrl
+    token_endpoint: HttpUrl
+    userinfo_endpoint: HttpUrl
+    jwks_uri: HttpUrl
