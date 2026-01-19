@@ -336,7 +336,6 @@ async def jwks():
     return security.get_jwks().as_dict()
 
 
-# TODO fix validation issue with acct: pattern
 @app.get(
     "/.well-known/webfinger",
     summary="WebFinger",
