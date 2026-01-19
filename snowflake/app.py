@@ -11,7 +11,7 @@ from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.params import Path as PathParam
 from fastapi.params import Query
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse, Response
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBasic,
@@ -105,7 +105,7 @@ async def docs():
     raise HTTPException(404)
 
 
-@app.get("/health", summary="Healthcheck")
+@app.get("/health", summary="Healthcheck", response_class=Response)
 def health():
     """
     This endpoint returns an empty HTTP 200 response and does nothing else.
