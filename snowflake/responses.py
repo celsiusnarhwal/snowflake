@@ -12,13 +12,13 @@ class TokenResponse(BaseModel):
 
 class UserInfoResponse(BaseModel):
     sub: str
-    name: str
-    preferred_username: str
-    locale: str
-    picture: str
-    email: str
-    email_verified: bool
-    groups: list[str]
+    name: str = None
+    preferred_username: str = None
+    locale: str = None
+    picture: str = None
+    email: str = None
+    email_verified: bool = None
+    groups: list[str] = None
 
 
 class JWK(BaseModel):
