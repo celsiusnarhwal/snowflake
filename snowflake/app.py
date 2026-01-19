@@ -387,6 +387,10 @@ async def discovery(request: Request):
     """
     return {
         "issuer": str(request.base_url),
+        "authorization_endpoint": str(request.url_for("authorize")),
+        "token_endpoint": str(request.url_for("token")),
+        "userinfo_endpoint": str(request.url_for("userinfo")),
+        "jwks_uri": str(request.url_for("jwks")),
         "claims_supported": [
             "sub",
             "name",
@@ -406,8 +410,4 @@ async def discovery(request: Request):
         "response_types_supported": ["token", "id_token"],
         "subject_types_supported": ["public"],
         "scopes_supported": ["openid", "profile", "email", "groups"],
-        "authorization_endpoint": str(request.url_for("authorize")),
-        "token_endpoint": str(request.url_for("token")),
-        "userinfo_endpoint": str(request.url_for("userinfo")),
-        "jwks_uri": str(request.url_for("jwks")),
     }
