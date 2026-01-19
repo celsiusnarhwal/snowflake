@@ -38,7 +38,7 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/celsiusnarhwal/snowflake/blob/main/LICENSE.md",
     },
-    version=version if version != "0.0.0" else None,
+    version=version if version != "0.0.0" else "Edge",
     root_path=settings().base_path,
     docs_url=None,
     redoc_url=None,
