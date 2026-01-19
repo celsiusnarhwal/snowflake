@@ -116,7 +116,14 @@ def health():
 async def authorize(
     request: Request,
     client_id: t.Annotated[str, Query(title="Client ID")],
-    scope: str,
+    scope: t.Annotated[
+        str,
+        Query(
+            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. Only`openid` is required, "
+            'but you will get a "no scopes provided" error from Discord if you do not '
+            "supply at least one other scope."
+        ),
+    ],
     redirect_uri: t.Annotated[
         str,
         Query(
@@ -372,6 +379,7 @@ async def webfinger(
             pattern="acct:\S+",
             description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
             "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`.",
+            example="acct:koumae@kitauji.ed.jp",
         ),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
     ],
