@@ -10,8 +10,8 @@ from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
 from joserfc.jwt import Token
 
+from snowflake.jwt import SnowflakeAuthorizationData
 from snowflake.settings import settings
-from snowflake.types import SnowflakeAuthorizationData
 
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
 
@@ -83,7 +83,7 @@ async def create_tokens(
 
     access_claims = {
         "iss": str(request.base_url),
-        "sub": user_info["id"],
+        "sub": str(user_info["id"]),
         "aud": str(request.url_for("userinfo")),
         "iat": now,
         "exp": expiry,
