@@ -5,6 +5,7 @@ from functools import lru_cache
 import dns.name
 import durationpy
 from pydantic import (
+    BaseModel,
     BeforeValidator,
     Field,
     field_validator,
@@ -20,8 +21,14 @@ Duration = t.Annotated[
 ]
 
 
+class SnowflakePrivateSettings(BaseModel):
+    show_scalar_devtools_on_localhost: bool = False
+
+
 class SnowflakeSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="SNOWFLAKE_", env_ignore_empty=True)
+    model_config = SettingsConfigDict(
+        env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
+    )
 
     allowed_hosts: t.Annotated[list[str], NoDecode] = Field(
         default_factory=list, validate_default=False
@@ -37,6 +44,8 @@ class SnowflakeSettings(BaseSettings):
         default_factory=list, validate_default=False
     )
     enable_docs: bool = False
+
+    private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
 
     @field_validator("allowed_hosts", mode="before")
     @classmethod

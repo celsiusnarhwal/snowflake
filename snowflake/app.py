@@ -89,6 +89,9 @@ async def docs():
             openapi_url=app.openapi_url,
             hide_models=True,
             hide_client_button=True,
+            show_developer_tools="localhost"
+            if settings().private.show_scalar_devtools_on_localhost
+            else "never",
         )
 
     raise HTTPException(404)
