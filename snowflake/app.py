@@ -1,8 +1,8 @@
 import importlib.metadata
+import typing as t
 
 import dns.name
 import httpx
-import typing_extensions as t
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Depends, FastAPI, Form, Request
