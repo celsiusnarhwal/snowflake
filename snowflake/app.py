@@ -81,14 +81,6 @@ def root():
     raise HTTPException(404)
 
 
-@app.get("/health", summary="Healthcheck")
-def health():
-    """
-    This endpoint returns an HTTP 200 status code alongside an empty response body and does nothing else.
-    """
-    return
-
-
 @app.get("/docs", include_in_schema=False)
 async def docs():
     if settings().enable_docs:
@@ -99,6 +91,14 @@ async def docs():
         )
 
     raise HTTPException(404)
+
+
+@app.get("/health", summary="Healthcheck")
+def health():
+    """
+    This endpoint returns an HTTP 200 status code alongside an empty response body and does nothing else.
+    """
+    return
 
 
 @app.get(
