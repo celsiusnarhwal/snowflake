@@ -87,13 +87,6 @@ class SnowflakeSettings(BaseSettings):
     def validate_enable_docs(cls, v: bool, info: ValidationInfo) -> bool:
         return v or info.data["root_redirect"] == "docs"
 
-    @property
-    def root_redirect_url(self):
-        return {
-            "repo": "https://github.com/celsiusnarhwal/snowflake",
-            "settings": "https://discord.com/settings/account",
-        }.get(self.root_redirect)
-
 
 @lru_cache
 def settings() -> SnowflakeSettings:
