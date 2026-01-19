@@ -48,6 +48,7 @@ class DiscoveryResponse(BaseModel):
     claims_supported: list[str]
     grant_types_supported: list[str]
     id_token_signing_alg_values_supported: list[str]
+    token_endpoint_auth_methods_supported: list[str]
     response_types_supported: list[str]
     scopes_supported: list[str]
     authorization_endpoint: str

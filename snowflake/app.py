@@ -385,6 +385,10 @@ async def discovery(request: Request):
         ],
         "grant_types_supported": ["authorization_code"],
         "id_token_signing_alg_values_supported": ["RS256"],
+        "token_endpoint_auth_methods_supported": [
+            "client_secret_basic",
+            "client_secret_post",
+        ],
         "response_types_supported": ["token", "id_token"],
         "subject_types_supported": ["public"],
         "scopes_supported": ["openid", "profile", "email", "groups"],
