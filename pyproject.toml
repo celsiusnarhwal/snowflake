@@ -16,6 +16,10 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[tool.pdm.version]
+source = "scm"
+fallback_version = "0.0.0"
+
 [tool.ruff.lint]
 ignore = ["F403"]
 extend-select = ["I"]
