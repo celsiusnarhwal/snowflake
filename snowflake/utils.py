@@ -2,7 +2,6 @@ import httpx
 import pydantic
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Request
-from pydantic import ConfigDict
 from starlette.datastructures import URL
 
 
@@ -47,7 +46,6 @@ def get_response_code_documentation(code: int) -> dict:
 
     model = pydantic.create_model(
         f"HTTP{code}Error",
-        __config__=ConfigDict(title=f"HTTP {code} Error"),
         detail=(str, reason_phrase),
     )
 
