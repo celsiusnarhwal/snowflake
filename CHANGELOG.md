@@ -16,7 +16,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 - The `/token` endpoint now returns an HTTP 400 error if you try to supply the client ID and secret via both
 form fields and HTTP Basic authentication at the same time (though you shouldn't have been doing that anyway).
 - The `/token` endpont now returns an HTTP 400 error if no client ID is supplied.
-- The `resource` parameter of the `WebFinger` endpoint now only accepts URIs in the form `acct:<email>`, where
+- The `resource` parameter of the WebFinger endpoint now only accepts URIs in the form `acct:<email>`, where
 `<email>` is a valid (though not necessarily deliverable) email address. Email addresses must end in a hostname
 permitted by the new `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (more on that later). The endpoint will
 return an HTTP 404 error for emails with non-whitelisted hostnames.
