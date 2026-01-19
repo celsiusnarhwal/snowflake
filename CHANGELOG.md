@@ -27,11 +27,11 @@ return an HTTP 404 error for emails with non-whitelisted hostnames.
 endpoint may end in. Wildcard domains (e.g., `*.example.com`) are supported, but the unqualified wildcard (`*`) is not.
 - The OIDC discovery endpoint now includes the [`token_endpoint_auth_methods_supported`](https://openid.net/specs/openid-connect-discovery-1_0.html#:~:text=token_endpoint_auth_methods_supported)
 key in its response.
+- Snowflake's Dockerfile now includes an `EXPOSE` directive indicating that Snowflake listens on port 8000.
 
 ### Changed
 
 - Snowflake's interactive API documentation is now built with [Scalar](https://scalar.com) instead of Swagger UI.
-- Snowflake's Dockerfile now includes an `EXPOSE` directive indicating that Snowflake listens on port 8000.
 
 ## <a name="1-4-0">1.4.0 — 2025-07-20</a>
 
