@@ -97,7 +97,7 @@ async def docs():
 @app.get("/health", summary="Healthcheck")
 def health():
     """
-    This endpoint returns an HTTP 200 status code alongside an empty response body and does nothing else.
+    This endpoint returns an HTTP 200 status code and does nothing else.
     """
     return
 
