@@ -30,7 +30,7 @@ documentation. Doing so will force `SNOWFLAKE_ENABLE_DOCS` to be `true`.
 - The OIDC discovery endpoint now includes the [`token_endpoint_auth_methods_supported`](https://openid.net/specs/openid-connect-discovery-1_0.html#:~:text=token_endpoint_auth_methods_supported)
 key in its response.
 - Snowflake's Dockerfile now includes an `EXPOSE` directive indicating that Snowflake listens on port 8000.
-- The WebFinger endpoint now supports a `rel` parameter, though the response's `links` array will be empty if its
+- The WebFinger endpoint now supports a `rel` parameter, though the response's `links` array will be empty if it's
 anything other than `http://openid.net/specs/connect/1.0/issuer`.
 
 ### Changed
