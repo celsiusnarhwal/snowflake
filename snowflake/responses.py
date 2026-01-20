@@ -57,3 +57,7 @@ class DiscoveryResponse(BaseModel, title="OpenID Connect Discovery"):
     token_endpoint_auth_methods_supported: list[str]
     response_types_supported: list[str]
     scopes_supported: list[str]
+
+
+class HTTPClientErrorResponse(BaseModel, title="HTTP Client Error"):
+    detail: str

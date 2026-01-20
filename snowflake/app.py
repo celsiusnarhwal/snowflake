@@ -118,7 +118,7 @@ def health():
     summary="Authorization",
     response_class=RedirectResponse,
     status_code=302,
-    responses={400: utils.get_response_code_documentation(400)},
+    responses={400: {"model": r.HTTPClientErrorResponse}},
 )
 async def authorize(
     request: Request,
@@ -260,7 +260,7 @@ async def callback(
     "/token",
     summary="Token",
     response_model=r.TokenResponse,
-    responses={400: utils.get_response_code_documentation(400)},
+    responses={400: {"model": r.HTTPClientErrorResponse}},
 )
 async def token(
     request: Request,
@@ -330,10 +330,7 @@ class UnauthorizedMessage(BaseModel):
     "/userinfo",
     summary="User Info",
     response_model=r.UserInfoResponse,
-    responses={
-        404: utils.get_response_code_documentation(404),
-        403: utils.get_response_code_documentation(403),
-    },
+    responses={code: {"model": r.HTTPClientErrorResponse} for code in [403, 404]},
 )
 async def userinfo(
     request: Request,
@@ -394,7 +391,7 @@ async def jwks():
     "/.well-known/webfinger",
     summary="WebFinger",
     response_model=r.WebFingerResponse,
-    responses={404: utils.get_response_code_documentation(404)},
+    responses={404: {"model": r.HTTPClientErrorResponse}},
 )
 async def webfinger(
     request: Request,
