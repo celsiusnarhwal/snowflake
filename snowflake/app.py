@@ -399,8 +399,7 @@ async def webfinger(
         str,
         Query(
             pattern="acct:\S+",
-            description="Must be an email address prepended with `acct:` and ending with a domain permitted by "
-            "`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`.",
+            description="Must be an email address prepended with `acct:`.",
             example="acct:koumae@kitauji.ed.jp",
         ),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
