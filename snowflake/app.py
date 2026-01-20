@@ -1,4 +1,3 @@
-import importlib.metadata
 import typing as t
 
 import dns.name
@@ -30,8 +29,6 @@ from snowflake.serializable import (
 )
 from snowflake.settings import settings
 
-version = importlib.metadata.version("snowflake")
-
 app = FastAPI(
     title="Snowflake",
     description="Snowflake lets you use Discord as an OpenID Connect provider. "
@@ -40,8 +37,8 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/celsiusnarhwal/snowflake/blob/main/LICENSE.md",
     },
-    version=version if version != "0.0.0" else "Edge",
     root_path=settings().base_path,
+    version="2.0.0",
     docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json" if settings().enable_docs else None,
