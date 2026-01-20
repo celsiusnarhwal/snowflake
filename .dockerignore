@@ -2,4 +2,3 @@
 !snowflake/
 !pyproject.toml
 !uv.lock
-snowflake/data/
