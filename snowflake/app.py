@@ -341,9 +341,11 @@ async def userinfo(
     ],
 ):
     """
-    This endpoint recieves an access token via HTTP Bearer authentication and returns its claims. It is recommended
-    that clients obtain user claims by decoding the ID token directly rather than using this endpoint; the data is the
-    same either way.
+    This endpoint recieves an access token via HTTP Bearer authentication and returns its claims.
+
+    > [!note]
+      It is recommended that clients obtain user claims by decoding the ID token directly rather than using this
+      endpoint; the data is the same either way.
 
     Only `sub` is guaranteed to be present in the response. The presence of other claims is dependent on the scopes
     the token was granted with.
