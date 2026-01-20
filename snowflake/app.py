@@ -267,7 +267,15 @@ async def token(
     code: t.Annotated[str, Form(title="Authorization Code")],
     redirect_uri: t.Annotated[str, Form(title="Redirect URI")],
     credentials: t.Annotated[
-        HTTPBasicCredentials, Depends(HTTPBasic(auto_error=False))
+        HTTPBasicCredentials,
+        Depends(
+            HTTPBasic(
+                auto_error=False,
+                scheme_name="Client ID / Client Secret",
+                description="The authenticating Discord application's client ID (username) and "
+                "client secret (password).",
+            )
+        ),
     ],
     client_id: t.Annotated[str, Form(title="Client ID")] = None,
     client_secret: t.Annotated[str, Form()] = None,
@@ -285,8 +293,9 @@ async def token(
             "authentication at the same time",
         )
 
-    client_id = client_id or credentials.username
-    client_secret = client_secret or credentials.password
+    if credentials:
+        client_id = credentials.username
+        client_secret = credentials.password
 
     if not client_id:
         raise HTTPException(400, "Client ID is required")
