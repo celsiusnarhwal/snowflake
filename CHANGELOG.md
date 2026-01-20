@@ -6,9 +6,6 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## <a name="2-0-0">2.0.0 — 2026-01-20</a>
 
-> [!IMPORTANT]
-> This version of Snowflake has not yet been released. This is preview of changes to come.
-
 ### 🚨 Breaking Changes
 
 - The `/token` endpoint now returns an HTTP 400 error if you try to supply the client ID and secret via both
