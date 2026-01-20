@@ -323,7 +323,7 @@ async def token(
     "/userinfo",
     summary="User Info",
     response_model=r.UserInfoResponse,
-    responses={code: {"model": r.HTTPClientErrorResponse} for code in [403, 404]},
+    responses={code: {"model": r.HTTPClientErrorResponse} for code in [401, 403]},
 )
 async def userinfo(
     request: Request,
