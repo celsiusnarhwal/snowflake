@@ -2,3 +2,4 @@
 !snowflake/
 !pyproject.toml
 !uv.lock
+!.git
