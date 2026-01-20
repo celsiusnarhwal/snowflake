@@ -430,7 +430,7 @@ async def webfinger(
 
         return response
 
-    raise HTTPException(404)
+    raise HTTPException(404, f"The resource {resource} does not exist on this server")
 
 
 @app.get(
