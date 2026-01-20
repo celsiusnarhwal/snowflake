@@ -31,9 +31,7 @@ class SnowflakeSettings(BaseSettings):
         env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
     )
 
-    allowed_hosts: t.Annotated[list[str], NoDecode] = Field(
-        default_factory=list, validate_default=False
-    )
+    allowed_hosts: t.Annotated[list[str], NoDecode] = Field(default_factory=list)
     allowed_clients: t.Annotated[list[str], NoDecode] = Field(
         default=["*"], validate_default=False
     )
@@ -50,8 +48,8 @@ class SnowflakeSettings(BaseSettings):
 
     @field_validator("allowed_hosts", mode="before")
     @classmethod
-    def validate_allowed_hosts(cls, v: str) -> list[str]:
-        hosts = v.split(",")
+    def validate_allowed_hosts(cls, v: str | list) -> list[str]:
+        hosts = v.split(",") if isinstance(v, str) else v
 
         if "*" in hosts:
             logging.getLogger("uvicorn").warning(
