@@ -284,7 +284,7 @@ async def token(
     Clients exchange authorization codes for tokens at this endpoint.
 
     The client ID and client secret may be provided via either form fields or HTTP Basic authentication, but not both.
-    Clients using the PKCE-enhanced authorization code flow may omit the client secret entirely.
+    Public clients using the PKCE-enhanced authorization code flow may omit the client secret entirely.
     """
     if (client_id or client_secret) and credentials:
         raise HTTPException(
