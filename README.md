@@ -139,7 +139,7 @@ Depending on the provided scopes, Snowflake-issued access and ID tokens include 
 | `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`                                       |
 | `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`                                       |
 | `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`                                      |
-| `nonce`              | If the `nonce` parameter was sent to the authorization endpoint, this claim will contain its value. It only appears in ID tokens.                                        |                                               |
+| `nonce`              | If the `nonce` parameter was sent to the authorization endpoint, this claim will contain its value. It only appears in ID tokens.                                        | None                                          |
 
 #### User Info
 
