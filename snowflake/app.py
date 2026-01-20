@@ -209,9 +209,6 @@ async def authorize(
 
 @app.get("/r", include_in_schema=False)
 async def redirect():
-    """
-    Dummy endpoint that exists so `snowflake.utils.fix_redirect_uri()` can work properly.
-    """
     raise HTTPException(403)
 
 
