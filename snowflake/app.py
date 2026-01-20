@@ -289,8 +289,7 @@ async def token(
     if (client_id or client_secret) and credentials:
         raise HTTPException(
             400,
-            "You cannot supply both client_secret_basic and client_secret_post "
-            "authentication at the same time",
+            "You cannot supply both form field and HTTP Basic authentication at the same time",
         )
 
     if credentials:
