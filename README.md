@@ -23,6 +23,7 @@ Conceptually, Snowflake itself is an OIDC provider and can be used like any othe
       * [Tokens](#tokens)
       * [User Info](#user-info)
     * [PKCE Support](#pkce-support)
+    * [WebFinger Support](#webfinger-support)
   * [HTTPS and Reverse Proxies](#https-and-reverse-proxies)
   * [Configuration](#configuration)
 <!-- TOC -->
@@ -165,6 +166,15 @@ The `/userinfo` endpoint returns the same claims as access and ID tokens but doe
 For applications that cannot securely store a client secret, Snowflake supports the
 [PKCE-enhanced authorization code flow](https://datatracker.ietf.org/doc/html/rfc7636).
 Make sure the `Public Client` option is enabled in your Discord application's OAuth2 settings.
+
+### WebFinger Support
+
+Snowflake provides a [WebFinger](https://en.wikipedia.org/wiki/WebFinger) endpoint at `/.well-known/webfinger`
+to enable the discovery of Snowflake as the OIDC provider for email addresses at domains permitted by the
+`SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (see [Configuration](#configuration)). The endpoint
+only supports `acct:` URIs and does not support any link relations other than OpenID Connnect.
+
+The endpoint will return an HTTP 404 error for email addresses at non-whitelisted domains.
 
 ## HTTPS and Reverse Proxies
 
