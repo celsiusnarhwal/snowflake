@@ -22,7 +22,7 @@ class UserInfoResponse(BaseModel, title="User Info"):
 
 
 class JWKSResponse(BaseModel, title="JSON Web Key Set"):
-    class JWK(BaseModel):
+    class JWK(BaseModel, title="JSON Web Key"):
         n: str = Field(title="Modulus")
         e: str = Field(title="Exponent")
         kty: t.Literal["RSA"] = Field(title="Key Type")
