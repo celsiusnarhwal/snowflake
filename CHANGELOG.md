@@ -19,7 +19,7 @@ form fields and HTTP Basic authentication at the same time (though you shouldn't
 permitted by the new `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (more on that later). The endpoint will
 return an HTTP 404 error for emails with non-whitelisted hostnames.
 - The `/ping` endpoint has been renamed to `/health` and now returns an empty response.
-- The `SNOWFLAKE_ENABLE_SWAGGER` setting is now `SNOWFLAKE_ENABLE_DOCS`. It's still `false` by default.
+- The `SNOWFLAKE_ENABLE_SWAGGER` setting is now `SNOWFLAKE_ENABLE_DOCS`.
 
 ### Added
 
