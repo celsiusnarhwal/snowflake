@@ -208,5 +208,5 @@ Snowflake is configurable through the following environment variables (all optio
 
 Uvicorn will respect any of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 
-[^1]: See: [Erisa/discord-oidc-worker](https://github.com/Erisa/discord-oidc-worker), [qwerqy/discord-cognito-openid-wrapper](https://github.com/qwerqy/discord-cognito-openid-wrapper)
+[^1]: See: [Erisa/discord-oidc-worker](https://github.com/Erisa/discord-oidc-worker)
 [^2]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
