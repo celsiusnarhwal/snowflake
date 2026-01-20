@@ -393,7 +393,7 @@ async def webfinger(
     resource: t.Annotated[
         str,
         Query(
-            pattern="acct:\S+",
+            pattern=r"acct:\S+",
             description="Must be an email address prepended with `acct:`.",
             example="acct:koumae@kitauji.ed.jp",
         ),
