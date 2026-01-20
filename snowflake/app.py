@@ -19,7 +19,7 @@ from fastapi.security import (
     HTTPBearer,
 )
 from joserfc.errors import JoseError
-from pydantic import AfterValidator, BaseModel, Field, validate_email
+from pydantic import AfterValidator, Field, validate_email
 from scalar_fastapi import get_scalar_api_reference
 
 import snowflake.responses as r
@@ -320,10 +320,6 @@ async def token(
         discord_token=discord_token,
         authorization_data=authorization_data,
     )
-
-
-class UnauthorizedMessage(BaseModel):
-    detail: str = "Unauthorized"
 
 
 @app.get(
