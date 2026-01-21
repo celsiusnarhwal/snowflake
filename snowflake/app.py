@@ -186,7 +186,9 @@ async def authorize(
         scope=list_to_scope([v for k, v in scope_map.items() if k in scopes]),
     )
 
-    state_data = SnowflakeStateData(state=state, scopes=scopes, nonce=nonce)
+    state_data = SnowflakeStateData(
+        state=state, redirect_uri=redirect_uri, scopes=scopes, nonce=nonce
+    )
 
     authorization_params = {
         **request.query_params,
@@ -226,6 +228,11 @@ async def callback(
     Discord must redirect to this endpoint upon successful authorization.
     """
     state_data = SnowflakeStateData.from_jwt(state)
+
+    if utils.fix_redirect_uri(request, redirect_uri) != state_data.redirect_uri:
+        raise HTTPException(
+            400, "Redirect URI does not match what was sent at authorization"
+        )
 
     full_redirect_uri = (
         URL(redirect_uri)

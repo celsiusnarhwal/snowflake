@@ -43,6 +43,7 @@ class Serializable(BaseModel):
 
 class SnowflakeStateData(Serializable):
     scopes: list
+    redirect_uri: str
     state: str | None = None
     nonce: str | None = None
 
