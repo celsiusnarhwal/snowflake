@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-0-4">2.0.4 — 2026-01-20</a>
+
+### Fixed
+
+- Fixed a vulnerability that allowed for improper manipulation of the redirect URI sent to the `/callback` endpoint.
+
 ## <a name="2-0-3">2.0.3 — 2026-01-20</a>
 
 ### Fixed
