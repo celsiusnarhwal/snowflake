@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-0-3">2.0.3 — 2026-01-20</a>
+
+### Fixed
+
+- Fixed a bug that caused the healthcheck in Snowflake's Docker image to erroneously fail.
+
 ## <a name="2-0-0">2.0.0 — 2026-01-20</a>
 
 ### 🚨 Breaking Changes

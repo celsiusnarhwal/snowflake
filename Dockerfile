@@ -9,7 +9,7 @@ RUN uv sync
 
 COPY . /app/
 
-HEALTHCHECK CMD curl -fs localhost:${UVICORN_PORT}/health
+HEALTHCHECK CMD curl -fs localhost:8000/health
 
 EXPOSE 8000
 
