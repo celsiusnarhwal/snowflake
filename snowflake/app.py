@@ -216,6 +216,7 @@ async def redirect():
     summary="Callback",
     response_class=RedirectResponse,
     status_code=302,
+    responses={400: {"model": r.HTTPClientErrorResponse}},
 )
 async def callback(
     request: Request,
