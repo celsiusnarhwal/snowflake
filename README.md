@@ -5,10 +5,6 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
-Snowflake is not the first tool to bridge Discord's OAuth2 API and the OpenID Connect protocol[^1] but is, as
-far as I can tell, the only one that acts as a generic OIDC provider that can be deployed anywhere
-Docker containers can run.
-
 > [!IMPORTANT]
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
@@ -191,6 +187,5 @@ Snowflake is configurable through the following environment variables (all optio
 
 Uvicorn will respect most[^3] of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 
-[^1]: See: [Erisa/discord-oidc-worker](https://github.com/Erisa/discord-oidc-worker)
 [^2]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
 [^3]: With the exceptions of `UVICORN_HOST` and `UVICORN_PORT`.
