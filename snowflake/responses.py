@@ -32,8 +32,8 @@ class JWKSResponse(BaseModel, title="JSON Web Key Set"):
     keys: list[JWK]
 
 
-class WebFingerResponse(BaseModel, title="WebFinger"):
-    class WebFingerLink(BaseModel, title="WebFinger Link"):
+class WebFingerResponse(BaseModel, title="JSON Resource Descriptor"):
+    class WebFingerLink(BaseModel, title="Link"):
         rel: t.Literal["http://openid.net/specs/connect/1.0/issuer"] = Field(
             title="Link Relation"
         )
