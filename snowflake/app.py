@@ -106,7 +106,6 @@ def health():
     """
     This endpoint returns an empty HTTP 200 response and does nothing else.
     """
-    return
 
 
 @app.get(
