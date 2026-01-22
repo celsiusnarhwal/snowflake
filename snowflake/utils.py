@@ -37,6 +37,9 @@ def is_secure_transport(url: str | URL) -> bool:
 
 
 def get_discovery_info(request: Request) -> dict:
+    """
+    Return OpenID Connect Discovery information.
+    """
     return {
         "issuer": str(request.base_url),
         "authorization_endpoint": str(request.url_for("authorize")),
