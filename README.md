@@ -153,7 +153,7 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 Snowflake provides a [WebFinger](https://en.wikipedia.org/wiki/WebFinger) endpoint at `/.well-known/webfinger`
 to enable the discovery of Snowflake as the OIDC provider for email addresses at domains permitted by the
 `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (see [Configuration](#configuration)). The endpoint
-only supports `acct:` URIs and does not support any link relations other than OpenID Connnect.
+only supports `acct:` URIs containing email addresses and does not support any link relations other than OpenID Connnect.
 
 The endpoint will return an HTTP 404 error for email addresses at non-whitelisted domains.
 
