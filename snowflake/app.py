@@ -207,7 +207,7 @@ async def authorize(
 
 @app.get("/r", include_in_schema=False)
 async def redirect():
-    raise HTTPException(403)
+    raise HTTPException(404)
 
 
 @app.get(
