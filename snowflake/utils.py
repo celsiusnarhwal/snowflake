@@ -34,3 +34,32 @@ def is_secure_transport(url: str | URL) -> bool:
         url = URL(url)
 
     return url.scheme == "https" or url.hostname in ["localhost", "127.0.0.1", "::1"]
+
+
+def get_discovery_info(request: Request) -> dict:
+    return {
+        "issuer": str(request.base_url),
+        "authorization_endpoint": str(request.url_for("authorize")),
+        "token_endpoint": str(request.url_for("token")),
+        "userinfo_endpoint": str(request.url_for("userinfo")),
+        "jwks_uri": str(request.url_for("jwks")),
+        "claims_supported": [
+            "sub",
+            "name",
+            "preferred_username",
+            "locale",
+            "picture",
+            "email",
+            "email_verified",
+            "groups",
+        ],
+        "grant_types_supported": ["authorization_code"],
+        "id_token_signing_alg_values_supported": ["RS256"],
+        "token_endpoint_auth_methods_supported": [
+            "client_secret_basic",
+            "client_secret_post",
+        ],
+        "response_types_supported": ["token", "id_token"],
+        "subject_types_supported": ["public"],
+        "scopes_supported": ["openid", "profile", "email", "groups"],
+    }

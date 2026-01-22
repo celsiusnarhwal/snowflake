@@ -1,7 +1,6 @@
 import typing as t
 
 import dns.name
-import httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Depends, FastAPI, Form, Request
@@ -352,18 +351,15 @@ async def userinfo(
     Only `sub` is guaranteed to be present in the response. The presence of other claims is dependent on the scopes
     the token was granted with.
     """
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(str(request.url_for("discovery")))
-        resp.raise_for_status()
-
-    oidc_metadata = resp.json()
+    oidc_metadata = utils.get_discovery_info(request)
 
     try:
         access_token = security.decode_jwt(
             credentials.credentials,
             iss={"essential": True, "value": oidc_metadata["issuer"]},
+            aud={"essential": True, "value": oidc_metadata["userinfo_endpoint"]},
         )
-    except JoseError:
+    except (JoseError, ValueError):
         raise HTTPException(401)
 
     userinfo_claims = {
@@ -441,29 +437,4 @@ async def discovery(request: Request):
     """
     This endpoint implements [OpenID Connect Discovery 1.0](https://openid.net/specs/openid-connect-discovery-1_0.html).
     """
-    return {
-        "issuer": str(request.base_url),
-        "authorization_endpoint": str(request.url_for("authorize")),
-        "token_endpoint": str(request.url_for("token")),
-        "userinfo_endpoint": str(request.url_for("userinfo")),
-        "jwks_uri": str(request.url_for("jwks")),
-        "claims_supported": [
-            "sub",
-            "name",
-            "preferred_username",
-            "locale",
-            "picture",
-            "email",
-            "email_verified",
-            "groups",
-        ],
-        "grant_types_supported": ["authorization_code"],
-        "id_token_signing_alg_values_supported": ["RS256"],
-        "token_endpoint_auth_methods_supported": [
-            "client_secret_basic",
-            "client_secret_post",
-        ],
-        "response_types_supported": ["token", "id_token"],
-        "subject_types_supported": ["public"],
-        "scopes_supported": ["openid", "profile", "email", "groups"],
-    }
+    return utils.get_discovery_info(request)
