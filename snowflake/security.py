@@ -4,7 +4,6 @@ from json import JSONDecodeError
 from pathlib import Path
 
 from authlib.integrations.starlette_client import StarletteOAuth2App
-from fastapi import Request
 from joserfc import jwt
 from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
@@ -35,6 +34,7 @@ def get_private_key() -> KeySet:
         pass
 
     create_private_key()
+
     return get_private_key()
 
 
@@ -66,10 +66,10 @@ def get_jwks() -> KeySet:
 
 async def create_tokens(
     *,
-    request: Request,
     discord: StarletteOAuth2App,
     discord_token: dict,
     authorization_data: SnowflakeAuthorizationData,
+    oidc_metadata: dict,
 ) -> dict[str, str | int]:
     """
     Create a pair of access and ID tokens.
@@ -82,9 +82,9 @@ async def create_tokens(
     expiry = now + settings().token_lifetime
 
     access_claims = {
-        "iss": str(request.base_url),
+        "iss": oidc_metadata["issuer"],
         "sub": user_info["id"],
-        "aud": str(request.url_for("userinfo")),
+        "aud": oidc_metadata["userinfo_endpoint"],
         "iat": now,
         "exp": expiry,
     }

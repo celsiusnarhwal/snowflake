@@ -316,10 +316,10 @@ async def token(
     discord_token = await discord.fetch_access_token(**token_params)
 
     return await security.create_tokens(
-        request=request,
         discord=discord,
         discord_token=discord_token,
         authorization_data=authorization_data,
+        oidc_metadata=utils.get_discovery_info(request),
     )
 
 
