@@ -5,10 +5,6 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
-Snowflake is not the first tool to bridge Discord's OAuth2 API and the OpenID Connect protocol[^1] but is, as
-far as I can tell, the only one that acts as a generic OIDC provider that can be deployed anywhere
-Docker containers can run.
-
 > [!IMPORTANT]
 > Snowflake requires HTTPS for external connections. (HTTP connections on `localhost` are fine.)
 
@@ -134,7 +130,7 @@ Depending on the provided scopes, Snowflake-issued access and ID tokens include 
 | `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | None                                          |
 | `preferred_username` | The username of the user's Discord account.                                                                                                                              | `profile`                                     |
 | `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. | `profile`                                     |
-| `locale`             | The locale (i.e., chosen language setting) of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        | `profile`                                     |
+| `locale`             | The locale of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).        | `profile`                                     |
 | `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | `profile`                                     |
 | `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`                                       |
 | `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`                                       |
@@ -157,7 +153,7 @@ Make sure the `Public Client` option is enabled in your Discord application's OA
 Snowflake provides a [WebFinger](https://en.wikipedia.org/wiki/WebFinger) endpoint at `/.well-known/webfinger`
 to enable the discovery of Snowflake as the OIDC provider for email addresses at domains permitted by the
 `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (see [Configuration](#configuration)). The endpoint
-only supports `acct:` URIs and does not support any link relations other than OpenID Connnect.
+only supports `acct:` URIs containing email addresses and does not support any link relations other than OpenID Connnect.
 
 The endpoint will return an HTTP 404 error for email addresses at non-whitelisted domains.
 
@@ -191,6 +187,5 @@ Snowflake is configurable through the following environment variables (all optio
 
 Uvicorn will respect most[^3] of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 
-[^1]: See: [Erisa/discord-oidc-worker](https://github.com/Erisa/discord-oidc-worker)
 [^2]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
 [^3]: With the exceptions of `UVICORN_HOST` and `UVICORN_PORT`.
