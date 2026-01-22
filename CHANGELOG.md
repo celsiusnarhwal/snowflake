@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-0-5">2.0.5 — 2026-01-21</a>
+
+### Fixed
+
+- Fixed an issue that allowed the `/userinfo` endpoint to decode ID tokens.
+
 ## <a name="2-0-4">2.0.4 — 2026-01-20</a>
 
 ### Fixed
