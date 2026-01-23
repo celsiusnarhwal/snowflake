@@ -329,6 +329,7 @@ async def token(
     response_model=r.UserInfoResponse,
     responses={code: {"model": r.HTTPClientErrorResponse} for code in [401, 403]},
 )
+@app.post("/userinfo", include_in_schema=False)
 async def userinfo(
     request: Request,
     credentials: t.Annotated[
@@ -350,6 +351,10 @@ async def userinfo(
 
     Only `sub` is guaranteed to be present in the response. The presence of other claims is dependent on the scopes
     the token was granted with.
+
+    This endpoint also accepts `POST` requests per
+    [OpenID Connect Core 1.0 § 5.3](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo). Usage is identical
+    to `GET`.
     """
     oidc_metadata = utils.get_discovery_info(request)
 
