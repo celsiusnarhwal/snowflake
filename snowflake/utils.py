@@ -2,6 +2,8 @@ from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from fastapi import Request
 from starlette.datastructures import URL
 
+from snowflake.settings import settings
+
 
 def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     """
@@ -33,7 +35,10 @@ def is_secure_transport(url: str | URL) -> bool:
     if not isinstance(url, URL):
         url = URL(url)
 
-    return url.scheme == "https" or url.hostname in ["localhost", "127.0.0.1", "::1"]
+    return url.scheme == "https" or (
+        settings().treat_loopback_as_secure
+        and url.hostname in ["localhost", "127.0.0.1", "::1"]
+    )
 
 
 def get_discovery_info(request: Request) -> dict:
