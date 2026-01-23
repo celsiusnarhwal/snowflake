@@ -40,10 +40,10 @@ class SnowflakeSettings(BaseSettings):
     token_lifetime: Duration = Field("1h", ge=60)
     root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     treat_loopback_as_secure: bool = True
+    return_to_referrer: bool = False
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         default_factory=list, validate_default=False
     )
-    return_to_referrer: bool = False
     enable_docs: bool = False
 
     private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
