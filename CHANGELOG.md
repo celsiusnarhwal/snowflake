@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-1-0">2.1.0 — 2026-01-22</a>
+
+## Added
+
+- The `/userinfo` endpoint now supports POST requests.
+
 ## <a name="2-0-6">2.0.6 — 2026-01-21</a>
 
 ### Fixed
