@@ -11,8 +11,8 @@ API.
 
 ## Installation
 
-[Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set
-the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
+[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. You will almost always 
+want to set the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
 
 > [!note]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
