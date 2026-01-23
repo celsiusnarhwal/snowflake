@@ -4,6 +4,17 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-2-0">2.2.0 — 2026-01-23</a>
+
+### Added
+
+- This version of Snowflake adds two new settings:
+  - `SNOWFLAKE_TREAT_LOOPBACK_AS_SECURE`: Controls whether Snowflake should consider loopback addresses 
+  (e.g., `localhost`) to be secure even if they don't use HTTPS.
+  - `SNOWFLAKE_RETURN_TO_REFERRER`: Controls whether Snowflake should return to the initating URL when authorization
+  requests are denied.
+
+
 ## <a name="2-1-0">2.1.0 — 2026-01-22</a>
 
 ### Added
