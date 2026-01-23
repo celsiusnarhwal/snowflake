@@ -7,7 +7,7 @@ API.
 
 > [!IMPORTANT]
 > Snowflake requires HTTPS for external connections. (By default, HTTP connections on `localhost` are fine; see
-> [Configuration](#configuration)).
+> [Configuration](#configuration).)
 
 ## Installation
 
