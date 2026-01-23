@@ -36,6 +36,11 @@ the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configu
 
 <hr>
 
+> [!important]
+> It is highly recommended that you mount `/app/snowflake/data` to a directory on your
+> host machine so the private key Snowflake uses to sign tokens can persist across container restarts.
+> If you don't, then restarting Snowflake will immediately invalidate any tokens it has issued.
+
 ### Docker Compose
 
 ```yaml
