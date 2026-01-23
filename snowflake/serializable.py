@@ -46,6 +46,7 @@ class SnowflakeStateData(Serializable):
     redirect_uri: str
     state: str | None = None
     nonce: str | None = None
+    referrer: str | None = None
 
     @classmethod
     def from_jwt(cls, token: str) -> t.Self:

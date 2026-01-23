@@ -3,7 +3,7 @@ import typing as t
 import dns.name
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
-from fastapi import Depends, FastAPI, Form, Request
+from fastapi import Depends, FastAPI, Form, Header, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
@@ -144,6 +144,7 @@ async def authorize(
         ),
     ] = None,
     nonce: str = None,
+    referrer: t.Annotated[str | None, Header(alias="referer")] = None,
 ):
     """
     Clients are directed to this endpoint to begin the authorization process.
@@ -186,7 +187,11 @@ async def authorize(
     )
 
     state_data = SnowflakeStateData(
-        state=state, redirect_uri=redirect_uri, scopes=scopes, nonce=nonce
+        state=state,
+        redirect_uri=redirect_uri,
+        scopes=scopes,
+        nonce=nonce,
+        referrer=referrer,
     )
 
     authorization_params = {
@@ -228,6 +233,13 @@ async def callback(
     Discord must redirect to this endpoint upon successful authorization.
     """
     state_data = SnowflakeStateData.from_jwt(state)
+
+    if (
+        error == "access_denied"
+        and state_data.referrer
+        and settings().return_to_referrer
+    ):
+        return RedirectResponse(state_data.referrer, status_code=302)
 
     if utils.fix_redirect_uri(request, redirect_uri) != state_data.redirect_uri:
         raise HTTPException(
