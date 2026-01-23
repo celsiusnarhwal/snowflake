@@ -186,6 +186,7 @@ Snowflake is configurable through the following environment variables (all optio
 | `SNOWFLAKE_RETURN_TO_REFERRER`      | Boolean  | If this is `true` and the user denies an authorization request, Snowflake will redirect the user back to the initiating URL.[^3] Otherwise, Snowflake behaves according to [OpenID Connect Core 1.0 § 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).                                                                                                                      |                           |
 | `SNOWFLAKE_ENABLE_DOCS`             | Boolean  | Whether to serve Snowflake's interactive API documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.<br/><br/>This is forced to be `true` if `SNOWFLAKE_ROOT_REDIRECT` is set to `docs`.                                                                                                           | `false`                   |
 
+
 Uvicorn will respect most[^2] of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 
 [^1]: 1 day = 24 hours, 1 week = 7 days, 1 month = 30 days, and 1 year = 365 days.
