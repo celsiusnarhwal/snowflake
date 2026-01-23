@@ -5,7 +5,7 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
-> [!IMPORTANT]
+> [!important]
 > Snowflake requires HTTPS for external connections. (By default, HTTP connections on `localhost` are fine; see
 > [Configuration](#configuration).)
 
@@ -14,7 +14,7 @@ API.
 [Docker](https://docs.docker.com) is the only supported way of running Snowflake. You will almost always want to set
 the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
 
-> [!NOTE]
+> [!note]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
 > Snowflake instace is reachable.
 
@@ -35,11 +35,6 @@ the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configu
 </details>
 
 <hr>
-
-> [!important]
-> It is highly recommended that you mount `/app/snowflake/data` to a directory on your
-> host machine so the private key Snowflake uses to sign tokens can persist across container restarts.
-> If you don't, then restarting Snowflake will immediately invalidate any tokens it has issued.
 
 ### Docker Compose
 
@@ -78,7 +73,7 @@ where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your applica
 URI of `https://myapp.example.com/callback` would be set in the Developer Portal
 as `https://snowflake.example.com/r/https://myapp.example.com/callback`.
 
-> [!TIP]
+> [!tip]
 > If you're unable to control the redirect URI your OIDC client provides to Snowflake, set
 > the `SNOWFLAKE_FIX_REDIRECT_URIS` environment variable to `true`. See [Configuration](#configuration)
 > for details.
@@ -116,7 +111,7 @@ Frankly, if you're reading this then you should already know how this works.
 Snowflake only requires the `openid` scope, but you will get a "no scopes provided" error from Discord if you do
 not provide at least one of the other scopes.
 
-> [!WARNING]
+> [!warning]
 > The Discord API is a little slow at returning guild information, so providing the `groups` scope can make Snowflake
 > take significantly longer to respond to access token requests.
 
