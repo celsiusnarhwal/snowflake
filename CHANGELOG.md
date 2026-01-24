@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-3-0">2.3.0 — Unreleased</a>
+
+### Added
+
+- Snowflake now supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
+
 ## <a name="2-2-0">2.2.0 — 2026-01-23</a>
 
 ### Added

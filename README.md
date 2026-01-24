@@ -142,6 +142,15 @@ Depending on the provided scopes, Snowflake-issued access and ID tokens include 
 The `/userinfo` endpoint returns the same claims as access tokens but does not include `iss`, `aud`,
 `iat`, or `exp`.
 
+#### Refresh Tokens
+
+Snowflake supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
+Discord doesn't allow refresh tokens to be separately scoped, so the access and ID tokens issued in response to refresh
+requests will always the same scopes as the original authorization request.
+
+Snowflake doesn't have any control over whether a refresh token is valid or when it expires; all of that is solely
+up to Discord.
+
 ### PKCE Support
 
 For applications that cannot securely store a client secret, Snowflake supports the

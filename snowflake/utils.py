@@ -1,5 +1,10 @@
+import typing as t
+
+# noinspection PyUnresolvedReferences
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
+from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Request
+from pydantic import BeforeValidator, validate_call
 from starlette.datastructures import URL
 
 from snowflake.settings import settings
@@ -16,6 +21,26 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
         api_base_url="https://discord.com/api/",
         **kwargs,
     )
+
+
+@validate_call
+def convert_scopes(
+    scopes: t.Annotated[list | tuple | set, BeforeValidator(scope_to_list)],
+    *,
+    to_format: t.Literal["snowflake", "discord"],
+    output_type: t.Literal[list, str],
+) -> list | str:
+    """
+    Convert Snowflake scopes to Discord scopes or vice versa.
+    """
+    scope_map = {"profile": "idenitfy", "email": "email", "groups": "guilds"}
+
+    if to_format == "discord":
+        scope_map = {v: k for k, v in scope_map.items()}
+
+    converter = scope_to_list if output_type is list else list_to_scope
+
+    return converter([v for k, v in scope_map.items() if k in scopes])
 
 
 def fix_redirect_uri(request: Request, redirect_uri: str) -> str:

@@ -16,6 +16,7 @@ from fastapi.security import (
     HTTPBasicCredentials,
     HTTPBearer,
 )
+from httpx import HTTPStatusError
 from joserfc.errors import JoseError
 from pydantic import AfterValidator, Field, validate_email
 from scalar_fastapi import get_scalar_api_reference
@@ -64,11 +65,21 @@ async def secure_transport_middleware(request: Request, call_next):
 
 # noinspection PyUnusedLocal
 @app.exception_handler(AuthlibHTTPError)
-async def oauth_exception_handler(request: Request, exception: AuthlibHTTPError):
+@app.exception_handler(HTTPStatusError)
+async def http_error_handler(
+    request: Request, exception: AuthlibHTTPError | HTTPStatusError
+):
     """
-    Re-raise `AuthlibHTTPError` exceptions as `HTTPException` exceptions.
+    Re-raise exceptions that correspond to HTTP status codes as `HTTPException` exceptions.
     """
-    raise HTTPException(exception.status_code, exception.description)
+    if isinstance(exception, HTTPStatusError):
+        status_code = exception.response.status_code
+        description = exception.response.json()
+    else:
+        status_code = exception.status_code
+        description = exception.description
+
+    raise HTTPException(status_code, description)
 
 
 @app.get("/", include_in_schema=False)
@@ -175,15 +186,11 @@ async def authorize(
     if "openid" not in scopes:
         raise HTTPException(400, "openid scope is required")
 
-    scope_map = {
-        "profile": "identify",
-        "email": "email",
-        "groups": "guilds",
-    }
-
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=list_to_scope([v for k, v in scope_map.items() if k in scopes]),
+        scope=list_to_scope(
+            utils.convert_scopes(scopes, to_format="discord", output_type=str)
+        ),
     )
 
     state_data = SnowflakeStateData(
@@ -277,8 +284,6 @@ async def callback(
 )
 async def token(
     request: Request,
-    code: t.Annotated[str, Form(title="Authorization Code")],
-    redirect_uri: t.Annotated[str, Form(title="Redirect URI")],
     credentials: t.Annotated[
         HTTPBasicCredentials,
         Depends(
@@ -290,15 +295,50 @@ async def token(
             )
         ),
     ],
-    client_id: t.Annotated[str, Form(title="Client ID")] = None,
-    client_secret: t.Annotated[str, Form()] = None,
+    grant_type: t.Annotated[str, Form(title="Grant Type")] = None,
+    client_id: t.Annotated[
+        str,
+        Form(
+            title="Client ID",
+            description="Required unless client credentials are provided via HTTP Basic authentication.",
+        ),
+    ] = None,
+    client_secret: t.Annotated[
+        str,
+        Form(
+            description="Required for non-public clients unless client credentials are provided via HTTP Basic authentication."
+        ),
+    ] = None,
+    redirect_uri: t.Annotated[
+        str,
+        Form(
+            title="Redirect URI",
+            description="Required unless `grant_type` is `refresh_token`.",
+        ),
+    ] = None,
+    code: t.Annotated[
+        str,
+        Form(
+            title="Authorization Code",
+            description="Required unless `grant_type` is `refresh_token`.",
+        ),
+    ] = None,
+    refresh_token: t.Annotated[
+        str,
+        Form(
+            title="Refresh Token",
+            description="Required if `grant_type` is `refresh_token`.",
+        ),
+    ] = None,
 ):
     """
-    Clients exchange authorization codes for tokens at this endpoint.
+    Clients obtain tokens from this endpoint.
 
     The client ID and client secret may be provided via either form fields or HTTP Basic authentication, but not both.
     Public clients using the PKCE-enhanced authorization code flow may omit the client secret entirely.
     """
+    oidc_metadata = utils.get_discovery_info(request)
+
     if (client_id or client_secret) and credentials:
         raise HTTPException(
             400,
@@ -312,6 +352,24 @@ async def token(
 
     if not client_id:
         raise HTTPException(400, "Client ID is required")
+
+    if grant_type == "refresh_token":
+        if not refresh_token:
+            raise HTTPException(400, "Refresh Token is required")
+
+        discord = utils.get_oauth_client(
+            client_id=client_id, client_secret=client_secret
+        )
+
+        return await security.refresh_token(
+            request=request, discord=discord, token=refresh_token
+        )
+
+    if not redirect_uri:
+        raise HTTPException(400, "Redirect URI is required")
+
+    if not code:
+        raise HTTPException(400, "Authorization code is required")
 
     authorization_data = SnowflakeAuthorizationData.from_jwt(code)
 
@@ -330,8 +388,9 @@ async def token(
     return await security.create_tokens(
         discord=discord,
         discord_token=discord_token,
-        authorization_data=authorization_data,
-        oidc_metadata=utils.get_discovery_info(request),
+        scopes=authorization_data.scopes,
+        nonce=authorization_data.nonce,
+        oidc_metadata=oidc_metadata,
     )
 
 

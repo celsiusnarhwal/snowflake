@@ -3,13 +3,17 @@ import time
 from json import JSONDecodeError
 from pathlib import Path
 
+import httpx
+
+# noinspection PyUnresolvedReferences
 from authlib.integrations.starlette_client import StarletteOAuth2App
+from fastapi import Request
 from joserfc import jwt
 from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
 from joserfc.jwt import Token
 
-from snowflake.serializable import SnowflakeAuthorizationData
+from snowflake import utils
 from snowflake.settings import settings
 
 PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
@@ -68,8 +72,9 @@ async def create_tokens(
     *,
     discord: StarletteOAuth2App,
     discord_token: dict,
-    authorization_data: SnowflakeAuthorizationData,
+    scopes: list[str],
     oidc_metadata: dict,
+    nonce: str | None = None,
 ) -> dict[str, str | int]:
     """
     Create a pair of access and ID tokens.
@@ -89,7 +94,7 @@ async def create_tokens(
         "exp": expiry,
     }
 
-    if "profile" in authorization_data.scopes:
+    if "profile" in scopes:
         access_claims.update(
             {
                 "preferred_username": user_info["username"],
@@ -100,12 +105,12 @@ async def create_tokens(
             }
         )
 
-    if "email" in authorization_data.scopes:
+    if "email" in scopes:
         access_claims.update(
             {"email": user_info["email"], "email_verified": user_info["verified"]}
         )
 
-    if "groups" in authorization_data.scopes:
+    if "groups" in scopes:
         guilds_resp = await discord.get("users/@me/guilds", token=discord_token)
         guilds_resp.raise_for_status()
         guilds = guilds_resp.json()
@@ -117,15 +122,53 @@ async def create_tokens(
         "aud": discord.client_id,
     }
 
-    if authorization_data.nonce:
-        identity_claims["nonce"] = authorization_data.nonce
+    if nonce is not None:
+        identity_claims["nonce"] = nonce
 
     access_token = create_jwt(access_claims)
-    id_token = create_jwt(identity_claims)
+    identity_token = create_jwt(identity_claims)
 
     return {
         "access_token": access_token,
         "token_type": "Bearer",
         "expires_at": expiry,
-        "id_token": id_token,
+        "id_token": identity_token,
+        "refresh_token": discord_token["refresh_token"],
     }
+
+
+async def refresh_token(
+    *, request: Request, discord: StarletteOAuth2App, token: str
+) -> dict:
+    token_params = {
+        **(await request.form()),
+        "grant_type": "refresh_token",
+        "refresh_token": token,
+    }
+
+    for param in "client_id", "client_secret":
+        token_params.pop(param, None)
+
+    async with httpx.AsyncClient() as client:
+        token_resp = await client.post(
+            discord.access_token_url,
+            data=token_params,
+            auth=(discord.client_id, discord.client_secret),
+        )
+
+        token_resp.raise_for_status()
+
+        discord_token = token_resp.json()
+
+    scopes = utils.convert_scopes(
+        discord_token["scope"], to_format="snowflake", output_type=list
+    )
+
+    return await create_tokens(
+        discord=discord,
+        discord_token=discord_token,
+        scopes=scopes,
+        oidc_metadata=utils.get_discovery_info(
+            request,
+        ),
+    )
