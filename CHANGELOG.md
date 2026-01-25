@@ -61,6 +61,7 @@ permitted by the new `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (m
 return an HTTP 404 error for emails with non-whitelisted hostnames.
 - The `/ping` endpoint has been renamed to `/health` and now returns an empty response.
 - The `SNOWFLAKE_ENABLE_SWAGGER` setting is now `SNOWFLAKE_ENABLE_DOCS`.
+- Uvicorn's host and port are now declared via command-line flags. This means Uvicorn will longer respect the `UVICORN_HOST` and `UVICORN_PORT` environment variables.
 
 ### Added
 
@@ -76,7 +77,6 @@ anything other than `http://openid.net/specs/connect/1.0/issuer`.
 
 ### Changed
 
-- Uvicorn's host and port are now declared via command-line flags. This means Uvicorn will longer respect the `UVICORN_HOST` and `UVICORN_PORT` environment variables.
 - Snowflake's interactive API documentation is now built with [Scalar](https://scalar.com) instead of Swagger UI.
 
 ## <a name="1-4-0">1.4.0 — 2025-07-20</a>
