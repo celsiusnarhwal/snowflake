@@ -112,7 +112,7 @@ Snowflake only requires the `openid` scope, but you will get a "no scopes provid
 not provide at least one of the other scopes.
 
 > [!warning]
-> Scopes are persisent. Once a scope is granted, your app maintains perpetual access to it — even if it later stops
+> Scopes are persistent. Once a scope is granted, your app maintains perpetual access to it — even if it later stops
 > asking for it — until the user manually revokes their authorization. Applications should be prepared to
 > receive data from scopes they did not explicitly request at authorization.
 >
