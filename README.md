@@ -112,8 +112,10 @@ Snowflake only requires the `openid` scope, but you will get a "no scopes provid
 not provide at least one of the other scopes.
 
 > [!warning]
-> The Discord API is a little slow at returning guild information, so providing the `groups` scope can make Snowflake
-> take significantly longer to respond to access token requests.
+> Scopes are persisent. Once a scope is granted, your app maintains perpetual access to it — even if it later stops
+> asking for it — until the user manually revokes their authorization. Applications should be prepared to
+> receive data from scopes they did not explicitly request at authorization.
+
 
 ### Supported Claims
 
