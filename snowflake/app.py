@@ -155,7 +155,7 @@ async def authorize(
         ),
     ] = None,
     nonce: str = None,
-    referrer: t.Annotated[str | None, Header(alias="referer")] = None,
+    referrer: t.Annotated[str | None, Header(alias="Referer")] = None,
 ):
     """
     Clients are directed to this endpoint to begin the authorization process.
