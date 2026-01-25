@@ -76,6 +76,7 @@ anything other than `http://openid.net/specs/connect/1.0/issuer`.
 
 ### Changed
 
+- Uvicorn's host and port are now declared via command-line flags. This means Uvicorn will longer respect the `UVICORN_HOST` and `UVICORN_PORT` environment variables.
 - Snowflake's interactive API documentation is now built with [Scalar](https://scalar.com) instead of Swagger UI.
 
 ## <a name="1-4-0">1.4.0 — 2025-07-20</a>
