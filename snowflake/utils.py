@@ -33,9 +33,9 @@ def convert_scopes(
     """
     Convert Snowflake scopes to Discord scopes or vice versa.
     """
-    scope_map = {"profile": "idenitfy", "email": "email", "groups": "guilds"}
+    scope_map = {"profile": "identify", "email": "email", "groups": "guilds"}
 
-    if to_format == "discord":
+    if to_format == "snowflake":
         scope_map = {v: k for k, v in scope_map.items()}
 
     converter = scope_to_list if output_type is list else list_to_scope

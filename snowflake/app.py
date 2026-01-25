@@ -2,7 +2,7 @@ import typing as t
 
 import dns.name
 from authlib.common.errors import AuthlibHTTPError
-from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
+from authlib.oauth2.rfc6749 import scope_to_list
 from fastapi import Depends, FastAPI, Form, Header, Request
 from fastapi.datastructures import URL
 from fastapi.exceptions import HTTPException
@@ -188,15 +188,12 @@ async def authorize(
 
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=list_to_scope(
-            utils.convert_scopes(scopes, to_format="discord", output_type=str)
-        ),
+        scope=utils.convert_scopes(scopes, to_format="discord", output_type=str),
     )
 
     state_data = SnowflakeStateData(
         state=state,
         redirect_uri=redirect_uri,
-        scopes=scopes,
         nonce=nonce,
         referrer=referrer,
     )
@@ -266,7 +263,7 @@ async def callback(
 
     if code and not error:
         authorization_data = SnowflakeAuthorizationData(
-            code=code, scopes=state_data.scopes, nonce=state_data.nonce
+            code=code, nonce=state_data.nonce
         )
 
         full_redirect_uri = full_redirect_uri.include_query_params(
@@ -306,7 +303,8 @@ async def token(
     client_secret: t.Annotated[
         str,
         Form(
-            description="Required for non-public clients unless client credentials are provided via HTTP Basic authentication."
+            description="Required for non-public clients unless client credentials are provided via HTTP Basic "
+            "authentication."
         ),
     ] = None,
     redirect_uri: t.Annotated[
@@ -362,7 +360,10 @@ async def token(
         )
 
         return await security.refresh_token(
-            request=request, discord=discord, token=refresh_token
+            discord=discord,
+            token=refresh_token,
+            oidc_metadata=oidc_metadata,
+            params=await request.form(),
         )
 
     if not redirect_uri:
@@ -388,7 +389,6 @@ async def token(
     return await security.create_tokens(
         discord=discord,
         discord_token=discord_token,
-        scopes=authorization_data.scopes,
         nonce=authorization_data.nonce,
         oidc_metadata=oidc_metadata,
     )

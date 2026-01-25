@@ -42,7 +42,6 @@ class Serializable(BaseModel):
 
 
 class SnowflakeStateData(Serializable):
-    scopes: list[str]
     redirect_uri: str
     state: str | None
     nonce: str | None
@@ -58,8 +57,7 @@ class SnowflakeStateData(Serializable):
 
 class SnowflakeAuthorizationData(Serializable):
     code: str
-    scopes: list[str]
-    nonce: str | None = None
+    nonce: str | None
 
     @classmethod
     def from_jwt(cls, token: str) -> t.Self:

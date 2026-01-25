@@ -7,7 +7,6 @@ import httpx
 
 # noinspection PyUnresolvedReferences
 from authlib.integrations.starlette_client import StarletteOAuth2App
-from fastapi import Request
 from joserfc import jwt
 from joserfc.errors import JoseError
 from joserfc.jwk import KeySet
@@ -72,7 +71,6 @@ async def create_tokens(
     *,
     discord: StarletteOAuth2App,
     discord_token: dict,
-    scopes: list[str],
     oidc_metadata: dict,
     nonce: str | None = None,
 ) -> dict[str, str | int]:
@@ -93,6 +91,10 @@ async def create_tokens(
         "iat": now,
         "exp": expiry,
     }
+
+    scopes = utils.convert_scopes(
+        discord_token["scope"], to_format="snowflake", output_type=list
+    )
 
     if "profile" in scopes:
         access_claims.update(
@@ -138,10 +140,10 @@ async def create_tokens(
 
 
 async def refresh_token(
-    *, request: Request, discord: StarletteOAuth2App, token: str
+    *, discord: StarletteOAuth2App, token: str, oidc_metadata: dict, params: dict
 ) -> dict:
     token_params = {
-        **(await request.form()),
+        **params,
         "grant_type": "refresh_token",
         "refresh_token": token,
     }
@@ -160,15 +162,8 @@ async def refresh_token(
 
         discord_token = token_resp.json()
 
-    scopes = utils.convert_scopes(
-        discord_token["scope"], to_format="snowflake", output_type=list
-    )
-
     return await create_tokens(
         discord=discord,
         discord_token=discord_token,
-        scopes=scopes,
-        oidc_metadata=utils.get_discovery_info(
-            request,
-        ),
+        oidc_metadata=oidc_metadata,
     )
