@@ -18,7 +18,7 @@ from fastapi.security import (
 )
 from httpx import HTTPStatusError
 from joserfc.errors import JoseError
-from pydantic import AfterValidator, Field, validate_email
+from pydantic import AfterValidator, validate_email
 from scalar_fastapi import get_scalar_api_reference
 
 import snowflake.responses as r
@@ -155,7 +155,9 @@ async def authorize(
         ),
     ] = None,
     nonce: str = None,
-    referrer: t.Annotated[str | None, Header(alias="Referer")] = None,
+    referrer: t.Annotated[
+        str | None, Header(alias="Referer", include_in_schema=False)
+    ] = None,
 ):
     """
     Clients are directed to this endpoint to begin the authorization process.
