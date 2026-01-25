@@ -61,7 +61,7 @@ permitted by the new `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS` environment variable (m
 return an HTTP 404 error for emails with non-whitelisted hostnames.
 - The `/ping` endpoint has been renamed to `/health` and now returns an empty response.
 - The `SNOWFLAKE_ENABLE_SWAGGER` setting is now `SNOWFLAKE_ENABLE_DOCS`.
-- Uvicorn's host and port are now declared via command-line flags. This means Uvicorn will longer respect the `UVICORN_HOST` and `UVICORN_PORT` environment variables.
+- Uvicorn's host and port are now declared via command-line flags. This means Uvicorn will no longer respect the `UVICORN_HOST` and `UVICORN_PORT` environment variables.
 
 ### Added
 
