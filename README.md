@@ -116,7 +116,6 @@ not provide at least one of the other scopes.
 > asking for it — until the user manually revokes their authorization. Applications should be prepared to
 > receive data from scopes they did not explicitly request at authorization.
 
-
 ### Supported Claims
 
 #### Tokens
