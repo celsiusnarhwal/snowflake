@@ -139,6 +139,7 @@ Depending on the provided scopes, Snowflake-issued access and ID tokens include 
 | `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`                                      |
 | `nonce`              | If the `nonce` parameter was sent to the authorization endpoint, this claim will contain its value. It only appears in ID tokens.                                        | None                                          |
 
+
 #### User Info
 
 The `/userinfo` endpoint returns the same claims as access tokens but does not include `iss`, `aud`,
@@ -146,12 +147,11 @@ The `/userinfo` endpoint returns the same claims as access tokens but does not i
 
 #### Refresh Tokens
 
-Snowflake supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
-Discord doesn't allow refresh tokens to be separately scoped, so the access and ID tokens issued in response to refresh
-requests will always the same scopes as the original authorization request.
+Successful responses from Snowflake's token endpoint also include a refresh token. After the access and ID tokens 
+expire, the refresh token can be sent to the token endpoint to obtain a new pair of access and ID tokens without having
+to make the user reauthorize.
 
-Snowflake doesn't have any control over whether a refresh token is valid or when it expires; all of that is solely
-up to Discord.
+See [OpenID Connect Core 1.0 § 12]((https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens). for additional details.
 
 ### PKCE Support
 
