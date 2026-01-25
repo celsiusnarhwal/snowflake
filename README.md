@@ -155,6 +155,10 @@ Successful responses from Snowflake's token endpoint also include a refresh toke
 expire, the refresh token can be sent to the token endpoint to obtain a new pair of access and ID tokens without having
 to make the user reauthorize.
 
+Unlike access and ID tokens, refresh tokens are not JWTs and don't have baked-in metadata indicating their expiry time.
+The only way to determine the validity of a refresh token is to send it to the token endpoint and see what happens.
+You'll get an HTTP 400 response if something goes wrong.
+
 See [OpenID Connect Core 1.0 § 12](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens) 
 for additional details.
 
