@@ -148,7 +148,7 @@ async def authorize(
     ] = None,
     state: t.Annotated[
         str,
-        Field(
+        Query(
             description="While optional, it is "
             "[highly recommended](https://discord.com/developers/docs/topics/oauth2#state-and-security) "
             "to supply this parameter.",
