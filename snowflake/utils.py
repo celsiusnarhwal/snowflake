@@ -27,15 +27,15 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
 def convert_scopes(
     scopes: t.Annotated[list | tuple | set, BeforeValidator(scope_to_list)],
     *,
-    to_format: t.Literal["snowflake", "discord"],
+    to_format: t.Literal["openid", "discord"],
     output_type: t.Literal[list, str],
 ) -> list | str:
     """
-    Convert Snowflake scopes to Discord scopes or vice versa.
+    Convert OpenID Connect scopes to Discord scopes or vice versa.
     """
     scope_map = {"profile": "identify", "email": "email", "groups": "guilds"}
 
-    if to_format == "snowflake":
+    if to_format == "openid":
         scope_map = {v: k for k, v in scope_map.items()}
 
     converter = scope_to_list if output_type is list else list_to_scope

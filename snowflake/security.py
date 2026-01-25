@@ -93,7 +93,7 @@ async def create_tokens(
     }
 
     scopes = utils.convert_scopes(
-        discord_token["scope"], to_format="snowflake", output_type=list
+        discord_token["scope"], to_format="openid", output_type=list
     )
 
     if "profile" in scopes:
