@@ -331,7 +331,7 @@ async def token(
     include_refresh_token: t.Annotated[
         str,
         Form(
-            "Include Refresh Token",
+            title="Include Refresh Token",
             description="Whether to include a refresh token in the response. Only available for public clients.",
         ),
     ] = None,
