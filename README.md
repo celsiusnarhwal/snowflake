@@ -155,7 +155,7 @@ having to make the user reauthorize.
 See [OpenID Connect Core 1.0 § 12](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens) 
 for additional details.
 
-> [!danger]
+> [!caution]
 > **Public clients must keep their refresh tokens secure!** If an attacker steals a public client's refresh token,
 > Discord doesn't provide any means to keep the attacker from using it.
 
