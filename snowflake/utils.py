@@ -16,8 +16,7 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     """
     return OAuth().register(
         name="discord",
-        authorize_url="https://discord.com/oauth2/authorize",
-        access_token_url="https://discord.com/api/oauth2/token",
+        server_metadata_url="https://discord.com/.well-known/openid-configuration",
         api_base_url="https://discord.com/api/",
         **kwargs,
     )
@@ -33,7 +32,12 @@ def convert_scopes(
     """
     Convert OpenID Connect scopes to Discord scopes or vice versa.
     """
-    scope_map = {"profile": "identify", "email": "email", "groups": "guilds"}
+    scope_map = {
+        "openid": "openid",
+        "profile": "identify",
+        "email": "email",
+        "groups": "guilds",
+    }
 
     if to_format == "openid":
         scope_map = {v: k for k, v in scope_map.items()}

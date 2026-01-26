@@ -134,8 +134,7 @@ async def authorize(
     scope: t.Annotated[
         str,
         Query(
-            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. At least `openid` and "
-            "`profile` are required.",
+            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. Only `openid` is required."
         ),
     ],
     redirect_uri: t.Annotated[
@@ -183,9 +182,8 @@ async def authorize(
                 f"(e.g., {fixed_redirect_uri})",
             )
 
-    for required_scope in "openid", "profile":
-        if required_scope not in scope_to_list(scope):
-            raise HTTPException(400, f"{required_scope} scope is required")
+    if "openid" not in scope_to_list(scope):
+        raise HTTPException(400, "openid scope is required")
 
     discord = utils.get_oauth_client(
         client_id=client_id,
@@ -329,7 +327,7 @@ async def token(
         ),
     ] = None,
     include_refresh_token: t.Annotated[
-        str,
+        bool,
         Form(
             title="Include Refresh Token",
             description="Whether to include a refresh token in the response. Only available for public clients.",

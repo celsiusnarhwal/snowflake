@@ -76,39 +76,30 @@ async def create_tokens(
     """
     Create a pair of access and ID tokens.
     """
-    user_resp = await discord.get("users/@me", token=discord_token)
-    user_resp.raise_for_status()
-    user_info = user_resp.json()
+    access_claims = await discord.userinfo(token=discord_token)
 
     now = int(time.time())
     expiry = now + settings().token_lifetime
 
-    access_claims = {
-        "iss": oidc_metadata["issuer"],
-        "sub": user_info["id"],
-        "aud": oidc_metadata["userinfo_endpoint"],
-        "iat": now,
-        "exp": expiry,
-        "preferred_username": user_info["username"],
-        "name": user_info["global_name"],
-        "locale": user_info["locale"],
-        "picture": f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}."
-        f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
-    }
+    access_claims.update(
+        {
+            "iss": oidc_metadata["issuer"],
+            "aud": oidc_metadata["userinfo_endpoint"],
+            "iat": now,
+            "exp": expiry,
+        }
+    )
 
     scopes = utils.convert_scopes(
         discord_token["scope"], to_format="openid", output_type=list
     )
 
-    if "email" in scopes:
-        access_claims.update(
-            {"email": user_info["email"], "email_verified": user_info["verified"]}
-        )
-
     if "groups" in scopes:
-        guilds_resp = await discord.get("users/@me/guilds", token=discord_token)
-        guilds_resp.raise_for_status()
-        guilds = guilds_resp.json()
+        guilds = (
+            (await discord.get("users/@me/guilds", token=discord_token))
+            .raise_for_status()
+            .json()
+        )
 
         access_claims["groups"] = [guild["id"] for guild in guilds]
 
