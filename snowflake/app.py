@@ -294,7 +294,13 @@ async def token(
             )
         ),
     ],
-    grant_type: t.Annotated[str, Form(title="Grant Type")] = None,
+    grant_type: t.Annotated[
+        str,
+        Form(
+            title="Grant Type",
+            description="When using a refresh token, this must be `refresh_token`.",
+        ),
+    ] = None,
     client_id: t.Annotated[
         str,
         Form(
