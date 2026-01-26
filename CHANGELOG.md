@@ -6,7 +6,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## <a name="2-3-0">2.3.0 — Unreleased</a>
 
-> [!important]
+> [!note]
 > This version of Snowflake has not yet been released. This is a preview of changes to come.
 
 ### Added
