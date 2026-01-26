@@ -66,6 +66,13 @@ def is_secure_transport(url: str | URL) -> bool:
     )
 
 
+def client_is_allowed(client_id: int) -> bool:
+    """
+    Return `True` if the given client ID is allowed per `SNOWFLAKE_ALLOWED_CLIENTS`; `False` otherwise.
+    """
+    return bool({client_id, "*"}.intersection(settings().allowed_clients))
+
+
 def get_discovery_info(request: Request) -> dict:
     """
     Return OpenID Connect Discovery information.

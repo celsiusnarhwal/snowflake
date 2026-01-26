@@ -163,7 +163,7 @@ async def authorize(
     """
     Clients are directed to this endpoint to begin the authorization process.
     """
-    if not {client_id, "*"}.intersection(settings().allowed_clients):
+    if not utils.client_is_allowed(client_id):
         raise HTTPException(400, f"Client ID {client_id} is not allowed")
 
     if not utils.is_secure_transport(redirect_uri):
@@ -358,6 +358,9 @@ async def token(
     if not client_id:
         raise HTTPException(400, "Client ID is required")
 
+    if not utils.client_is_allowed(client_id):
+        raise HTTPException(400, f"Client ID {client_id} is not allowed")
+
     oidc_metadata = utils.get_discovery_info(request)
     discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
 
@@ -374,6 +377,7 @@ async def token(
                             **(await request.form()),
                             "client_id": client_id,
                             "client_secret": client_secret,
+                            "refresh_token": refresh_token,
                         },
                     )
                 )
