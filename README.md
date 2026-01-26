@@ -159,6 +159,9 @@ for additional details.
 > **Public clients must keep their refresh tokens secure!** If an attacker steals a public client's refresh token,
 > Discord doesn't provide any means to keep the attacker from using it and obtaining new access and ID tokens
 > indefinitely.
+> 
+> Public clients may opt out of recieving refresh tokens by sending `include_refresh_token=false` to the `/token`
+> endpoint.
 
 ### PKCE Support
 
