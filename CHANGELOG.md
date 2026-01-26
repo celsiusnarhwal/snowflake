@@ -15,12 +15,12 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Snowflake now requires the `profile` scope at authorization time. Previously, not requesting the `profile` scope
-would have caused requests to the `/token` endpoint to fail; all that has changed in practice is that the failure now 
-occurs at authorization.
+- Requesting only the `openid` scope, without any other scopes, no longer triggers a "no scopes provided" error
+from Discord.
 
 ### Fixed
 
+- Fixed an issue where token requests would fail if the `profile` scope was not requested.
 - Fixed an issue where the `/userinfo` endpoint would erroneously return null values for unavailable claims instead
 of omitting them from the respose entirely.
 
