@@ -145,7 +145,7 @@ The `/userinfo` endpoint returns the same claims as access tokens but does not i
 
 #### Refresh Tokens
 
-> [!important]
+> [!note]
 > This feature is coming in a future version of Snowflake. It isn't available yet.
 
 Successful responses from Snowflake's token endpoint also include a refresh token. After the access and ID tokens 
