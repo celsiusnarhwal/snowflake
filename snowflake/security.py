@@ -144,18 +144,16 @@ async def refresh_token(
 ) -> dict:
     token_params = {
         **params,
+        "client_id": discord.client_id,
+        "client_secret": discord.client_secret,
         "grant_type": "refresh_token",
         "refresh_token": token,
     }
-
-    for param in "client_id", "client_secret":
-        token_params.pop(param, None)
 
     async with httpx.AsyncClient() as client:
         token_resp = await client.post(
             discord.access_token_url,
             data=token_params,
-            auth=(discord.client_id, discord.client_secret),
         )
 
         token_resp.raise_for_status()
