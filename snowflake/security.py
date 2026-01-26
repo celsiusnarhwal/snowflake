@@ -3,8 +3,6 @@ import time
 from json import JSONDecodeError
 from pathlib import Path
 
-import httpx
-
 # noinspection PyUnresolvedReferences
 from authlib.integrations.starlette_client import StarletteOAuth2App
 from joserfc import jwt
@@ -137,31 +135,3 @@ async def create_tokens(
         "id_token": identity_token,
         "refresh_token": discord_token["refresh_token"],
     }
-
-
-async def refresh_token(
-    *, discord: StarletteOAuth2App, token: str, oidc_metadata: dict, params: dict
-) -> dict:
-    token_params = {
-        **params,
-        "client_id": discord.client_id,
-        "client_secret": discord.client_secret,
-        "grant_type": "refresh_token",
-        "refresh_token": token,
-    }
-
-    async with httpx.AsyncClient() as client:
-        token_resp = await client.post(
-            discord.access_token_url,
-            data=token_params,
-        )
-
-        token_resp.raise_for_status()
-
-        discord_token = token_resp.json()
-
-    return await create_tokens(
-        discord=discord,
-        discord_token=discord_token,
-        oidc_metadata=oidc_metadata,
-    )

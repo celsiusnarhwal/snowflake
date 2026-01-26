@@ -1,6 +1,7 @@
 import typing as t
 
 import dns.name
+import httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import scope_to_list
 from fastapi import Depends, FastAPI, Form, Header, Request
@@ -343,8 +344,6 @@ async def token(
     The client ID and client secret may be provided via either form fields or HTTP Basic authentication, but not both.
     Public clients using the PKCE-enhanced authorization code flow may omit the client secret entirely.
     """
-    oidc_metadata = utils.get_discovery_info(request)
-
     if (client_id or client_secret) and credentials:
         raise HTTPException(
             400,
@@ -359,19 +358,33 @@ async def token(
     if not client_id:
         raise HTTPException(400, "Client ID is required")
 
+    oidc_metadata = utils.get_discovery_info(request)
+    discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
+
     if grant_type == "refresh_token":
         if not refresh_token:
             raise HTTPException(400, "Refresh Token is required")
 
-        discord = utils.get_oauth_client(
-            client_id=client_id, client_secret=client_secret
-        )
+        async with httpx.AsyncClient() as client:
+            discord_token = (
+                (
+                    await client.post(
+                        discord.access_token_url,
+                        data={
+                            **(await request.form()),
+                            "client_id": client_id,
+                            "client_secret": client_secret,
+                        },
+                    )
+                )
+                .raise_for_status()
+                .json()
+            )
 
-        return await security.refresh_token(
+        return await security.create_tokens(
             discord=discord,
-            token=refresh_token,
+            discord_token=discord_token,
             oidc_metadata=oidc_metadata,
-            params=await request.form(),
         )
 
     if not redirect_uri:
@@ -391,7 +404,6 @@ async def token(
     for param in "client_id", "client_secret":
         token_params.pop(param, None)
 
-    discord = utils.get_oauth_client(client_id=client_id, client_secret=client_secret)
     discord_token = await discord.fetch_access_token(**token_params)
 
     return await security.create_tokens(
