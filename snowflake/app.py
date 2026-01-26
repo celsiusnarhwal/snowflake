@@ -134,9 +134,8 @@ async def authorize(
     scope: t.Annotated[
         str,
         Query(
-            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. Only `openid` is required, "
-            'but you will get a "no scopes provided" error from Discord if you do not '
-            "supply at least one other scope."
+            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. At least `openid` and "
+            "`profile` are required.",
         ),
     ],
     redirect_uri: t.Annotated[
@@ -184,14 +183,13 @@ async def authorize(
                 f"(e.g., {fixed_redirect_uri})",
             )
 
-    scopes = set(scope_to_list(scope))
-
-    if "openid" not in scopes:
-        raise HTTPException(400, "openid scope is required")
+    for required_scope in "openid", "profile":
+        if required_scope not in scope_to_list(scope):
+            raise HTTPException(400, f"{required_scope} scope is required")
 
     discord = utils.get_oauth_client(
         client_id=client_id,
-        scope=utils.convert_scopes(scopes, to_format="discord", output_type=str),
+        scope=utils.convert_scopes(scope, to_format="discord", output_type=str),
     )
 
     state_data = SnowflakeStateData(

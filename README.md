@@ -104,12 +104,9 @@ Frankly, if you're reading this then you should already know how this works.
 | **Scope** | **Requests**                                                                                    | **Required?** |
 |-----------|-------------------------------------------------------------------------------------------------|---------------|
 | `openid`  | To authenticate using OpenID Connect.                                                           | Yes           |
-| `profile` | Basic information about the user's Discord account.                                             | No            |
+| `profile` | Basic information about the user's Discord account.                                             | Yes           |
 | `email`   | The email address associated with the user's Discord account and whether or not it is verified. | No            |
 | `groups`  | A list of IDs of guilds (a.k.a. "servers") the user is a member of.                             | No            |
-
-Snowflake only requires the `openid` scope, but you will get a "no scopes provided" error from Discord if you do
-not provide at least one of the other scopes.
 
 > [!warning]
 > Scopes are persistent. Once a scope is granted, your app maintains perpetual access to it — even if it later stops
@@ -124,21 +121,21 @@ not provide at least one of the other scopes.
 
 Depending on the provided scopes, Snowflake-issued access and ID tokens include some subset of the following claims:
 
-| **Claim**            | **Description**                                                                                                                                                          | **Required Scopes (in addition to `openid`)** |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `iss`                | The URL at which the client accessed Snowflake.                                                                                                                          | None                                          |
-| `sub`                | The ID of the user's Discord account.                                                                                                                                    | None                                          |
-| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                | None                                          |
-| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  | None                                          |
-| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | None                                          |
-| `preferred_username` | The username of the user's Discord account.                                                                                                                              | `profile`                                     |
-| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. | `profile`                                     |
-| `locale`             | The locale of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).                                        | `profile`                                     |
-| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | `profile`                                     |
-| `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`                                       |
-| `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`                                       |
-| `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`                                      |
-| `nonce`              | If the `nonce` parameter was sent to the authorization endpoint, this claim will contain its value. It only appears in ID tokens.                                        | None                                          |
+| **Claim**            | **Description**                                                                                                                                                          | **Required Scopes (in addition to `openid and profile`)** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| `iss`                | The URL at which the client accessed Snowflake.                                                                                                                          | None                                                      |
+| `sub`                | The ID of the user's Discord account.                                                                                                                                    | None                                                      |
+| `aud`                | For access tokens, the URL of Snowflake's `/userinfo` endpoint; for ID tokens, the client ID of your Discord application.                                                | None                                                      |
+| `iat`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) at which the token was issued.                                                                                  | None                                                      |
+| `exp`                | The [Unix time](https://en.wikipedia.org/wiki/Unix_time) past which the token should be considered expired and thus no longer valid.                                     | None                                                      |
+| `preferred_username` | The username of the user's Discord account.                                                                                                                              | None                                                      |
+| `name`               | The [display name](https://support.discord.com/hc/en-us/articles/12620128861463-New-Usernames-Display-Names#h_01GXPQABMYGEHGPRJJXJMPHF5C) of the user's Discord account. | `profile`                                                 |
+| `locale`             | The locale of the user's Discord account. See all possible locales [here](https://discord.com/developers/docs/reference#locales).                                        | None                                                      |
+| `picture`            | The URL of the avatar of the user's Discord account.                                                                                                                     | None                                                      |
+| `email`              | The email address associated with the user's Discord account.                                                                                                            | `email`                                                   |
+| `email_verified`     | Whether the email address associated with the user's Discord account is verified.                                                                                        | `email`                                                   |
+| `groups`             | A list of IDs of guilds the user is a member of.                                                                                                                         | `groups`                                                  |
+| `nonce`              | If the `nonce` parameter was sent to the authorization endpoint, this claim will contain its value. It only appears in ID tokens.                                        | None                                                      |
 
 
 #### User Info

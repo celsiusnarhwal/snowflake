@@ -88,22 +88,16 @@ async def create_tokens(
         "aud": oidc_metadata["userinfo_endpoint"],
         "iat": now,
         "exp": expiry,
+        "preferred_username": user_info["username"],
+        "name": user_info["global_name"],
+        "locale": user_info["locale"],
+        "picture": f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}."
+        f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
     }
 
     scopes = utils.convert_scopes(
         discord_token["scope"], to_format="openid", output_type=list
     )
-
-    if "profile" in scopes:
-        access_claims.update(
-            {
-                "preferred_username": user_info["username"],
-                "name": user_info["global_name"],
-                "locale": user_info["locale"],
-                "picture": f"https://cdn.discordapp.com/avatars/{user_info['id']}/{user_info['avatar']}."
-                f"{'gif' if user_info['avatar'].startswith('a_') else 'png'}",
-            }
-        )
 
     if "email" in scopes:
         access_claims.update(
