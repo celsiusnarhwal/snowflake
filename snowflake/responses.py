@@ -61,4 +61,4 @@ class DiscoveryResponse(BaseModel, title="OpenID Connect Discovery"):
 
 
 class HTTPClientErrorResponse(BaseModel, title="HTTP Client Error"):
-    detail: str
+    detail: str | dict
