@@ -400,6 +400,7 @@ async def token(
     "/userinfo",
     summary="User Info",
     response_model=r.UserInfoResponse,
+    response_model_exclude_none=True,
     responses={code: {"model": r.HTTPClientErrorResponse} for code in [401, 403]},
 )
 @app.post("/userinfo", include_in_schema=False)
