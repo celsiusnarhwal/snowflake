@@ -13,6 +13,12 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 - Snowflake now supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
 
+### Changed
+
+- Snowflake now requires the `profile` scope at authorization time. Previously, not requesting the `profile` scope
+would have caused requests to the `/token` endpoint to fail; all that has changed in practice is that the failure now 
+occurs at authorization.
+
 ### Fixed
 
 - Fixed an issue where the `/userinfo` endpoint would erroneously return null values for unavailable claims instead
