@@ -133,7 +133,7 @@ async def authorize(
     scope: t.Annotated[
         str,
         Query(
-            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. Only`openid` is required, "
+            description="Supported scopes are `openid`, `profile`, `email`, and `groups`. Only `openid` is required, "
             'but you will get a "no scopes provided" error from Discord if you do not '
             "supply at least one other scope."
         ),
