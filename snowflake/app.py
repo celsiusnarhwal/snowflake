@@ -328,6 +328,13 @@ async def token(
             description="Required unless `grant_type` is `refresh_token`.",
         ),
     ] = None,
+    include_refresh_token: t.Annotated[
+        str,
+        Form(
+            "Include Refresh Token",
+            description="Whether to include a refresh token in the response. Only available for public clients.",
+        ),
+    ] = None,
     refresh_token: t.Annotated[
         str,
         Form(
@@ -366,6 +373,12 @@ async def token(
         if not refresh_token:
             raise HTTPException(400, "Refresh Token is required")
 
+        if not include_refresh_token:
+            raise HTTPException(
+                400,
+                "You cannot opt out of receiving a new refresh token when using an existing one",
+            )
+
         async with httpx.AsyncClient() as client:
             discord_token = (
                 (
@@ -395,6 +408,11 @@ async def token(
     if not code:
         raise HTTPException(400, "Authorization code is required")
 
+    if include_refresh_token and not client_secret:
+        raise HTTPException(
+            400, "Confidential clients cannot opt out of receiving a refresh token"
+        )
+
     authorization_data = SnowflakeAuthorizationData.from_jwt(code)
 
     token_params = {
@@ -413,6 +431,7 @@ async def token(
         discord_token=discord_token,
         nonce=authorization_data.nonce,
         oidc_metadata=oidc_metadata,
+        include_refresh_token=include_refresh_token,
     )
 
 

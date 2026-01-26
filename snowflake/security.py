@@ -71,6 +71,7 @@ async def create_tokens(
     discord_token: dict,
     oidc_metadata: dict,
     nonce: str | None = None,
+    include_refresh_token: bool = True,
 ) -> dict[str, str | int]:
     """
     Create a pair of access and ID tokens.
@@ -122,10 +123,14 @@ async def create_tokens(
     access_token = create_jwt(access_claims)
     identity_token = create_jwt(identity_claims)
 
-    return {
+    tokens = {
         "access_token": access_token,
         "token_type": "Bearer",
         "expires_at": expiry,
         "id_token": identity_token,
-        "refresh_token": discord_token["refresh_token"],
     }
+
+    if include_refresh_token:
+        tokens["refresh_token"] = discord_token["refresh_token"]
+
+    return tokens
