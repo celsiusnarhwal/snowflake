@@ -408,7 +408,7 @@ async def token(
     if not code:
         raise HTTPException(400, "Authorization code is required")
 
-    if include_refresh_token and client_secret:
+    if client_secret and not include_refresh_token:
         raise HTTPException(
             400, "Confidential clients cannot opt out of receiving a refresh token"
         )
