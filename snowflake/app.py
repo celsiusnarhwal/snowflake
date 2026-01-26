@@ -157,7 +157,7 @@ async def authorize(
     ] = None,
     nonce: str = None,
     referrer: t.Annotated[
-        str | None, Header(alias="Referer", include_in_schema=False)
+        str | None, Header(alias="referer", include_in_schema=False)
     ] = None,
 ):
     """
