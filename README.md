@@ -201,7 +201,7 @@ be useful, for example, in environments where mounting `/app/snowflake/data` isn
 to keep the private key in an environment variable rather than have it persisted to a file.
 
 The value of `SNOWFLAKE_PRIVATE_KEY` must be an RS256 JSON Web Key. You can generate one by using
-[mkjwk](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256) (using this link will prefill the configuration
+[mkjwk](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256) (using that link will prefill the configuration
 options; you only need to click `Generate`) and then clicking `Copy to Clipboard` underneath 
 `Public and Private Keypair`.
 
