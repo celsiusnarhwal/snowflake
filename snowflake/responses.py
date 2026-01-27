@@ -8,7 +8,7 @@ class TokenResponse(BaseModel, title="Token"):
     token_type: t.Literal["Bearer"]
     expires_at: int
     id_token: str = Field(title="ID Token")
-    refresh_token: str = Field(title="Refresh Token")
+    refresh_token: str = Field(None, title="Refresh Token")
 
 
 class UserInfoResponse(BaseModel, title="User Info"):

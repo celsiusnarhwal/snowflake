@@ -276,6 +276,7 @@ async def callback(
     "/token",
     summary="Token",
     response_model=r.TokenResponse,
+    response_model_exclude_none=True,
     responses={400: {"model": r.HTTPClientErrorResponse}},
 )
 async def token(
