@@ -195,7 +195,7 @@ For more information, see [Uvicorn's documentation](https://www.uvicorn.org/depl
 
 By default, Snowflake signs its JWTs with a private key that it generates and writes to `/app/snowflake/data`,
 which you are instructed to mount on your host machine (see [Installation](#installation)). As an alternative to this,
-Snowflake allows you to provide your own private key via the `SNOWFLAKE_PRIVATE_KEY` environment variable. This might
+Snowflake allows you to provide your own private key via the `SNOWFLAKE_PRIVATE_KEY` environment variable. This may
 be useful, for example, in environments where mounting `/app/snowflake/data` isn't possible, or if you'd just prefer
 to keep the private key in an environment variable rather than have it persisted to a file.
 
