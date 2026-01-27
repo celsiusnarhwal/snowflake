@@ -65,8 +65,8 @@ ghcr.io/celsiusnarhwal/snowflake:latest
 
 ## Usage
 
-First, [create an application in the Discord Developer Portal](https://discord.com/developers/applications). In your
-application's OAuth2 settings, note your client ID and client secret, then set your redirect URIs.
+First, [create an application in the Discord Developer Portal](https://discord.com/developers/applications?new_application=true). 
+In your application's OAuth2 settings, note your client ID and client secret, then set your redirect URIs.
 
 Your redirect URIs must be in the form `https://snowflake.example.com/r/{YOUR_REDIRECT_URI}`,
 where `{YOUR_REDIRECT_URI}` is the actual intended redirect URI for your application. For example, a redirect
