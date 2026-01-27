@@ -99,6 +99,9 @@ async def create_tokens(
         discord_token["scope"], to_format="openid", output_type=list
     )
 
+    if "profile" in scopes:
+        access_claims["name"] = access_claims["nickname"]
+
     if "groups" in scopes:
         guilds = (
             (await discord.get("users/@me/guilds", token=discord_token))
