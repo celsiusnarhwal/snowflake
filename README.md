@@ -191,7 +191,7 @@ For more information, see [Uvicorn's documentation](https://www.uvicorn.org/depl
 ## Custom Private Keys
 
 > [!note]
-> This is an advanced feature most users shouldn't need.
+> This is an advanced feature most users won't need.
 
 By default, Snowflake signs its JWTs with a private key that it generates and writes to `/app/snowflake/data`,
 which you are instructed to mount on your host machine (see [Installation](#installation)). As an alternative to this,
