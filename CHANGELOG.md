@@ -6,9 +6,6 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 ## <a name="2-3-0">2.3.0 — 2026-01-26</a>
 
-> [!note]
-> This version of Snowflake has not yet been released. This is a preview of changes to come.
-
 ### Added
 
 - Snowflake now supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
