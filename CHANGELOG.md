@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-4-0">2.4.0 — Unreleased</a>
+
+### Added
+
+- Snowflake now supports custom private keys; see the README for details.
+
 ## <a name="2-3-0">2.3.0 — 2026-01-26</a>
 
 ### Added
