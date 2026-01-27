@@ -145,9 +145,6 @@ The `/userinfo` endpoint returns the same claims as access tokens but does not i
 
 #### Refresh Tokens
 
-> [!note]
-> This feature is coming in a future version of Snowflake. It isn't available yet.
-
 Successful responses from Snowflake's token endpoint also include a refresh token. After the access and ID tokens 
 expire, the refresh token can be sent to the token endpoint to obtain a new set access, ID, and refresh tokens without 
 having to make the user reauthorize.
