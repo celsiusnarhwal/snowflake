@@ -104,6 +104,8 @@ class SnowflakeSettings(BaseSettings):
         if key.alg != "RS256":
             raise ValueError(f"{variable_name} must be an RS256 key")
 
+        logging.getLogger("uvicorn").info("Snowflake is using a custom private key.")
+
         return KeySet([key])
 
 

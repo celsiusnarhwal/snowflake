@@ -226,7 +226,8 @@ options; you only need to click `Generate`) and then clicking `Copy to Clipboard
 
 </details>
 
-If `SNOWFLAKE_PRIVATE_KEY` is set, there's no need to mount `/app/snowflake/data`.
+If `SNOWFLAKE_PRIVATE_KEY` is set, there's no need to mount `/app/snowflake/data`. On startup, Snowflake
+will log a message affirming that a custom private key is in use.
 
 ## Configuration
 
