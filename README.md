@@ -188,6 +188,46 @@ trust all IP addresses, but this is generally not recommended.
 
 For more information, see [Uvicorn's documentation](https://www.uvicorn.org/deployment/#proxies-and-forwarded-headers).
 
+## Custom Private Keys
+
+> [!note]
+> This is an advanced feature most users shouldn't need.
+
+By default, Snowflake signs its JWTs with a private key that it generates and writes to `/app/snowflake/data`,
+which you are instructed to mount on your host machine (see [Installation](#installation)). As an alternative to this,
+Snowflake allows you to provide your own private key via the `SNOWFLAKE_PRIVATE_KEY` environment variable. This might
+be useful, for example, in environments where mounting `/app/snowflake/data` isn't possible, or if you'd just prefer
+to keep the private key in an environment variable rather than have it persisted to a file.
+
+The value of `SNOWFLAKE_PRIVATE_KEY` must be an RS256 JSON Web Key. You can generate one by using
+[mkjwk](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256) (using this link will prefill the configuration
+options; you only need to click `Generate`) and then clicking `Copy to Clipboard` underneath 
+`Public and Private Keypair`.
+
+<details>
+<summary>The result should look similar to this (click to expand):</summary>
+
+```json5
+// For demonstration purposes only, do not actually use this private key. Obviously.
+{
+    "p": "4AGfVeTcxkgbvqf0WP5c270L-p_WQyNwMmtn4pXPazhmfwVPW6j3f2n2_Ober4xObaD5KOJIR3ah3Wu9LCoYp2HNdxsddyBXYh7nZhYP21uq1MphX9jvw1l422qAEbPraISKfkPv71sJxnXMG1cm7SaUtkj4P6Lg7bTv8PxapQ0",
+    "kty": "RSA",
+    "q": "2ues113yqdjCdx9O_1piyYeWQhYbM-VZy_TTKmc3JqARj68wx8lUoggr_ybcN5dJ8JKPKh93SN5TnqbmscqYllEaXtSQPw6aDq5OkF5Z5M7J-kDtfVcHU-Z02NFa40ViU25seIDmejbJi442ox2yChTd9gbp_0Rfkhv9EuWdnaU",
+    "d": "GMJcHduhQEp1EYSU7MGuA6RWUHFYWhuwxPorrY09E5PrAPmPJxFmrPls_2hSfJSSJ-TnnKKcHQpcNFt7BiZ6Th2D_qH5DH9FUKSRkl6kvb9gEI5bNDF_1lYZxnivG94OEtkqprVXURMaza5Hbz57Gl0iBpV28BmnZAg6Llb7AUUNONmZgtzhPYpwH9JxJOHCzQHbc4u9ZF1XfbW-iINHenJW34pN8jdWPlv_DYKt9SDd9qPQq4eCGkOU9uQFL4KeoPlGaDXA_7ps4i62klEtb-rdQFQD-gg8-nc2trMt9oMmqVl0XFdG4KN9_N4Qid4HgiaiMwjNsdkNKk2e8aZWvQ",
+    "e": "AQAB",
+    "use": "sig",
+    "qi": "2vWPtbeCUETj7ZgqrOxUqtO_yD5I86tY_zoMK_woQ389VLg--fwXcY9amWo1FViHm1KmuA0nqxc0Sdbl5N1ibxZPqYglX_YnGH5AQ9HTOCmrPeAOTCOdUtUgBD0biG2y63VfiGKnrJz1QGVLIkEFub6V0JraUNDxE7nUJlxb3Lk",
+    "dp": "YLISl79dVfJWl6xkm-3hI7GtdBh_IygvDHS0uWi1yrDj_bzLDuQXQlb5mR4Hznugd05ff7h-PusE4FHbrS7WyZo8WUfJJl09m0t_099-JNCjI4vhEMDSbt82fnCwq_OgkNN1_R9SeV4xEAxVeQ_b688VrsI89ytWMQZD9SDZ-Bk",
+    "alg": "RS256",
+    "dq": "JmN8jyQ9mwWVTNijvOo36smpUxuXV6l_7uGXapdBN7fYfI8nidHH0saGGK_S7LjOUa8SBjwQain7FhaE3GcADVRZwImcZkKER9DPnEe_kf2ltApQ26s4cME4epF0U-jmDmWOBi_su0ACZkPhVwetIlF4f13FCWwPKotX_UlhM7U",
+    "n": "v4waY3YE-AFuYoVy_T7fgC48LRujLaQNaFb-GGZnZEbiFi7rkVJF_EVajmu3Ksz1TwTrIHhrJijKAuBg_p4UKNJVZATqjPCilIrOajbWWJ-OISYXqeUHmlaoqML3Qq1x8ti05G6DyUjZTfZRabqrx7UggB3nOL-Eog69FnNf7tf1XmEIKEvwfB9NFAQWG2Jiksts8jzU2PVDnmR5cpsAeOK2hwZnp0BKcezAnILGrVbt_NPvp4J2ldD6eV8_YMZ9YenZaTw6LuVAE0k4buPv7mNoP-QhDhhg2UrmY3xElhhk0VNxbNV7b0AAm07bfuPfEb-y8V0amzYLKb48F55aYQ"
+}
+```
+
+</details>
+
+If `SNOWFLAKE_PRIVATE_KEY` is set, there's no need to mount `/app/snowflake/data`.
+
 ## Configuration
 
 Snowflake is configurable through the following environment variables (all optional):
@@ -203,6 +243,7 @@ Snowflake is configurable through the following environment variables (all optio
 | `SNOWFLAKE_TREAT_LOOPBACK_AS_SECURE` | Boolean  | Whether Snowflake will consider loopback addresses (e.g., `localhost`) to be secure even if they don't use HTTPS.                                                                                                                                                                                                                                                                                     | `true`                    |
 | `SNOWFLAKE_RETURN_TO_REFERRER`       | Boolean  | If this is `true` and the user denies an authorization request, Snowflake will redirect the user back to the initiating URL.[^3] Otherwise, Snowflake behaves according to [OpenID Connect Core 1.0 § 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).                                                                                                                      | `false`                   |
 | `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`  | String   | A comma-separated lists of domains allowed in `acct:` URIs sent to Snowflake's WebFinger endpoint. The endpoint will return an HTTP 404 error for URIs with domains not permitted by this setting.<br/><br/> Wildcard domains (e.g., `*.example.com`) are supported, but the unqualified wildcard (`*`) is not.                                                                                       | N/A                       |
+| `SNOWFLAKE_PRIVATE_KEY`              | String   | A private RS256 JSON Web Key. If provided, Snowflake will use it instead of generating its own. See [Custom Private Keys](#custom-private-keys).                                                                                                                                                                                                                                                      |                           |
 | `SNOWFLAKE_ENABLE_DOCS`              | Boolean  | Whether to serve Snowflake's interactive API documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.<br/><br/>This is forced to be `true` if `SNOWFLAKE_ROOT_REDIRECT` is set to `docs`.                                                                                                           | `false`                   |
 
 <br>

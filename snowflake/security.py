@@ -20,7 +20,9 @@ def create_private_key() -> None:
     """
     Create a new private key.
     """
-    key = KeySet.generate_key_set("RSA", 2048, private=True, count=1)
+    key = KeySet.generate_key_set(
+        "RSA", 2048, parameters={"use": "sig"}, private=True, count=1
+    )
     PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
     json.dump(key.as_dict(private=True), PRIVATE_KEY_FILE.open("w"))
 
@@ -29,6 +31,9 @@ def get_private_key() -> KeySet:
     """
     Get the private key, creating one if necessary.
     """
+    if settings().private_key:
+        return settings().private_key
+
     try:
         return KeySet.import_key_set(json.load(PRIVATE_KEY_FILE.open()))
     except (FileNotFoundError, JSONDecodeError, JoseError):

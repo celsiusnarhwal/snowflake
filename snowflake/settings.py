@@ -1,9 +1,12 @@
+import json
 import logging
 import typing as t
 from functools import lru_cache
 
 import dns.name
 import durationpy
+from joserfc.jwk import KeySet
+from joserfc.rfc7518.rsa_key import RSAKey
 from pydantic import (
     BaseModel,
     BeforeValidator,
@@ -44,6 +47,7 @@ class SnowflakeSettings(BaseSettings):
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         default_factory=list, validate_default=False
     )
+    private_key: t.Annotated[KeySet, NoDecode] = Field(None, validate_default=False)
     enable_docs: bool = False
 
     private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
@@ -86,6 +90,21 @@ class SnowflakeSettings(BaseSettings):
     @classmethod
     def validate_enable_docs(cls, v: bool, info: ValidationInfo) -> bool:
         return v or info.data["root_redirect"] == "docs"
+
+    @field_validator("private_key", mode="before")
+    @classmethod
+    def validate_private_key(cls, v: str) -> KeySet:
+        variable_name = "SNOWFLAKE_PRIVATE_KEY"
+
+        key = RSAKey.import_key(json.loads(v))
+
+        if not key.is_private:
+            raise ValueError(f"{variable_name} must be a private key")
+
+        if key.alg != "RS256":
+            raise ValueError(f"{variable_name} must be an RS256 key")
+
+        return KeySet([key])
 
 
 @lru_cache
