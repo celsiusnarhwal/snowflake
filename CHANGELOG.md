@@ -4,17 +4,22 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## <a name="2-4-0">2.4.0 — Unreleased</a>
+## <a name="2-4-0">2.4.0 — 2026-01-27</a>
 
 ### Added
 
 - Snowflake now supports custom private keys; see the README for details.
+
+### Fixed
+
+- Fixed a regression where access and ID tokens would be missing the name scope.
 
 ## <a name="2-3-0">2.3.0 — 2026-01-26</a>
 
 ### Added
 
 - Snowflake now supports [refresh tokens](https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens).
+- Access and ID tokens now include the `nickname` scope.
 
 ### Changed
 
