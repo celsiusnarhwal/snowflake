@@ -207,7 +207,8 @@ options; you only need to click `Generate`) and then clicking `Copy to Clipboard
 
 <details>
 <summary>The result should look similar to this (click to expand):</summary>
-
+<br>
+  
 ```json5
 // For demonstration purposes only, do not actually use this private key. Obviously.
 {
