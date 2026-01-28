@@ -4,6 +4,13 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-5-0">2.5.0 — 2026-01-28</a>
+
+### Added
+
+- Snowflake now has a `keygen` CLI command for generating private keys to be used with the `SNOWFLAKE_PRIVATE_KEY`
+  environment variable.
+
 ## <a name="2-4-0">2.4.0 — 2026-01-27</a>
 
 ### Added
@@ -14,14 +21,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed a regression where access and ID tokens would be missing the `name` scope.
 
-## <a name="2-4-0">2.4.0 — 2026-01-28</a>
-
-### Added
-
-- Snowflake now has a `keygen` CLI command for generating private keys to be used with the `SNOWFLAKE_PRIVATE_KEY`
-environment variable.
-
-## <a name="2-3-0">2.3.0 — 2026-01-27</a>
+## <a name="2-3-0">2.3.0 — 2026-01-26</a>
 
 ### Added
 
