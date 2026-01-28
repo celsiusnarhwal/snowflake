@@ -213,6 +213,7 @@ will prefill the configuration options; you only need to click `Generate` and th
 
 <details>
 <summary>Either way, the result should look similar to this (click to expand):</summary>
+<br>
 
 ```json5
 // For demonstration purposes only, do not actually use this private key. Obviously.
