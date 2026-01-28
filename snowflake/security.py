@@ -21,8 +21,9 @@ def create_private_key() -> None:
     Create a new private key.
     """
     key = KeySet.generate_key_set(
-        "RSA", 2048, parameters={"use": "sig"}, private=True, count=1
+        "RSA", 2048, parameters={"use": "sig", "alg": "RS256"}, private=True, count=1
     )
+
     PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
     json.dump(key.as_dict(private=True), PRIVATE_KEY_FILE.open("w"))
 
