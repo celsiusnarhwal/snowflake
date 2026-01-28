@@ -16,6 +16,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+keygen = "snowflake.cli:keygen"
+
 [tool.pdm.version]
 source = "scm"
 fallback_version = "0.0.0"

@@ -2,6 +2,8 @@ FROM ghcr.io/astral-sh/uv:0.9-debian
 
 LABEL org.opencontainers.image.authors="celsius narhwal <hello@celsiusnarhwal.dev>"
 
+ENV PATH="/app/.venv/bin:${PATH}"
+
 WORKDIR /app/
 
 COPY pyproject.toml uv.lock /app/
