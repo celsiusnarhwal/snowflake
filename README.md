@@ -200,13 +200,19 @@ Snowflake allows you to provide your own private key via the `SNOWFLAKE_PRIVATE_
 be useful, for example, in environments where mounting `/app/snowflake/data` isn't possible, or if you'd just prefer
 to keep the private key in an environment variable rather than have it persisted to a file.
 
-The value of `SNOWFLAKE_PRIVATE_KEY` must be an RS256 JSON Web Key. You can generate one by using
-[mkjwk](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256) (using that link will prefill the configuration
-options; you only need to click `Generate`) and then clicking `Copy to Clipboard` underneath 
+The value of `SNOWFLAKE_PRIVATE_KEY` must be an RS256 JSON Web Key. There are two recommended ways to generate one:
+
+1. Use the online tool mkjwk via [this link](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256). Using that link 
+will prefill the configuration options; you only need to click `Generate` and then `Copy to Clipboard` underneath 
 `Public and Private Keypair`.
+2. Use the following command:
+
+    ```shell
+    docker run ghcr.io/celsiusnarhwal/snowflake keygen
+    ```
 
 <details>
-<summary>The result should look similar to this (click to expand):</summary>
+<summary>Either way, the result should look similar to this (click to expand):</summary>
 
 ```json5
 // For demonstration purposes only, do not actually use this private key. Obviously.
