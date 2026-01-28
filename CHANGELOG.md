@@ -14,7 +14,7 @@ Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
 - Fixed a regression where access and ID tokens would be missing the `name` scope.
 
-## <a name="2-4-0">2.3.0 — 2026-01-28</a>
+## <a name="2-4-0">2.4.0 — 2026-01-28</a>
 
 ### Added
 
