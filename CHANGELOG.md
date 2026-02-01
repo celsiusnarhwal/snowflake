@@ -4,6 +4,12 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="2-5-1">2.5.1 — 2026-01-31</a>
+
+### Changed
+
+- Scalar's AI chat interface is no longer available in Snowflake's API documentation.
+
 ## <a name="2-5-0">2.5.0 — 2026-01-28</a>
 
 ### Added
