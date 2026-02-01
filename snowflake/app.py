@@ -108,6 +108,7 @@ async def docs():
             show_developer_tools="localhost"
             if settings().private.show_scalar_devtools_on_localhost
             else "never",
+            overrides={"slug": "snowflake", "agent": {"disabled": True}},
         )
 
     raise HTTPException(404)
