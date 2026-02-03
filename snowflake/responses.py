@@ -13,8 +13,9 @@ class TokenResponse(BaseModel, title="Token"):
 
 class UserInfoResponse(BaseModel, title="User Info"):
     sub: str = Field(title="Subject")
-    name: str = None
     preferred_username: str = None
+    name: str = None
+    nickname: str = None
     locale: str = None
     picture: HttpUrl = None
     email: str = None
