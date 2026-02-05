@@ -5,6 +5,8 @@ an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
+Snowflake is a sister project to [Takagi](https://github.com/celsiusnarhwal/takagi), which does the same thing but for GitHub. You should check that out, too.
+
 > [!important]
 > Snowflake requires HTTPS for external connections. (By default, HTTP connections on `localhost` are fine; see
 > [Configuration](#configuration).)
