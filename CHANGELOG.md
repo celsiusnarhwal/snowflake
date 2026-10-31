@@ -26,6 +26,10 @@ have changed to reflect that.
 default, it's the same as `SNOWFLAKE_TOKEN_LIFETIME`. The number of keys Snowflake currently has in rotation can be set
 with `SNOWFLAKE_KEY_HISTORY`.
 
+### Fixed
+
+- Fixed a bug that would cause refresh token requests to always fail.
+
 ## <a name="2-5-2">2.5.2 — 2026-02-02</a>
 
 ### Fixed
