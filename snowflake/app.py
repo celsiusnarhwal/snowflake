@@ -388,10 +388,12 @@ async def token(
             )
 
         async with httpx.AsyncClient() as client:
+            await discord.load_server_metadata()
+
             discord_token = (
                 (
                     await client.post(
-                        discord.access_token_url,
+                        discord.server_metadata["token_endpoint"],
                         data={
                             **(await request.form()),
                             "client_id": client_id,
