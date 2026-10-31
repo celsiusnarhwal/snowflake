@@ -1,4 +1,5 @@
 import typing as t
+from pathlib import Path
 
 import dns.name
 import httpx2 as httpx
@@ -108,7 +109,13 @@ async def docs():
             show_developer_tools="localhost"
             if settings().private.show_scalar_devtools_on_localhost
             else "never",
-            overrides={"slug": "snowflake", "agent": {"disabled": True}},
+            overrides={
+                "slug": "snowflake",
+                "agent": {"disabled": True},
+                "customCss": Path(__file__)
+                .parent.joinpath("docs/docs.css")
+                .read_text(),
+            },
         )
 
     raise HTTPException(404)

@@ -1,0 +1,159 @@
+/*
+Adapted from Catppucin's Scalar userstyle.
+https://github.com/catppuccin/userstyles/tree/main/styles/scalar
+ */
+
+@import url("https://unpkg.com/@catppuccin/highlightjs@1.0.0/css/catppuccin-variables.important.css");
+code.hljs {
+  background: none !important;
+}
+.light-mode {
+  color-scheme: light;
+  --ctp-rosewater: #dc8a78;
+  --ctp-flamingo: #dd7878;
+  --ctp-pink: #ea76cb;
+  --ctp-mauve: #8839ef;
+  --ctp-red: #d20f39;
+  --ctp-maroon: #e64553;
+  --ctp-peach: #fe640b;
+  --ctp-yellow: #df8e1d;
+  --ctp-green: #40a02b;
+  --ctp-teal: #179299;
+  --ctp-sky: #04a5e5;
+  --ctp-sapphire: #209fb5;
+  --ctp-blue: #1e66f5;
+  --ctp-lavender: #7287fd;
+  --ctp-text: #4c4f69;
+  --ctp-subtext1: #5c5f77;
+  --ctp-subtext0: #6c6f85;
+  --ctp-overlay2: #7c7f93;
+  --ctp-overlay1: #8c8fa1;
+  --ctp-overlay0: #9ca0b0;
+  --ctp-surface2: #acb0be;
+  --ctp-surface1: #bcc0cc;
+  --ctp-surface0: #ccd0da;
+  --ctp-base: #eff1f5;
+  --ctp-mantle: #e6e9ef;
+  --ctp-crust: #dce0e8;
+  --scalar-color-1: #4c4f69;
+  --scalar-color-2: #5c5f77;
+  --scalar-color-3: #6c6f85;
+  --scalar-color-accent: #8839ef;
+  --scalar-background-1: #eff1f5;
+  --scalar-background-2: #ccd0da;
+  --scalar-background-3: #bcc0cc;
+  --scalar-background-accent: rgba(136, 57, 239, 0.12);
+  --scalar-border-color: #bcc0cc;
+  --scalar-color-green: #40a02b;
+  --scalar-color-red: #d20f39;
+  --scalar-color-yellow: #df8e1d;
+  --scalar-color-blue: #1e66f5;
+  --scalar-color-orange: #fe640b;
+  --scalar-color-purple: #8839ef;
+  --scalar-selection-1: rgba(136, 57, 239, 0.3);
+  --scalar-button-1: #8839ef;
+  --scalar-button-1-hover: #7a21ed;
+  --scalar-button-1-color: #eff1f5;
+  background-color: #eff1f5;
+}
+.light-mode ::selection {
+  background-color: rgba(136, 57, 239, 0.3);
+}
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: #6c6f85 !important;
+}
+.light-mode .sidebar {
+  --scalar-sidebar-background-1: #e6e9ef;
+  --scalar-sidebar-item-hover-background: #ccd0da;
+  --scalar-sidebar-item-active-background: rgba(136, 57, 239, 0.1);
+  --scalar-sidebar-color-active: #8839ef;
+}
+.light-mode .scalar-code-block,
+.light-mode .t-editor__code {
+  background-color: #e6e9ef;
+}
+.light-mode .brightness-lifted {
+  filter: none;
+}
+.light-mode .text-white {
+  color: #eff1f5;
+}
+.light-mode .logo {
+  filter: brightness(0) saturate(100%) invert(43%) sepia(43%) saturate(515%) hue-rotate(196deg) brightness(49%) contrast(68%);
+}
+.dark-mode {
+  color-scheme: dark;
+  --ctp-rosewater: #f5e0dc;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-pink: #f5c2e7;
+  --ctp-mauve: #cba6f7;
+  --ctp-red: #f38ba8;
+  --ctp-maroon: #eba0ac;
+  --ctp-peach: #fab387;
+  --ctp-yellow: #f9e2af;
+  --ctp-green: #a6e3a1;
+  --ctp-teal: #94e2d5;
+  --ctp-sky: #89dceb;
+  --ctp-sapphire: #74c7ec;
+  --ctp-blue: #89b4fa;
+  --ctp-lavender: #b4befe;
+  --ctp-text: #cdd6f4;
+  --ctp-subtext1: #bac2de;
+  --ctp-subtext0: #a6adc8;
+  --ctp-overlay2: #9399b2;
+  --ctp-overlay1: #7f849c;
+  --ctp-overlay0: #6c7086;
+  --ctp-surface2: #585b70;
+  --ctp-surface1: #45475a;
+  --ctp-surface0: #313244;
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+  --scalar-color-1: #cdd6f4;
+  --scalar-color-2: #bac2de;
+  --scalar-color-3: #a6adc8;
+  --scalar-color-accent: #cba6f7;
+  --scalar-background-1: #1e1e2e;
+  --scalar-background-2: #313244;
+  --scalar-background-3: #45475a;
+  --scalar-background-accent: rgba(203, 166, 247, 0.12);
+  --scalar-border-color: #45475a;
+  --scalar-color-green: #a6e3a1;
+  --scalar-color-red: #f38ba8;
+  --scalar-color-yellow: #f9e2af;
+  --scalar-color-blue: #89b4fa;
+  --scalar-color-orange: #fab387;
+  --scalar-color-purple: #cba6f7;
+  --scalar-selection-1: rgba(203, 166, 247, 0.3);
+  --scalar-button-1: #cba6f7;
+  --scalar-button-1-hover: #bd8ff5;
+  --scalar-button-1-color: #1e1e2e;
+  background-color: #1e1e2e;
+}
+.dark-mode ::selection {
+  background-color: rgba(203, 166, 247, 0.3);
+}
+.dark-mode input::placeholder,
+.dark-mode textarea::placeholder {
+  color: #a6adc8 !important;
+}
+.dark-mode .sidebar {
+  --scalar-sidebar-background-1: #181825;
+  --scalar-sidebar-item-hover-background: #313244;
+  --scalar-sidebar-item-active-background: rgba(203, 166, 247, 0.1);
+  --scalar-sidebar-color-active: #cba6f7;
+}
+.dark-mode .scalar-code-block,
+.dark-mode .t-editor__code {
+  background-color: #181825;
+}
+.dark-mode .brightness-lifted {
+  filter: none;
+}
+.dark-mode .text-white {
+  color: #1e1e2e;
+}
+.dark-mode .logo {
+  filter: brightness(0) saturate(100%) invert(75%) sepia(82%) saturate(1008%) hue-rotate(189deg) brightness(120%) contrast(90%);
+}
