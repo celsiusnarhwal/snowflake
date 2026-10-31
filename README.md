@@ -11,10 +11,8 @@ API.
 
 ## Installation
 
-[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. It's recommended that you set
-the `SNOWFLAKE_SECRET` environment variable, and setting `SNOWFLAKE_ALLOWED_HOSTS` is required if Snowflake is to be 
-accessible from outside your local network; see  [Generating a Secret](#generating-a-secret) and 
-[Configuration](#configuration) for more details.
+[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. Adjust either of the
+following Docker Compose or Docker CLI configurations to your needs.
 
 > [!note]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
@@ -50,7 +48,7 @@ services:
       - "8000:8000"
     environment:
       - SNOWFLAKE_ALLOWED_HOSTS=snowflake.example.com
-      - SNOWFLAKE_SECRET=your-secret-here  # See the "Generating a Secret" section later in this README
+      - SNOWFLAKE_SECRET=your-secret-here 
 ```
 
 ### Docker CLI
@@ -60,9 +58,19 @@ docker run --name snowflake \
 --restart unless-stopped \
 -p "8000:8000" \
 -e "SNOWFLAKE_ALLOWED_HOSTS=snowflake.example.com"
--v "/some/directory/on/your/machine:/app/snowflake/data" \
+-e "SNOWFLAKE_SECRET=your-secret-here"
 ghcr.io/celsiusnarhwal/snowflake:latest
 ```
+
+### Required Configuration
+
+Strictly speaking, neither of these environment variables are required, but you will almost always want to set them:
+
+| **Environment Variable**             | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                                                       | **Default**                             |
+|--------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------|
+| `SNOWFLAKE_ALLOWED_HOSTS`            | String   | A comma-separated list of hostnames at which Snowflake may be accessed. This is required if you want to access Snowflake from outside your local network.<br/><br/> Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended.<br/><br/>Loopback addresses (e.g., `localhost`) are always included.   | `localhost,127.0.0.1,::1`               |
+| `SNOWFLAKE_SECRET`                   | String   | A Base64-encoded string at least 32 bytes in length. While optional, it is strongly recommended to provide this.                                                                                                                                                                                                                                                                                      | Randomly generated                      |
+
 
 ## Usage
 
