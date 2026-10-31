@@ -44,8 +44,8 @@ class SnowflakeSettings(BaseSettings):
 
     allowed_hosts: CommaSeparatedList[str] = []
     secret: Secret[Base64Bytes] = Field(None)
-    allowed_clients: CommaSeparatedList = Field(["*"], validate_default=False)
-    base_path: str = Field(None, validate_default=False)
+    allowed_clients: CommaSeparatedList[str] = Field(["*"], validate_default=False)
+    base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
     rotation_interval: Duration = None
@@ -77,12 +77,6 @@ class SnowflakeSettings(BaseSettings):
 
         return v + loopback
 
-    @field_validator("base_path", mode="after")
-    def validate_base_path(cls, v):
-        logging.getLogger("uvicorn").warning(
-            "SNOWFLAKE_BASE_PATH is deprecated. Use UVICORN_ROOT_PATH instead."
-        )
-
     @field_validator("allowed_webfinger_hosts", mode="before")
     def validate_allowed_webfinger_hosts(cls, v: str) -> list[dns.name.Name]:
         hosts = []
@@ -100,7 +94,7 @@ class SnowflakeSettings(BaseSettings):
         return hosts
 
     @field_validator("secret", mode="wrap")
-    def validate_secret(cls, v, handler: t.Callable):
+    def validate_secret(cls, v: str | None, handler: t.Callable) -> Secret[Base64Bytes]:
         if v is None:
             v = base64.b64encode(secrets.token_bytes(32))
 
@@ -121,7 +115,9 @@ class SnowflakeSettings(BaseSettings):
         return v
 
     @field_validator("rotation_interval", mode="wrap")
-    def validate_rotation_interval(cls, v, handler: t.Callable, info: ValidationInfo):
+    def validate_rotation_interval(
+        cls, v: str, handler: t.Callable, info: ValidationInfo
+    ) -> Duration:
         token_lifetime = info.data["token_lifetime"]
 
         if v is None:
