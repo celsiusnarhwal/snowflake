@@ -45,7 +45,7 @@ class SnowflakeSettings(BaseSettings):
     allowed_hosts: CommaSeparatedList[str] = []
     secret: Secret[Base64Bytes] = Field(None)
     allowed_clients: CommaSeparatedList = Field(["*"], validate_default=False)
-    base_path: str = "/"
+    base_path: str = Field(None, validate_default=False)
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
     rotation_interval: Duration = None
@@ -53,7 +53,7 @@ class SnowflakeSettings(BaseSettings):
     root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     treat_loopback_as_secure: bool = True
     return_to_referrer: bool = False
-    allowed_webfinger_hosts: CommaSeparatedList[dns.name.Name] = Field(
+    allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         [], validate_default=False
     )
     enable_docs: bool = False
@@ -76,6 +76,12 @@ class SnowflakeSettings(BaseSettings):
             )
 
         return v + loopback
+
+    @field_validator("base_path", mode="after")
+    def validate_base_path(cls, v):
+        logging.getLogger("uvicorn").warning(
+            "SNOWFLAKE_BASE_PATH is deprecated. Use UVICORN_ROOT_PATH instead."
+        )
 
     @field_validator("allowed_webfinger_hosts", mode="before")
     def validate_allowed_webfinger_hosts(cls, v: str) -> list[dns.name.Name]:
@@ -142,4 +148,3 @@ def settings() -> SnowflakeSettings:
 
 
 settings()
-print(settings())
