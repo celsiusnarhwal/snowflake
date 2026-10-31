@@ -22,6 +22,12 @@ from pydantic_settings import (
     SettingsConfigDict,
 )
 
+type CommaSeparatedList[T] = t.Annotated[
+    list[T],
+    NoDecode,
+    BeforeValidator(lambda v: v.split(",") if isinstance(v, str) else v),
+]
+
 Duration = t.Annotated[
     int, BeforeValidator(lambda v: durationpy.from_str(v).total_seconds())
 ]
@@ -36,7 +42,7 @@ class SnowflakeSettings(BaseSettings):
         env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
     )
 
-    allowed_hosts: t.Annotated[list[str], NoDecode] = Field(default_factory=list)
+    allowed_hosts: CommaSeparatedList[str] = Field(default_factory=list)
     secret: Secret[Base64Bytes] = Field(None)
     allowed_clients: t.Annotated[list[str], NoDecode] = Field(
         default=["*"], validate_default=False
@@ -49,23 +55,29 @@ class SnowflakeSettings(BaseSettings):
     root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     treat_loopback_as_secure: bool = True
     return_to_referrer: bool = False
-    allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
+    allowed_webfinger_hosts: CommaSeparatedList[dns.name.Name] = Field(
         default_factory=list, validate_default=False
     )
     enable_docs: bool = False
 
     private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
 
-    @field_validator("allowed_hosts", mode="before")
+    @field_validator("allowed_hosts", mode="after")
     def validate_allowed_hosts(cls, v: str | list) -> list[str]:
-        hosts = v.split(",") if isinstance(v, str) else v
-
-        if "*" in hosts:
+        if "*" in v:
             logging.getLogger("uvicorn").warning(
                 "Setting SNOWFLAKE_ALLOWED_HOSTS to '*' is insecure and not recommended."
             )
 
-        return hosts + ["localhost", "127.0.0.1", "::1"]
+        loopback = ["localhost", "127.0.0.1", "::1"]
+
+        if not set(v).difference(loopback):
+            logging.getLogger("uvicorn").warning(
+                "Snowflake is only accessible from within your local network. If this isn't your intention, set "
+                "SNOWFLAKE_ALLOWED_HOSTS to include the hosts at which Snowflake should be accessible."
+            )
+
+        return v + loopback
 
     @field_validator("allowed_clients", mode="before")
     def validate_allowed_clients(cls, v: str) -> list[str]:
@@ -91,11 +103,12 @@ class SnowflakeSettings(BaseSettings):
     def validate_secret(cls, v, handler: t.Callable):
         if v is None:
             v = base64.b64encode(secrets.token_bytes(32))
+
             logging.getLogger("uvicorn").warning(
                 f"SNOWFLAKE_SECRET is not set. Snowflake will generate one for "
                 f"you this time, but unless you set SNOWLAKE_SECRET yourself, "
                 f"restarting Snowflake will cause all in-progress authorizations to "
-                f"fail and cause the user info endpoint to reject all existing tokens. You can generate a secret with "
+                f"fail and invalidate all existing tokens. You can generate a secret with "
                 f"the following command: "
                 f"docker run --rm ghcr.io/celsiusnarhwal/snowflake:v{importlib.metadata.version('snowflake')} secret"
             )
@@ -135,3 +148,4 @@ def settings() -> SnowflakeSettings:
 
 
 settings()
+print(settings())
