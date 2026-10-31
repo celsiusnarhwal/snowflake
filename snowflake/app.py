@@ -22,6 +22,7 @@ from httpx2 import HTTPStatusError
 from joserfc.errors import JoseError
 from pydantic import AfterValidator, validate_email
 from scalar_fastapi import get_scalar_api_reference
+from starlette_rootpath_middleware import RootPathMiddleware
 
 import snowflake.responses as r
 from snowflake import security, utils
@@ -39,13 +40,13 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/celsiusnarhwal/snowflake/blob/main/LICENSE.md",
     },
-    root_path=settings().base_path,
     version="2.0.0",
     docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json" if settings().enable_docs else None,
 )
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings().allowed_hosts)
+app.add_middleware(RootPathMiddleware, root_path=settings().base_path)
 
 
 @app.middleware("http")

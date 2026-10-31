@@ -1374,6 +1374,7 @@ dependencies = [
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
     { name = "scalar-fastapi" },
+    { name = "starlette-rootpath-middleware" },
 ]
 
 [package.metadata]
@@ -1387,6 +1388,7 @@ requires-dist = [
     { name = "pydantic", extras = ["email"], specifier = ">=2.11.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
     { name = "scalar-fastapi", specifier = ">=1.6.0" },
+    { name = "starlette-rootpath-middleware", directory = "/Users/celsiusnarhwal/PycharmProjects/fastapi-rootpath-middleware" },
 ]
 
 [[package]]
@@ -1400,6 +1402,16 @@ sdist = { url = "https://files.pythonhosted.org/packages/48/bb/3d8757f21e9a53d90
 wheels = [
     { url = "https://files.pythonhosted.org/packages/88/2e/947cfe02def9371c07cd5bf5b6b61c829e9aecb9904db02a66cfafbc1eec/starlette-1.10.0-py3-none-any.whl", hash = "sha256:478c0ab3b4ced6e82719849c118fa406f0278a3499c1a898cd15cd31bdc38ce4", size = 80571, upload-time = "2026-10-24T15:04:10.371Z" },
 ]
+
+[[package]]
+name = "starlette-rootpath-middleware"
+source = { directory = "/Users/celsiusnarhwal/PycharmProjects/fastapi-rootpath-middleware" }
+dependencies = [
+    { name = "starlette" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "starlette", specifier = ">=0.33.0" }]
 
 [[package]]
 name = "truststore"
