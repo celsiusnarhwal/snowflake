@@ -1,3 +1,4 @@
+import importlib.metadata
 import typing as t
 from pathlib import Path
 
@@ -40,7 +41,7 @@ app = FastAPI(
         "name": "MIT License",
         "url": "https://github.com/celsiusnarhwal/snowflake/blob/main/LICENSE.md",
     },
-    version="2.0.0",
+    version=importlib.metadata.version("snowflake"),
     docs_url=None,
     redoc_url=None,
     openapi_url="/openapi.json" if settings().enable_docs else None,
