@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:0.9-debian
+FROM ghcr.io/astral-sh/uv:0.13-debian
 
 LABEL org.opencontainers.image.authors="celsius narhwal <hello@celsiusnarhwal.dev>"
 
