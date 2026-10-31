@@ -1,55 +1,80 @@
-import json
 import time
-from json import JSONDecodeError
-from pathlib import Path
+from functools import lru_cache
 
 # noinspection PyUnresolvedReferences
 from authlib.integrations.starlette_client import StarletteOAuth2App
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from joserfc import jwt
-from joserfc.errors import JoseError
-from joserfc.jwk import KeySet
+from joserfc.jwk import ECKey, KeySet
 from joserfc.jwt import Token
 
 from snowflake import utils
 from snowflake.settings import settings
 
-PRIVATE_KEY_FILE = Path(__file__).parent / "data" / "keys" / "jwt_private_key.json"
 
+@lru_cache(maxsize=settings().key_history + 3)
+def derive_private_key(secret: bytes, version: int) -> ECKey:
+    """
+    Derive a private key from a secret.
 
-def create_private_key() -> None:
+    Parameters
+    ----------
+    secret: str
+        The secret from which to derive the key.
+
+    version: int
+        The key version.
+
+    Returns
+    -------
+    ECKey
+        The derived key.
+
     """
-    Create a new private key.
-    """
-    key = KeySet.generate_key_set(
-        "RSA", 2048, parameters={"use": "sig", "alg": "RS256"}, private=True, count=1
+    hkdf_key = HKDF(
+        algorithm=hashes.SHA256(),
+        length=40,
+        salt=None,
+        info=f"snowflake/{settings().rotation_interval}s/v{version}/es256".encode(),
+    ).derive(secret)
+
+    curve = ec.SECP256R1()
+    derived_key = ec.derive_private_key(
+        int.from_bytes(hkdf_key) % (curve.group_order - 1) + 1, curve
     )
 
-    PRIVATE_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(key.as_dict(private=True), PRIVATE_KEY_FILE.open("w"))
+    return ECKey.import_key(derived_key, {"alg": "ES256", "use": "sig"})
 
 
-def get_private_key() -> KeySet:
+def get_private_key_set(*, include_unused: bool = False) -> KeySet:
     """
-    Get the private key, creating one if necessary.
+    Get the private key set.
+
+    Parameters
+    ----------
+    include_unused: bool, default=False
+        Whether to include key versions not used for signing.
     """
-    if settings().private_key:
-        return settings().private_key
+    secret = settings().secret.get_secret_value()
+    current_version = int(time.time()) // settings().rotation_interval
 
-    try:
-        return KeySet.import_key_set(json.load(PRIVATE_KEY_FILE.open()))
-    except (FileNotFoundError, JSONDecodeError, JoseError):
-        pass
+    if include_unused:
+        versions = [current_version + 1] + [
+            current_version - i for i in range(settings().key_history + 1)
+        ]
+    else:
+        versions = [current_version]
 
-    create_private_key()
-
-    return get_private_key()
+    return KeySet([derive_private_key(secret, version) for version in versions])
 
 
 def create_jwt(claims: dict) -> str:
     """
     Create a JWT.
     """
-    return jwt.encode({"alg": "RS256"}, claims, get_private_key())
+    return jwt.encode({"alg": "ES256"}, claims, get_private_key_set())
 
 
 def decode_jwt(token: str, **claims: dict) -> Token:
@@ -67,7 +92,8 @@ def get_jwks() -> KeySet:
     Get the public JSON Web Key Set.
     """
     return KeySet.import_key_set(
-        get_private_key().as_dict(private=False), parameters={"use": "sig"}
+        get_private_key_set(include_unused=True).as_dict(private=False),
+        parameters={"use": "sig"},
     )
 
 

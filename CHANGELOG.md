@@ -4,12 +4,33 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
+## <a name="3.0.0">3.0.0 — 1970-01-01</a>
+
+This is technically a breaking release, but most users should be able to upgrade without strictly needing to
+change anything.
+
+### 🚨 Breaking Changes
+
+- Snowflake no longer stores a private key or allows you provide one. Instead, Snowflake computes private keys
+from a secret provided via `SNOWFLAKE_SECRET`. Snowflake will generate a secret for you if you don't provide one, 
+but you really should provide one; see [Configuration](https://github.com/celsiusnarhwal/snowflake/tree/main#configuration 
+for the full details.
+  - By extension, it is no longer necessary to provide Snowflake's container with any volume mounts, and the `SNOWFLAKE_PRIVATE_KEY`
+    setting and `snowflake keygen` commmand have been removed.
+- Snowflakes private keys are now ES256 instead of RSA. The responses from the OpenID Connect Discovery and JWKS endpoints
+have changed to reflect that.
+
+### Added
+
+- Snowflake now rotates its private keys. You can configure a rotation interval via `SNOWFLAKE_ROTATION_INTERVAL`; by
+default, it's the same as `SNOWFLAKE_TOKEN_LIFETIME`. The number of keys Snowflake currently has in rotation can be set
+with `SNOWFLAKE_KEY_HISTORY`.
+
 ## <a name="2-5-2">2.5.2 — 2026-02-02</a>
 
 ### Fixed
 
 - Fixed an error that caused the `nickname` claim to be omitted from resposnes from the `/userinfo` endpoint.
-
 
 ## <a name="2-5-1">2.5.1 — 2026-01-31</a>
 

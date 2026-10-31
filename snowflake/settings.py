@@ -1,16 +1,18 @@
-import json
+import base64
+import importlib.metadata
 import logging
+import secrets
 import typing as t
 from functools import lru_cache
 
 import dns.name
 import durationpy
-from joserfc.jwk import KeySet
-from joserfc.rfc7518.rsa_key import RSAKey
 from pydantic import (
+    Base64Bytes,
     BaseModel,
     BeforeValidator,
     Field,
+    Secret,
     field_validator,
 )
 from pydantic_core.core_schema import ValidationInfo
@@ -35,25 +37,26 @@ class SnowflakeSettings(BaseSettings):
     )
 
     allowed_hosts: t.Annotated[list[str], NoDecode] = Field(default_factory=list)
+    secret: Secret[Base64Bytes] = Field(None)
     allowed_clients: t.Annotated[list[str], NoDecode] = Field(
         default=["*"], validate_default=False
     )
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
+    rotation_interval: Duration = None
+    key_history: int = Field(1, ge=1, le=10)
     root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     treat_loopback_as_secure: bool = True
     return_to_referrer: bool = False
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         default_factory=list, validate_default=False
     )
-    private_key: t.Annotated[KeySet, NoDecode] = Field(None, validate_default=False)
     enable_docs: bool = False
 
     private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
 
     @field_validator("allowed_hosts", mode="before")
-    @classmethod
     def validate_allowed_hosts(cls, v: str | list) -> list[str]:
         hosts = v.split(",") if isinstance(v, str) else v
 
@@ -65,12 +68,10 @@ class SnowflakeSettings(BaseSettings):
         return hosts + ["localhost", "127.0.0.1", "::1"]
 
     @field_validator("allowed_clients", mode="before")
-    @classmethod
     def validate_allowed_clients(cls, v: str) -> list[str]:
         return v.split(",")
 
     @field_validator("allowed_webfinger_hosts", mode="before")
-    @classmethod
     def validate_allowed_webfinger_hosts(cls, v: str) -> list[dns.name.Name]:
         hosts = []
 
@@ -86,27 +87,46 @@ class SnowflakeSettings(BaseSettings):
 
         return hosts
 
+    @field_validator("secret", mode="wrap")
+    def validate_secret(cls, v, handler: t.Callable):
+        if v is None:
+            v = base64.b64encode(secrets.token_bytes(32))
+            logging.getLogger("uvicorn").warning(
+                f"SNOWFLAKE_SECRET is not set. Snowflake will generate one for "
+                f"you this time, but unless you set SNOWLAKE_SECRET yourself, "
+                f"restarting Snowflake will cause all in-progress authorizations to "
+                f"fail and cause the user info endpoint to reject all existing tokens. You can generate a secret with "
+                f"the following command: "
+                f"docker run --rm ghcr.io/celsiusnarhwal/snowflake:v{importlib.metadata.version('snowflake')} secret"
+            )
+
+        v = handler(v)
+
+        if len(v.get_secret_value()) < 32:
+            raise ValueError("SNOWFLAKE_SECRET must be at least 32 bytes")
+
+        return v
+
+    @field_validator("rotation_interval", mode="wrap")
+    def validate_rotation_interval(cls, v, handler: t.Callable, info: ValidationInfo):
+        token_lifetime = info.data["token_lifetime"]
+
+        if v is None:
+            return token_lifetime
+
+        v = handler(v)
+
+        if v < token_lifetime:
+            raise ValueError(
+                "SNOWFLAKE_ROTATION_INTERVAL, if set to a duration, must be greater than or equal to "
+                "SNOWFLAKE_TOKEN_LIFETIME"
+            )
+
+        return v
+
     @field_validator("enable_docs")
-    @classmethod
     def validate_enable_docs(cls, v: bool, info: ValidationInfo) -> bool:
         return v or info.data["root_redirect"] == "docs"
-
-    @field_validator("private_key", mode="before")
-    @classmethod
-    def validate_private_key(cls, v: str) -> KeySet:
-        variable_name = "SNOWFLAKE_PRIVATE_KEY"
-
-        key = RSAKey.import_key(json.loads(v))
-
-        if not key.is_private:
-            raise ValueError(f"{variable_name} must be a private key")
-
-        if key.alg != "RS256":
-            raise ValueError(f"{variable_name} must be an RS256 key")
-
-        logging.getLogger("uvicorn").info("Snowflake is using a custom private key.")
-
-        return KeySet([key])
 
 
 @lru_cache

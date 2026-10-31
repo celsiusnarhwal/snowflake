@@ -22,7 +22,7 @@ def get_oauth_client(**kwargs) -> StarletteOAuth2App:
     )
 
 
-@validate_call
+@validate_call()
 def convert_scopes(
     scopes: t.Annotated[list | tuple | set, BeforeValidator(scope_to_list)],
     *,
@@ -42,7 +42,7 @@ def convert_scopes(
     if to_format == "openid":
         scope_map = {v: k for k, v in scope_map.items()}
 
-    converter = scope_to_list if output_type is list else list_to_scope
+    converter: t.Callable = scope_to_list if output_type is list else list_to_scope
 
     return converter([v for k, v in scope_map.items() if k in scopes])
 
@@ -98,7 +98,7 @@ def get_discovery_info(request: Request) -> dict:
             "groups",
         ],
         "grant_types_supported": ["authorization_code"],
-        "id_token_signing_alg_values_supported": ["RS256"],
+        "id_token_signing_alg_values_supported": ["ES256"],
         "token_endpoint_auth_methods_supported": [
             "client_secret_basic",
             "client_secret_post",

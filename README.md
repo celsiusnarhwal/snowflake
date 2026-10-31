@@ -1,7 +1,7 @@
 # Snowflake
 
 Snowflake enables you to use [Discord](https://discord.com) as
-an [OpenID Connect](https://auth0.com/docs/authenticate/protocols/openid-connect-protocol) (OIDC) provider. With it, you
+an [OpenID Connect](https://auth0.com/intro-to-iam/what-is-openid-connect-oidc) (OIDC) provider. With it, you
 can use Discord to identify your application's users without needing to implement specific support for Discord's OAuth2
 API.
 
@@ -11,12 +11,14 @@ API.
 
 ## Installation
 
-[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. You will almost always 
-want to set the `SNOWFLAKE_ALLOWED_HOSTS` environment variable; see [Configuration](#configuration).
+[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. It's recommended that you set
+the `SNOWFLAKE_SECRET` environment variable, and setting `SNOWFLAKE_ALLOWED_HOSTS` is required if Snowflake is to be 
+accessible from outside your local network; see  [Generating a Secret](#generating-a-secret) and 
+[Configuration](#configuration) for more details.
 
 > [!note]
 > Throughout this README, `snowflake.example.com` will be used as a placeholder for the domain at which your
-> Snowflake instace is reachable.
+> Snowflake instance is reachable.
 
 <hr>
 
@@ -48,8 +50,7 @@ services:
       - "8000:8000"
     environment:
       - SNOWFLAKE_ALLOWED_HOSTS=snowflake.example.com
-    volumes:
-      - /some/directory/on/your/machine:/app/snowflake/data
+      - SNOWFLAKE_SECRET=your-secret-here  # See the "Generating a Secret" section later in this README
 ```
 
 ### Docker CLI
@@ -86,6 +87,35 @@ directly to obtain the same claims.
 
 Frankly, if you're reading this then you should already know how this works.
 
+## Generating a Secret
+
+Snowflake needs a secret to compute the private keys it uses to sign data. It's strongly recommended that you provide
+a secret via the `SNOWFLAKE_SECRET` environment variable. Snowflake will generate one for you
+if you don't, but this will cause restarting Snowflake to make all in-progress authorizations to fail and 
+invalidate all existing tokens, so you really should provide a secret yourself.
+
+You can generate a secret using one of the following methods:
+
+### With Snowflake's `secret` command
+
+```shell
+docker run --rm ghcr.io/celsiusnarhwal/snowflake secret
+```
+
+The `secret` command takes a single optional argument, which is the length of the secret. It must be an integer
+greater than or equal to 32.
+
+### With OpenSSL
+
+If you have OpenSSL, you can run:
+
+```shell
+openssl rand -base64 32
+```
+
+The `num` argument (in the above example, `32`) must be greater than or equal to 32. Snowflake will reject secrets
+smaller than 32 bytes.
+
 ## OIDC Information
 
 ### Endpoints
@@ -109,8 +139,8 @@ Frankly, if you're reading this then you should already know how this works.
 | `groups`  | A list of IDs of guilds (a.k.a. "servers") the user is a member of.                             | No            |
 
 > [!warning]
-> Scopes are persistent. Once a scope is granted, your app maintains perpetual access to it — even if it later stops
-> asking for it — until the user manually revokes their authorization. Applications should be prepared to
+> Scopes are persistent. Once a scope is granted, your app maintains perpetual access to it—even if it later stops
+> asking for it—until the user manually revokes their authorization. Applications should be prepared to
 > receive data from scopes they did not explicitly request at authorization.
 >
 > This is a technical limitation of Discord's OAuth2 API.
@@ -180,82 +210,35 @@ The endpoint will return an HTTP 404 error for email addresses at non-whiteliste
 
 As previously mentioned, Snowflake requires HTTPS for external connections. If you're serving Snowflake
 behind a reverse proxy and connecting to the reverse proxy over HTTPS, you will likely need to configure
-[Uvicorn](https://www.uvicorn.org) — which Snowflake uses under the hood — to trust the IP address
+[Uvicorn](https://www.uvicorn.org)—which Snowflake uses under the hood—to trust the IP address
 of your reverse proxy.
 
 You can do this by setting the `UVICORN_FORWARDED_ALLOW_IPS` environment variable to a comma-separated list of IP
 addresses or networks, at least one of which must match the IP of your reverse proxy. You can also set it to `*` to
 trust all IP addresses, but this is generally not recommended.
 
-For more information, see [Uvicorn's documentation](https://www.uvicorn.org/deployment/#proxies-and-forwarded-headers).
-
-## Custom Private Keys
-
-> [!note]
-> This is an advanced feature most users won't need.
-
-By default, Snowflake signs its JWTs with a private key that it generates and writes to `/app/snowflake/data`,
-which you are instructed to mount on your host machine (see [Installation](#installation)). As an alternative to this,
-Snowflake allows you to provide your own private key via the `SNOWFLAKE_PRIVATE_KEY` environment variable. This may
-be useful, for example, in environments where mounting `/app/snowflake/data` isn't possible, or if you'd just prefer
-to keep the private key in an environment variable rather than have it persisted to a file.
-
-The value of `SNOWFLAKE_PRIVATE_KEY` must be an RS256 JSON Web Key. There are two recommended ways to generate one:
-
-1. Use the online tool mkjwk via [this link](https://mkjwk.org/?kty=rsa&size=2048&use=sig&alg=RS256). Using that link 
-will prefill the configuration options; you only need to click `Generate` and then `Copy to Clipboard` underneath 
-`Public and Private Keypair`.
-2. Use the following command:
-
-    ```shell
-    docker run ghcr.io/celsiusnarhwal/snowflake keygen
-    ```
-
-<details>
-<summary>Either way, the result should look similar to this (click to expand):</summary>
-<br/>
-
-```json5
-// For demonstration purposes only, do not actually use this private key. Obviously.
-{
-    "p": "4AGfVeTcxkgbvqf0WP5c270L-p_WQyNwMmtn4pXPazhmfwVPW6j3f2n2_Ober4xObaD5KOJIR3ah3Wu9LCoYp2HNdxsddyBXYh7nZhYP21uq1MphX9jvw1l422qAEbPraISKfkPv71sJxnXMG1cm7SaUtkj4P6Lg7bTv8PxapQ0",
-    "kty": "RSA",
-    "q": "2ues113yqdjCdx9O_1piyYeWQhYbM-VZy_TTKmc3JqARj68wx8lUoggr_ybcN5dJ8JKPKh93SN5TnqbmscqYllEaXtSQPw6aDq5OkF5Z5M7J-kDtfVcHU-Z02NFa40ViU25seIDmejbJi442ox2yChTd9gbp_0Rfkhv9EuWdnaU",
-    "d": "GMJcHduhQEp1EYSU7MGuA6RWUHFYWhuwxPorrY09E5PrAPmPJxFmrPls_2hSfJSSJ-TnnKKcHQpcNFt7BiZ6Th2D_qH5DH9FUKSRkl6kvb9gEI5bNDF_1lYZxnivG94OEtkqprVXURMaza5Hbz57Gl0iBpV28BmnZAg6Llb7AUUNONmZgtzhPYpwH9JxJOHCzQHbc4u9ZF1XfbW-iINHenJW34pN8jdWPlv_DYKt9SDd9qPQq4eCGkOU9uQFL4KeoPlGaDXA_7ps4i62klEtb-rdQFQD-gg8-nc2trMt9oMmqVl0XFdG4KN9_N4Qid4HgiaiMwjNsdkNKk2e8aZWvQ",
-    "e": "AQAB",
-    "use": "sig",
-    "qi": "2vWPtbeCUETj7ZgqrOxUqtO_yD5I86tY_zoMK_woQ389VLg--fwXcY9amWo1FViHm1KmuA0nqxc0Sdbl5N1ibxZPqYglX_YnGH5AQ9HTOCmrPeAOTCOdUtUgBD0biG2y63VfiGKnrJz1QGVLIkEFub6V0JraUNDxE7nUJlxb3Lk",
-    "dp": "YLISl79dVfJWl6xkm-3hI7GtdBh_IygvDHS0uWi1yrDj_bzLDuQXQlb5mR4Hznugd05ff7h-PusE4FHbrS7WyZo8WUfJJl09m0t_099-JNCjI4vhEMDSbt82fnCwq_OgkNN1_R9SeV4xEAxVeQ_b688VrsI89ytWMQZD9SDZ-Bk",
-    "alg": "RS256",
-    "dq": "JmN8jyQ9mwWVTNijvOo36smpUxuXV6l_7uGXapdBN7fYfI8nidHH0saGGK_S7LjOUa8SBjwQain7FhaE3GcADVRZwImcZkKER9DPnEe_kf2ltApQ26s4cME4epF0U-jmDmWOBi_su0ACZkPhVwetIlF4f13FCWwPKotX_UlhM7U",
-    "n": "v4waY3YE-AFuYoVy_T7fgC48LRujLaQNaFb-GGZnZEbiFi7rkVJF_EVajmu3Ksz1TwTrIHhrJijKAuBg_p4UKNJVZATqjPCilIrOajbWWJ-OISYXqeUHmlaoqML3Qq1x8ti05G6DyUjZTfZRabqrx7UggB3nOL-Eog69FnNf7tf1XmEIKEvwfB9NFAQWG2Jiksts8jzU2PVDnmR5cpsAeOK2hwZnp0BKcezAnILGrVbt_NPvp4J2ldD6eV8_YMZ9YenZaTw6LuVAE0k4buPv7mNoP-QhDhhg2UrmY3xElhhk0VNxbNV7b0AAm07bfuPfEb-y8V0amzYLKb48F55aYQ"
-}
-```
-
-</details>
-
-If `SNOWFLAKE_PRIVATE_KEY` is set, there's no need to mount `/app/snowflake/data`. On startup, Snowflake
-will log a message affirming that a custom private key is in use.
+For more information, see [Uvicorn's documentation](https://uvicorn.dev/deployment/#proxies-and-forwarded-headers).
 
 ## Configuration
 
 Snowflake is configurable through the following environment variables (all optional):
 
-| **Environment Variable**             | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                                                       | **Default**               |
-|--------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| `SNOWFLAKE_ALLOWED_HOSTS`            | String   | A comma-separated list of hostnames at which Snowflake may be accessed. Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended.<br/><br/>Loopback addresses (e.g., `localhost`) are always included.                                                                                               | `localhost,127.0.0.1,::1` |
-| `SNOWFLAKE_ALLOWED_CLIENTS`          | String   | A comma-separated list of Discord application client IDs. Snowflake will only fulfill authorization requests for client IDs in this list.<br/><br/>This can be set to `*` to allow all client IDs.                                                                                                                                                                                                    | `*`                       |
-| `SNOWFLAKE_BASE_PATH`                | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                                                                               | `/`                       |
-| `SNOWFLAKE_FIX_REDIRECT_URIS`        | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use.<br/><br/>The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                                                                       | `false`                   |                                                                                                                                                                                                                                                                                                                                   |               |              |
-| `SNOWFLAKE_TOKEN_LIFETIME`           | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>Must be greater than or equal to 60 seconds.                                                                             | `1h`                      |
-| `SNOWFLAKE_ROOT_REDIRECT`            | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, `docs`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `docs` redirects to Snowflake's interactive API documentation; `off` responds with an HTTP 404 error.<br/><br/>Setting this to `docs` will force `SNOWFLAKE_ENABLE_DOCS` to be true. | `repo`                    |
-| `SNOWFLAKE_TREAT_LOOPBACK_AS_SECURE` | Boolean  | Whether Snowflake will consider loopback addresses (e.g., `localhost`) to be secure even if they don't use HTTPS.                                                                                                                                                                                                                                                                                     | `true`                    |
-| `SNOWFLAKE_RETURN_TO_REFERRER`       | Boolean  | If this is `true` and the user denies an authorization request, Snowflake will redirect the user back to the initiating URL.[^3] Otherwise, Snowflake behaves according to [OpenID Connect Core 1.0 § 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).                                                                                                                      | `false`                   |
-| `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`  | String   | A comma-separated lists of domains allowed in `acct:` URIs sent to Snowflake's WebFinger endpoint. The endpoint will return an HTTP 404 error for URIs with domains not permitted by this setting.<br/><br/> Wildcard domains (e.g., `*.example.com`) are supported, but the unqualified wildcard (`*`) is not.                                                                                       | N/A                       |
-| `SNOWFLAKE_PRIVATE_KEY`              | String   | A private RS256 JSON Web Key. If provided, Snowflake will use it instead of generating its own. See [Custom Private Keys](#custom-private-keys).                                                                                                                                                                                                                                                      |                           |
-| `SNOWFLAKE_ENABLE_DOCS`              | Boolean  | Whether to serve Snowflake's interactive API documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.<br/><br/>This is forced to be `true` if `SNOWFLAKE_ROOT_REDIRECT` is set to `docs`.                                                                                                           | `false`                   |
+| **Environment Variable**             | **Type** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                             | **Default**               |
+|--------------------------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| `SNOWFLAKE_ALLOWED_HOSTS`            | String   | A comma-separated list of hostnames at which Snowflake may be accessed. This is required if you want to access Snowflake from outside your local network.<br/><br/> Wildcard domains (e.g., `*.example.com`) and IP addresses are supported. You can also set this to `*` to allow all hostnames, but this is not recommended.<br/><br/>Loopback addresses (e.g., `localhost`) are always included.                                       | `localhost,127.0.0.1,::1` |
+| `SNOWFLAKE_SECRET`                   | String   | A Base64-encoded string at least 32 bytes in length. While optional, it is strongly recommended to provide this.                                                                                                                                                                                                                                                                                                                            | Randomly generated        |
+| `SNOWFLAKE_ALLOWED_CLIENTS`          | String   | A comma-separated list of Discord application client IDs. Snowflake will only fulfill authorization requests for client IDs in this list.<br/><br/>This can be set to `*` to allow all client IDs.                                                                                                                                                                                                                                          | `*`                       |
+| `SNOWFLAKE_BASE_PATH`                | String   | The URL path at which Snowflake is being served. This may be useful if you're serving Snowflake behind a reverse proxy.                                                                                                                                                                                                                                                                                                                     | `/`                       |
+| `SNOWFLAKE_FIX_REDIRECT_URIS`        | Boolean  | Whether to automatically correct redirect URIs to subpaths of Snowflake's `/r` endpoint as necessary. This may be useful for OIDC clients that don't allow you to set the redirect URI they use.<br/><br/>The redirect URIs you set in the Discord Developer Portal must always be subpaths of `/r` regardless of this setting.                                                                                                             | `false`                   |                                                                                                                                                                                                                                                                                                                                   |               |              |
+| `SNOWFLAKE_TOKEN_LIFETIME`           | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) representing the amount of time after which Snowflake-issued tokens should expire. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>Must resolve to a whole number of seconds greater or equal to 60.                                                                                                                   | `1h`                      |
+| `SNOWFLAKE_ROTATION_INTERVAL`        | String   | A [Go duration string](https://pkg.go.dev/time#ParseDuration) represnting the interval at which Snowflake should rotate its private keys. In addition to the standard Go units, you can use `d` for day, `w` for week, `mm` for month, and `y` for year.[^1]<br/><br/>Must be greater than or equal to the value of `SNOWFLAKE_TOKEN_LIFETIME`.                                                      |                         The value of `SNOWFLAKE_TOKEN_LIFETIME`  |
+| `SNOWFLAKE_ROOT_REDIRECT`            | String   | Where Snowflake's root path redirects to. Must be `repo`, `settings`, `docs`, or `off`.<br/><br/>`repo` redirects to Snowflake's GitHub repository; `settings` redirects to the user's Discord account settings; `docs` redirects to Snowflake's interactive API documentation; `off` responds with an HTTP 404 error.<br/><br/>Setting this to `docs` will force `SNOWFLAKE_ENABLE_DOCS` to be true.                                       | `repo`                    |
+| `SNOWFLAKE_TREAT_LOOPBACK_AS_SECURE` | Boolean  | Whether Snowflake will consider loopback addresses (e.g., `localhost`) to be secure even if they don't use HTTPS.                                                                                                                                                                                                                                                                                                                           | `true`                    |
+| `SNOWFLAKE_RETURN_TO_REFERRER`       | Boolean  | If this is `true` and the user denies an authorization request, Snowflake will redirect the user back to the initiating URL.[^3] Otherwise, Snowflake behaves according to [OpenID Connect Core 1.0 § 3.1.2.6](https://openid.net/specs/openid-connect-core-1_0.html#AuthError).                                                                                                                                                            | `false`                   |
+| `SNOWFLAKE_ALLOWED_WEBFINGER_HOSTS`  | String   | A comma-separated lists of domains allowed in `acct:` URIs sent to Snowflake's WebFinger endpoint. The endpoint will return an HTTP 404 error for URIs with domains not permitted by this setting.<br/><br/> Wildcard domains (e.g., `*.example.com`) are supported, but the unqualified wildcard (`*`) is not.                                                                                                                             | N/A                       |
+| `SNOWFLAKE_ENABLE_DOCS`              | Boolean  | Whether to serve Snowflake's interactive API documentation at `/docs`. This also controls whether Snowflake's [OpenAPI](https://spec.openapis.org/oas/latest.html) schema is served at `/openapi.json`.<br/><br/>This is forced to be `true` if `SNOWFLAKE_ROOT_REDIRECT` is set to `docs`.                                                                                                                                                 | `false`                   |
 
-<br>
+<br/>
 
 Uvicorn will respect most[^2] of [its own environment variables](https://www.uvicorn.org/settings/) if they are set, but `UVICORN_FORWARDED_ALLOW_IPS` is the only one supported by Snowflake. Please don't open an issue if you set any of the others and something breaks.
 

@@ -1,7 +1,7 @@
 import typing as t
 
 import dns.name
-import httpx
+import httpx2 as httpx
 from authlib.common.errors import AuthlibHTTPError
 from authlib.oauth2.rfc6749 import scope_to_list
 from fastapi import Depends, FastAPI, Form, Header, Request
@@ -17,7 +17,7 @@ from fastapi.security import (
     HTTPBasicCredentials,
     HTTPBearer,
 )
-from httpx import HTTPStatusError
+from httpx2 import HTTPStatusError
 from joserfc.errors import JoseError
 from pydantic import AfterValidator, validate_email
 from scalar_fastapi import get_scalar_api_reference

@@ -25,9 +25,11 @@ class UserInfoResponse(BaseModel, title="User Info"):
 
 class JWKSResponse(BaseModel, title="JSON Web Key Set"):
     class JWK(BaseModel, title="JSON Web Key"):
-        n: str = Field(title="Modulus")
-        e: str = Field(title="Exponent")
-        kty: t.Literal["RSA"] = Field(title="Key Type")
+        crv: str = Field(title="Curve")
+        x: str = Field(title="X Coordinate")
+        y: str = Field(title="Y Coordinate")
+        kty: t.Literal["EC"] = Field(title="Key Type")
+        alg: t.Literal["ES256"] = Field(title="Key Algorithm")
         kid: str = Field(title="Key ID")
         use: t.Literal["sig"] = Field(title="Public Key Use")
 
