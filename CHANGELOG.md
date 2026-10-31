@@ -4,10 +4,7 @@ Notable changes to Snowflake are documented here.
 
 Snowflake adheres to [semantic versioning](https://semver.org/spec/v2.0.0.html).
 
-## <a name="3.0.0">3.0.0 — 1970-01-01</a>
-
-This is technically a breaking release, but most users should be able to upgrade without strictly needing to
-change anything.
+## <a name="3.0.0">3.0.0 — Unreleased</a>
 
 ### 🚨 Breaking Changes
 
