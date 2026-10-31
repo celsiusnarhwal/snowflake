@@ -12,7 +12,7 @@ API.
 
 ## Installation
 
-[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. Adjust either of the
+[Docker](https://docs.docker.com/get-started) is the only supported way of running Snowflake. Adjust either the
 following Docker Compose or Docker CLI configurations to your needs.
 
 > [!note]
