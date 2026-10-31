@@ -7,6 +7,7 @@ ENV PATH="/app/.venv/bin:${PATH}"
 WORKDIR /app/
 
 COPY pyproject.toml uv.lock /app/
+ARG PDM_BUILD_SCM_VERSION
 RUN uv sync
 
 COPY . /app/

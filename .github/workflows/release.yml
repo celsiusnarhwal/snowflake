@@ -34,7 +34,7 @@ jobs:
 
       - name: Get Image Metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: |
             ghcr.io/${{ github.repository }}
@@ -47,6 +47,10 @@ jobs:
             type=pep440,pattern={{major}}.{{minor}}
             type=pep440,pattern=v{{major}}.{{minor}}
 
+      - name: Get Version
+        if: github.event_name == 'release'
+        run: echo "PDM_BUILD_SCM_VERSION=${{ github.ref_name }}" >> ${GITHUB_ENV}
+
       - name: Build and Push Image
         uses: docker/build-push-action@v6
         with:
@@ -58,4 +62,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           build-args: |
-            BUILDKIT_CONTEXT_KEEP_GIT_DIR=1
+            PDM_BUILD_SCM_VERSION=${{ env.PDM_BUILD_SCM_VERSION }}
