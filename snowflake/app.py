@@ -524,7 +524,7 @@ async def webfinger(
         Query(
             pattern=r"acct:\S+",
             description="Must be an email address prepended with `acct:`.",
-            example="acct:koumae@kitauji.ed.jp",
+            examples=["acct:koumae@kitauji.ed.jp"],
         ),
         AfterValidator(lambda x: "acct:" + validate_email(x.split("acct:")[1])[1]),
     ],
