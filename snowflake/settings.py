@@ -42,11 +42,9 @@ class SnowflakeSettings(BaseSettings):
         env_prefix="SNOWFLAKE_", env_ignore_empty=True, env_nested_delimiter="__"
     )
 
-    allowed_hosts: CommaSeparatedList[str] = Field(default_factory=list)
+    allowed_hosts: CommaSeparatedList[str] = []
     secret: Secret[Base64Bytes] = Field(None)
-    allowed_clients: t.Annotated[list[str], NoDecode] = Field(
-        default=["*"], validate_default=False
-    )
+    allowed_clients: CommaSeparatedList = Field(["*"], validate_default=False)
     base_path: str = "/"
     fix_redirect_uris: bool = False
     token_lifetime: Duration = Field("1h", ge=60)
@@ -56,11 +54,11 @@ class SnowflakeSettings(BaseSettings):
     treat_loopback_as_secure: bool = True
     return_to_referrer: bool = False
     allowed_webfinger_hosts: CommaSeparatedList[dns.name.Name] = Field(
-        default_factory=list, validate_default=False
+        [], validate_default=False
     )
     enable_docs: bool = False
 
-    private: SnowflakePrivateSettings = Field(default_factory=SnowflakePrivateSettings)
+    private: SnowflakePrivateSettings = Field(SnowflakePrivateSettings())
 
     @field_validator("allowed_hosts", mode="after")
     def validate_allowed_hosts(cls, v: str | list) -> list[str]:
