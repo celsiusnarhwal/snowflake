@@ -77,10 +77,6 @@ class SnowflakeSettings(BaseSettings):
 
         return v + loopback
 
-    @field_validator("allowed_clients", mode="before")
-    def validate_allowed_clients(cls, v: str) -> list[str]:
-        return v.split(",")
-
     @field_validator("allowed_webfinger_hosts", mode="before")
     def validate_allowed_webfinger_hosts(cls, v: str) -> list[dns.name.Name]:
         hosts = []
