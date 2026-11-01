@@ -31,7 +31,6 @@ def derive_private_key(secret: bytes, version: int) -> ECKey:
     -------
     ECKey
         The derived key.
-
     """
     hkdf_key = HKDF(
         algorithm=hashes.SHA256(),
