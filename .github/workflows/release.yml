@@ -32,6 +32,11 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ github.token }}
 
+      - name: Get Icon Data
+        id: icon
+        run: echo "icon=data:image/svg+xml;base64,$(base64 < icon.svg | tr -d '\n')" > ${GITHUB_OUTPUT}
+
+
       - name: Get Image Metadata
         id: meta
         uses: docker/metadata-action@v6
@@ -46,6 +51,8 @@ jobs:
             type=pep440,pattern=v{{major}}
             type=pep440,pattern={{major}}.{{minor}}
             type=pep440,pattern=v{{major}}.{{minor}}
+          labels: |
+            dev.dozzle.icon=${{ steps.icon.outputs.icon }}
 
       - name: Get Version
         if: github.event_name == 'release'
