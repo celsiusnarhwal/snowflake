@@ -1,14 +1,9 @@
-import argparse
 import base64
 import secrets
 import sys
 import typing as t
 
 from pydantic import Field, TypeAdapter, ValidationError
-
-parser = argparse.ArgumentParser()
-parser.add_argument("secret")
-
 
 def secret():
     if len(sys.argv) >= 2:
