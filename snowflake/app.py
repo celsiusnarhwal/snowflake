@@ -196,7 +196,7 @@ async def authorize(
     if "openid" not in scope_to_list(scope):
         raise HTTPException(400, "openid scope is required")
 
-    groups = [scope.split(":")[1] for scope in scope_to_list(scope) if re.match(r"^groups:\d+")]
+    groups = [scope.split(":")[1] for scope in scope_to_list(scope) if re.match(r"^groups:\d+", scope)]
 
     if groups:
         scope += " groups"
