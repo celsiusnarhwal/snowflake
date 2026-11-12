@@ -45,6 +45,7 @@ class SnowflakeStateData(Serializable):
     redirect_uri: str
     state: str | None
     nonce: str | None
+    groups: list[str]
     referrer: str | None
 
     @classmethod
@@ -58,6 +59,7 @@ class SnowflakeStateData(Serializable):
 class SnowflakeAuthorizationData(Serializable):
     code: str
     nonce: str | None
+    groups: list[str]
 
     @classmethod
     def from_jwt(cls, token: str) -> t.Self:
@@ -65,3 +67,16 @@ class SnowflakeAuthorizationData(Serializable):
             return super(SnowflakeAuthorizationData, cls).from_jwt(token)
         except (JoseError, ValidationError):
             raise HTTPException(400, "Invalid authorization code")
+
+
+class SnowflakeRefreshToken(Serializable):
+    token: str
+    groups: list[str]
+
+    @classmethod
+    def from_jwt(cls, token: str):
+        try:
+            return super(SnowflakeRefreshToken, cls).from_jwt(token)
+        except (JoseError, ValidationError):
+            raise HTTPException(400, "Invalid refresh token")
+        

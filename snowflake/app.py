@@ -1,3 +1,4 @@
+import re
 import typing as t
 from pathlib import Path
 
@@ -28,6 +29,7 @@ import snowflake.responses as r
 from snowflake import security, utils
 from snowflake.serializable import (
     SnowflakeAuthorizationData,
+    SnowflakeRefreshToken,
     SnowflakeStateData,
 )
 from snowflake.settings import settings
@@ -194,6 +196,11 @@ async def authorize(
     if "openid" not in scope_to_list(scope):
         raise HTTPException(400, "openid scope is required")
 
+    groups = [scope.split(":")[1] for scope in scope_to_list(scope) if re.match(r"^groups:\d+")]
+
+    if groups:
+        scope += " groups"
+
     discord = utils.get_oauth_client(
         client_id=client_id,
         scope=utils.convert_scopes(scope, to_format="discord", output_type=str),
@@ -203,6 +210,7 @@ async def authorize(
         state=state,
         redirect_uri=redirect_uri,
         nonce=nonce,
+        groups=groups,
         referrer=referrer,
     )
 
@@ -271,7 +279,7 @@ async def callback(
 
     if code and not error:
         authorization_data = SnowflakeAuthorizationData(
-            code=code, nonce=state_data.nonce
+            code=code, nonce=state_data.nonce, groups=state_data.groups,
         )
 
         full_redirect_uri = full_redirect_uri.include_query_params(
@@ -398,7 +406,7 @@ async def token(
                             **(await request.form()),
                             "client_id": client_id,
                             "client_secret": client_secret,
-                            "refresh_token": refresh_token,
+                            "refresh_token": SnowflakeRefreshToken.from_jwt(refresh_token),
                         },
                     )
                 )
@@ -440,6 +448,7 @@ async def token(
         discord=discord,
         discord_token=discord_token,
         nonce=authorization_data.nonce,
+        groups=authorization_data.groups,
         oidc_metadata=oidc_metadata,
         include_refresh_token=include_refresh_token,
     )

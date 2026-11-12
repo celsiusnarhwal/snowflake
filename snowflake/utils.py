@@ -6,6 +6,7 @@ from authlib.oauth2.rfc6749 import list_to_scope, scope_to_list
 from fastapi import Request
 from pydantic import BeforeValidator, validate_call
 from starlette.datastructures import URL
+import re
 
 from snowflake.settings import settings
 

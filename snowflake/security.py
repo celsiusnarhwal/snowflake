@@ -11,6 +11,7 @@ from joserfc.jwk import ECKey, KeySet
 from joserfc.jwt import Token
 
 from snowflake import utils
+from snowflake.serializable import SnowflakeRefreshToken
 from snowflake.settings import settings
 
 
@@ -101,6 +102,7 @@ async def create_tokens(
     discord: StarletteOAuth2App,
     discord_token: dict,
     oidc_metadata: dict,
+    groups: list[str],
     nonce: str | None = None,
     include_refresh_token: bool = True,
 ) -> dict[str, str | int]:
@@ -135,7 +137,7 @@ async def create_tokens(
             .json()
         )
 
-        access_claims["groups"] = [guild["id"] for guild in guilds]
+        access_claims["groups"] = [guild["id"] for guild in guilds if guild["id"] in groups or not groups]
 
     identity_claims = {
         **access_claims,
@@ -156,6 +158,6 @@ async def create_tokens(
     }
 
     if include_refresh_token:
-        tokens["refresh_token"] = discord_token["refresh_token"]
+        tokens["refresh_token"] = SnowflakeRefreshToken(token=discord_token["refresh_token"], groups=groups).to_jwt()
 
     return tokens
