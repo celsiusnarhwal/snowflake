@@ -52,6 +52,7 @@ class SnowflakeSettings(BaseSettings):
     key_history: int = Field(1, ge=1, le=10)
     root_redirect: t.Literal["repo", "settings", "docs", "off"] = "repo"
     treat_loopback_as_secure: bool = True
+    issuer_no_trailing_slash: bool = False
     return_to_referrer: bool = False
     allowed_webfinger_hosts: t.Annotated[list[dns.name.Name], NoDecode] = Field(
         [], validate_default=False
