@@ -16,7 +16,7 @@ RUN uv sync
 
 COPY . /app/
 
-HEALTHCHECK CMD httpx http://localhost:8000/health
+HEALTHCHECK CMD httpx http://localhost:8000/health > /dev/null
 
 EXPOSE 8000
 
