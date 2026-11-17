@@ -82,8 +82,13 @@ def get_discovery_info(request: Request) -> dict:
     """
     Return OpenID Connect Discovery information.
     """
+    issuer = request.base_url
+
+    if issuer.path == "/":
+        issuer = issuer.replace(path="")
+
     return {
-        "issuer": str(request.base_url).rstrip("/" if settings().issuer_no_trailing_slash else ""),
+        "issuer": str(issuer),
         "authorization_endpoint": str(request.url_for("authorize")),
         "token_endpoint": str(request.url_for("token")),
         "userinfo_endpoint": str(request.url_for("userinfo")),
